@@ -1,0 +1,33 @@
+From 1605c01b00947016970a88f124e76ee1a93fa1ae Mon Sep 17 00:00:00 2001
+From: Aikar <aikar@aikar.co>
+Date: Thu, 3 Mar 2016 02:07:55 -0600
+Subject: [PATCH] Paper -> Optimize getBlockData
+
+常用方法，目前已知的是在寻路时会大量调用该方法。
+原来的执行过程会判断世界是否为演示世界，以及通过 try catch 来实现在出现异常的时候崩溃报告里能多点信息。
+这份优化把这些全部去掉了。
+Link：https://github.com/PaperMC/Paper/blob/master/Spigot-Server-Patches/0063-Optimize-Pathfinding.patch
+
+diff --git a/src/main/java/net/minecraft/server/Chunk.java b/src/main/java/net/minecraft/server/Chunk.java
+index 582e684..19788ed 100644
+--- a/src/main/java/net/minecraft/server/Chunk.java
++++ b/src/main/java/net/minecraft/server/Chunk.java
+@@ -392,8 +392,15 @@ public class Chunk {
+         return this.a(i, j, k).c();
+     }
+ 
++    // Paper - Optimize getBlockData
+     public IBlockData getBlockData(BlockPosition blockposition) {
+-        return this.a(blockposition.getX(), blockposition.getY(), blockposition.getZ());
++        if (blockposition.getY() >= 0 && blockposition.getY() >> 4 < this.sections.length) {
++            ChunkSection chunksection = this.sections[blockposition.getY() >> 4];
++            if (chunksection != null) {
++                return chunksection.getType(blockposition.getX() & 15, blockposition.getY() & 15, blockposition.getZ() & 15);
++            }
++        }
++        return Blocks.AIR.getBlockData();
+     }
+ 
+     public IBlockData a(final int i, final int j, final int k) {
+-- 
+2.7.2

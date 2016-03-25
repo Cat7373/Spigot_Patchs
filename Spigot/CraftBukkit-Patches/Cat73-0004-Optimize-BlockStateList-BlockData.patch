@@ -1,0 +1,39 @@
+From 23c5437c07a1bf673509fc5f20aed2117defe615 Mon Sep 17 00:00:00 2001
+From: Aikar <aikar@aikar.co>
+Date: Fri, 18 Mar 2016 19:15:44 -0400
+Subject: [PATCH] Paper -> Optimize BlockStateList/BlockData
+
+常用方法，会通过预先判断来实现在出现异常的时候崩溃报告里能多点信息。
+这份优化把这些去掉了。
+Link：https://github.com/PaperMC/Paper/blob/master/Spigot-Server-Patches/0092-Optimize-BlockStateList-BlockData.patch
+
+diff --git a/src/main/java/net/minecraft/server/BlockStateList.java b/src/main/java/net/minecraft/server/BlockStateList.java
+index a11c62f..43f198b 100644
+--- a/src/main/java/net/minecraft/server/BlockStateList.java
++++ b/src/main/java/net/minecraft/server/BlockStateList.java
+@@ -145,21 +145,11 @@ public class BlockStateList {
+         }
+ 
+         public <T extends Comparable<T>> T get(IBlockState<T> iblockstate) {
+-            if (!this.b.containsKey(iblockstate)) {
+-                throw new IllegalArgumentException("Cannot get property " + iblockstate + " as it does not exist in " + this.a.t());
+-            } else {
+-                return iblockstate.b().cast(this.b.get(iblockstate));
+-            }
++            return iblockstate.b().cast(this.b.get(iblockstate)); // Paper
+         }
+ 
+         public <T extends Comparable<T>, V extends T> IBlockData set(IBlockState<T> iblockstate, V v0) {
+-            if (!this.b.containsKey(iblockstate)) {
+-                throw new IllegalArgumentException("Cannot set property " + iblockstate + " as it does not exist in " + this.a.t());
+-            } else if (!iblockstate.c().contains(v0)) {
+-                throw new IllegalArgumentException("Cannot set property " + iblockstate + " to " + v0 + " on block " + Block.REGISTRY.b(this.a) + ", it is not an allowed value");
+-            } else {
+-                return (IBlockData) (this.b.get(iblockstate) == v0 ? this : (IBlockData) this.c.get(iblockstate, v0));
+-            }
++            return this.b.get(iblockstate) == v0 ? this : this.c.get(iblockstate, v0); // Paper
+         }
+ 
+         public ImmutableMap<IBlockState<?>, Comparable<?>> s() {
+-- 
+2.7.4

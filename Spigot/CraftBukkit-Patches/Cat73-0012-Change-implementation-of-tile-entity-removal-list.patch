@@ -1,0 +1,65 @@
+From 84b6a774a12374f05c0d1d02f2ca5e07f0fe40f3 Mon Sep 17 00:00:00 2001
+From: Joseph Hirschfeld <joe@ibj.io>
+Date: Thu, 3 Mar 2016 02:39:54 -0600
+Subject: [PATCH] Paper -> Change implementation of (tile)entity removal list
+
+将实体列表由 ArrayList 修改为 Set 存储，这个列表完全没有必要有顺序，维护一个无序列表能节约一些资源。
+Link：https://github.com/PaperMC/Paper/blob/master/Spigot-Server-Patches/0071-Change-implementation-of-tile-entity-removal-list.patch
+
+diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
+index c73f0ef..2d5ca21 100644
+--- a/src/main/java/net/minecraft/server/World.java
++++ b/src/main/java/net/minecraft/server/World.java
+@@ -9,6 +9,8 @@ import java.util.Calendar;
+ import java.util.Collection;
+ import java.util.Iterator;
+ import java.util.List;
++import java.util.Set;
++import com.google.common.collect.Sets;
+ import java.util.Random;
+ import java.util.UUID;
+ import java.util.concurrent.Callable;
+@@ -59,11 +61,11 @@ public abstract class World implements IBlockAccess {
+         }
+     };
+     // Spigot end
+-    protected final List<Entity> f = Lists.newArrayList();
++    protected final Set<Entity> f = Sets.newHashSet(); // Paper
+     public final List<TileEntity> tileEntityList = Lists.newArrayList();
+     public final List<TileEntity> tileEntityListTick = Lists.newArrayList();
+     private final List<TileEntity> b = Lists.newArrayList();
+-    private final List<TileEntity> tileEntityListUnload = Lists.newArrayList();
++    private final Set<TileEntity> tileEntityListUnload = Sets.newHashSet(); // Paper
+     public final List<EntityHuman> players = Lists.newArrayList();
+     public final List<Entity> j = Lists.newArrayList();
+     protected final IntHashMap<Entity> entitiesById = new IntHashMap();
+@@ -1370,18 +1372,18 @@ public abstract class World implements IBlockAccess {
+ 
+         int j;
+ 
+-        for (i = 0; i < this.f.size(); ++i) {
+-            entity = (Entity) this.f.get(i);
+-            int k = entity.ab;
++        // Paper start - Set based removal lists
++        for (Entity e : this.f) {
++            j = e.ad;
++            int k = e.ab;
+ 
+-            j = entity.ad;
+-            if (entity.aa && this.isChunkLoaded(k, j, true)) {
+-                this.getChunkAt(k, j).b(entity);
++            if (e.aa && this.isChunkLoaded(k, j, true)) {
++                this.getChunkAt(k, j).b(e);
+             }
+         }
+ 
+-        for (i = 0; i < this.f.size(); ++i) {
+-            this.c((Entity) this.f.get(i));
++        for (Entity e : this.f) {
++            this.c(e);
+         }
+ 
+         this.f.clear();
+
+-- 
+2.7.2
