@@ -1,0 +1,53 @@
+From b43fa0f53aa59234a9717fb4be730229a51218c3 Mon Sep 17 00:00:00 2001
+From: Cat73 <1901803382@qq.com>
+Date: Thu, 12 May 2016 16:06:11 +0800
+Subject: [PATCH] Cat73 -> Fix "Failed to save chunk"
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+有时候保存区块的时候会因为村民导致整个区块保存失败。
+这是个临时性解决方案，在遇到这种情况时，将出问题的交易表替换掉来避免整个区块保存失败。
+Link：https://hub.spigotmc.org/jira/browse/SPIGOT-1942
+
+diff --git a/src/main/java/net/minecraft/server/MerchantRecipe.java b/src/main/java/net/minecraft/server/MerchantRecipe.java
+index e3a8b1d..09a77cd 100644
+--- a/src/main/java/net/minecraft/server/MerchantRecipe.java
++++ b/src/main/java/net/minecraft/server/MerchantRecipe.java
+@@ -2,9 +2,12 @@ package net.minecraft.server;
+ 
+ import javax.annotation.Nullable;
+ import org.bukkit.craftbukkit.inventory.CraftMerchantRecipe; // CraftBukkit
++import org.apache.logging.log4j.LogManager;
++import org.apache.logging.log4j.Logger;
+ 
+ public class MerchantRecipe {
+ 
++    private static final Logger logger = LogManager.getLogger();
+     public ItemStack buyingItem1;
+     public ItemStack buyingItem2;
+     public ItemStack sellingItem;
+@@ -121,6 +124,20 @@ public class MerchantRecipe {
+     public NBTTagCompound k() {
+         NBTTagCompound nbttagcompound = new NBTTagCompound();
+ 
++        if (this.buyingItem1 == null || this.sellingItem == null) {
++            MerchantRecipe.logger.warn("save recipe failed.");
++
++            ItemStack buy = new ItemStack(Items.EMERALD, 9);
++            ItemStack sell = new ItemStack(Blocks.EMERALD_BLOCK);
++
++            nbttagcompound.set("buy", buy.save(new NBTTagCompound()));
++            nbttagcompound.set("sell", sell.save(new NBTTagCompound()));
++            nbttagcompound.setInt("uses", 1);
++            nbttagcompound.setInt("maxUses", 1);
++            nbttagcompound.setBoolean("rewardExp", false);
++            return nbttagcompound;
++        }
++
+         nbttagcompound.set("buy", this.buyingItem1.save(new NBTTagCompound()));
+         nbttagcompound.set("sell", this.sellingItem.save(new NBTTagCompound()));
+         if (this.buyingItem2 != null) {
+-- 
+2.8.2.windows.1
+
