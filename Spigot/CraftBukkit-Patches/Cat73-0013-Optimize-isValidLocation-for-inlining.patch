@@ -1,0 +1,291 @@
+From dc62f96b9c16fe77efbb7bbaf2ac512f8f8477d3 Mon Sep 17 00:00:00 2001
+From: Aikar <aikar@aikar.co>
+Date: Tue, 22 Mar 2016 23:41:34 -0400
+Subject: [PATCH] Paper -> Optimize isValidLocation for inlining
+
+isValidLocation 是一个非常简单的函数，但是它被调用的频率极高，这份优化可以减少每次调用中的 6 次 call，并在部分返回 false 的情况下减少几次判断次数。
+Link：https://github.com/PaperMC/Paper/blob/master/Spigot-Server-Patches/0108-Optimize-isValidLocation-for-inlining.patch
+Link：https://github.com/PaperMC/Paper/blob/master/Spigot-Server-Patches/0077-Speedup-BlockPos-by-fixing-inlining.patch
+Link：https://github.com/PaperMC/Paper/blob/master/Spigot-Server-Patches/0112-Prevent-possible-infinite-loop-in-BlockPosition-iter.patch
+
+diff --git a/src/main/java/net/minecraft/server/BlockPosition.java b/src/main/java/net/minecraft/server/BlockPosition.java
+index e7a95f3..2d56f02 100644
+--- a/src/main/java/net/minecraft/server/BlockPosition.java
++++ b/src/main/java/net/minecraft/server/BlockPosition.java
+@@ -207,9 +207,10 @@ public class BlockPosition extends BaseBlockPosition {
+                                 ++k;
+                             }
+ 
+-                            this.b.c = i;
+-                            this.b.d = j;
+-                            this.b.e = k;
++                            // Paper start - modify base position variables
++                            ((BaseBlockPosition) this.b).a = i;
++                            ((BaseBlockPosition) this.b).c = j;
++                            ((BaseBlockPosition) this.b).d = k;
+                             return this.b;
+                         }
+                     }
+@@ -228,17 +229,23 @@ public class BlockPosition extends BaseBlockPosition {
+ 
+     public static final class PooledBlockPosition extends BlockPosition {
+ 
++        // Paper start - remove variables
++        /*
+         private int c;
+         private int d;
+         private int e;
++        */
++        // Paper end
+         private boolean f;
+         private static final List<BlockPosition.PooledBlockPosition> g = Lists.newArrayList();
+ 
+         private PooledBlockPosition(int i, int j, int k) {
+             super(0, 0, 0);
+-            this.c = i;
+-            this.d = j;
+-            this.e = k;
++            // Paper start - modify base position variables
++            ((BaseBlockPosition) this).a = i;
++            ((BaseBlockPosition) this).c = j;
++            ((BaseBlockPosition) this).d = k;
++            // Paper end
+         }
+ 
+         public static BlockPosition.PooledBlockPosition s() {
+@@ -279,6 +286,8 @@ public class BlockPosition extends BaseBlockPosition {
+             }
+         }
+ 
++        // Paper start - use superclass methods
++        /*
+         public int getX() {
+             return this.c;
+         }
+@@ -290,6 +299,8 @@ public class BlockPosition extends BaseBlockPosition {
+         public int getZ() {
+             return this.e;
+         }
++        */
++        // Paper end
+ 
+         public BlockPosition.PooledBlockPosition d(int i, int j, int k) {
+             if (this.f) {
+@@ -297,9 +308,11 @@ public class BlockPosition extends BaseBlockPosition {
+                 this.f = false;
+             }
+ 
+-            this.c = i;
+-            this.d = j;
+-            this.e = k;
++            // Paper start - modify base position variables
++            ((BaseBlockPosition) this).a = i;
++            ((BaseBlockPosition) this).c = j;
++            ((BaseBlockPosition) this).d = k;
++            // Paper end
+             return this;
+         }
+ 
+@@ -312,7 +325,7 @@ public class BlockPosition extends BaseBlockPosition {
+         }
+ 
+         public BlockPosition.PooledBlockPosition c(EnumDirection enumdirection) {
+-            return this.d(this.c + enumdirection.getAdjacentX(), this.d + enumdirection.getAdjacentY(), this.e + enumdirection.getAdjacentZ());
++            return this.d(this.getX() + enumdirection.getAdjacentX(), this.getY() + enumdirection.getAdjacentY(), this.getZ() + enumdirection.getAdjacentZ()); // Paper - use getters
+         }
+ 
+         public BaseBlockPosition d(BaseBlockPosition baseblockposition) {
+@@ -322,9 +335,13 @@ public class BlockPosition extends BaseBlockPosition {
+ 
+     public static final class MutableBlockPosition extends BlockPosition {
+ 
++        // Paper start - remove variables
++        /*
+         private int c;
+         private int d;
+         private int e;
++        */
++        // Paper end
+ 
+         public MutableBlockPosition() {
+             this(0, 0, 0);
+@@ -336,11 +353,15 @@ public class BlockPosition extends BaseBlockPosition {
+ 
+         public MutableBlockPosition(int i, int j, int k) {
+             super(0, 0, 0);
+-            this.c = i;
+-            this.d = j;
+-            this.e = k;
++            // Paper start - modify base position variables
++            ((BaseBlockPosition) this).a = i;
++            ((BaseBlockPosition) this).c = j;
++            ((BaseBlockPosition) this).d = k;
++            // Paper end
+         }
+ 
++        // Paper start - use superclass methods
++        /*
+         public int getX() {
+             return this.c;
+         }
+@@ -352,22 +373,28 @@ public class BlockPosition extends BaseBlockPosition {
+         public int getZ() {
+             return this.e;
+         }
++        */
++        // Paper end
+ 
+         public BlockPosition.MutableBlockPosition c(int i, int j, int k) {
+-            this.c = i;
+-            this.d = j;
+-            this.e = k;
++            // Paper start - modify base position variables
++            ((BaseBlockPosition) this).a = i;
++            ((BaseBlockPosition) this).c = j;
++            ((BaseBlockPosition) this).d = k;
++            // Paper end
+             return this;
+         }
+ 
+         public void c(EnumDirection enumdirection) {
+-            this.c += enumdirection.getAdjacentX();
+-            this.d += enumdirection.getAdjacentY();
+-            this.e += enumdirection.getAdjacentZ();
++            // Paper start - modify base position variables
++            ((BaseBlockPosition) this).a += enumdirection.getAdjacentX();
++            ((BaseBlockPosition) this).c += enumdirection.getAdjacentY();
++            ((BaseBlockPosition) this).d += enumdirection.getAdjacentZ();
++            // Paper end
+         }
+ 
+         public void p(int i) {
+-            this.d = i;
++            ((BaseBlockPosition) this).c = i; // Paper - modify base variable
+         }
+ 
+         public BlockPosition h() {
+
+diff --git a/src/main/java/net/minecraft/server/BaseBlockPosition.java b/src/main/java/net/minecraft/server/BaseBlockPosition.java
+index e54e7b7..58bb541 100644
+--- a/src/main/java/net/minecraft/server/BaseBlockPosition.java
++++ b/src/main/java/net/minecraft/server/BaseBlockPosition.java
+@@ -5,9 +5,9 @@ import com.google.common.base.Objects;
+ public class BaseBlockPosition implements Comparable<BaseBlockPosition> {
+ 
+     public static final BaseBlockPosition ZERO = new BaseBlockPosition(0, 0, 0);
+-    private final int a;
+-    private final int c;
+-    private final int d;
++    protected int a;
++    protected int c;
++    protected int d;
+ 
+     public BaseBlockPosition(int i, int j, int k) {
+         this.a = i;
+@@ -39,18 +39,22 @@ public class BaseBlockPosition implements Comparable<BaseBlockPosition> {
+         return this.getY() == baseblockposition.getY() ? (this.getZ() == baseblockposition.getZ() ? this.getX() - baseblockposition.getX() : this.getZ() - baseblockposition.getZ()) : this.getY() - baseblockposition.getY();
+     }
+ 
+-    public int getX() {
++    public final int getX() {
+         return this.a;
+     }
+ 
+-    public int getY() {
++    public final int getY() {
+         return this.c;
+     }
+ 
+-    public int getZ() {
++    public final int getZ() {
+         return this.d;
+     }
+ 
++    public boolean isValidLocation() {
++        return this.c >= 0 && this.c < 256 && this.a >= -30000000 && this.d >= -30000000 && this.a < 30000000 && this.d < 30000000;
++    }
++
+     public BaseBlockPosition d(BaseBlockPosition baseblockposition) {
+         return new BaseBlockPosition(this.getY() * baseblockposition.getZ() - this.getZ() * baseblockposition.getY(), this.getZ() * baseblockposition.getX() - this.getX() * baseblockposition.getZ(), this.getX() * baseblockposition.getY() - this.getY() * baseblockposition.getX());
+     }
+
+diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
+index c2fc058..29722c8 100644
+--- a/src/main/java/net/minecraft/server/World.java
++++ b/src/main/java/net/minecraft/server/World.java
+@@ -284,8 +284,8 @@ public abstract class World implements IBlockAccess {
+         return this.getType(blockposition1);
+     }
+ 
+-    private boolean isValidLocation(BlockPosition blockposition) {
+-        return blockposition.getX() >= -30000000 && blockposition.getZ() >= -30000000 && blockposition.getX() < 30000000 && blockposition.getZ() < 30000000 && blockposition.getY() >= 0 && blockposition.getY() < 256;
++    private static boolean isValidLocation(BlockPosition blockposition) { // Paper
++        return blockposition.isValidLocation(); // Paper
+     }
+ 
+     public boolean isEmpty(BlockPosition blockposition) {
+@@ -297,7 +297,7 @@ public abstract class World implements IBlockAccess {
+     }
+ 
+     public boolean a(BlockPosition blockposition, boolean flag) {
+-        return !this.isValidLocation(blockposition) ? false : this.isChunkLoaded(blockposition.getX() >> 4, blockposition.getZ() >> 4, flag);
++        return !blockposition.isValidLocation() ? false : this.isChunkLoaded(blockposition.getX() >> 4, blockposition.getZ() >> 4, flag); // Paper
+     }
+ 
+     public boolean areChunksLoaded(BlockPosition blockposition, int i) {
+@@ -377,7 +377,7 @@ public abstract class World implements IBlockAccess {
+             return true;
+         }
+         // CraftBukkit end
+-        if (!this.isValidLocation(blockposition)) {
++        if (!blockposition.isValidLocation()) { // Paper
+             return false;
+         } else if (!this.isClientSide && this.worldData.getType() == WorldType.DEBUG_ALL_BLOCK_STATES) {
+             return false;
+@@ -768,7 +768,7 @@ public abstract class World implements IBlockAccess {
+             blockposition = new BlockPosition(blockposition.getX(), 0, blockposition.getZ());
+         }
+ 
+-        if (!this.isValidLocation(blockposition)) {
++        if (!blockposition.isValidLocation()) { // Paper
+             return enumskyblock.c;
+         } else if (!this.isLoaded(blockposition)) {
+             return enumskyblock.c;
+@@ -780,7 +780,7 @@ public abstract class World implements IBlockAccess {
+     }
+ 
+     public void a(EnumSkyBlock enumskyblock, BlockPosition blockposition, int i) {
+-        if (this.isValidLocation(blockposition)) {
++        if (blockposition.isValidLocation()) { // Paper
+             if (this.isLoaded(blockposition)) {
+                 Chunk chunk = this.getChunkAtWorldCoords(blockposition);
+ 
+@@ -834,7 +834,7 @@ public abstract class World implements IBlockAccess {
+             }
+         }
+         // CraftBukkit end
+-        if (!this.isValidLocation(blockposition)) {
++        if (!blockposition.isValidLocation()) { // Paper
+             return Blocks.AIR.getBlockData();
+         } else {
+             Chunk chunk = this.getChunkAtWorldCoords(blockposition);
+@@ -2063,7 +2063,7 @@ public abstract class World implements IBlockAccess {
+     public Map<BlockPosition, TileEntity> capturedTileEntities = Maps.newHashMap();
+ 
+     public TileEntity getTileEntity(BlockPosition blockposition) {
+-        if (!this.isValidLocation(blockposition)) {
++        if (!blockposition.isValidLocation()) { // Paper
+             return null;
+         } else {
+             // CraftBukkit start
+@@ -2166,7 +2166,7 @@ public abstract class World implements IBlockAccess {
+     }
+ 
+     public boolean d(BlockPosition blockposition, boolean flag) {
+-        if (!this.isValidLocation(blockposition)) {
++        if (!blockposition.isValidLocation()) { // Paper
+             return flag;
+         } else {
+             Chunk chunk = this.chunkProvider.getLoadedChunkAt(blockposition.getX() >> 4, blockposition.getZ() >> 4);
+-- 
+2.7.4
