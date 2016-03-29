@@ -1,0 +1,136 @@
+From 904cf475635d450be360cb181e0e4fb6d0a19670 Mon Sep 17 00:00:00 2001
+From: Cat73 <1901803382@qq.com>
+Date: Fri, 19 Mar 2016 14:12:20 +0800
+Subject: [PATCH] Cat73 -> mc-dev imports-fix
+
+MC 反编译结果可能有些错误需要修复，这个 Patch 专门用于修复这些问题。
+
+diff --git a/src/main/java/net/minecraft/server/BaseBlockPosition.java b/src/main/java/net/minecraft/server/BaseBlockPosition.java
+index aaaaaaa..e54e7b7 100644
+--- a/src/main/java/net/minecraft/server/BaseBlockPosition.java
++++ b/src/main/java/net/minecraft/server/BaseBlockPosition.java
+@@ -87,7 +87,7 @@ public class BaseBlockPosition implements Comparable<BaseBlockPosition> {
+         return Objects.toStringHelper(this).add("x", this.getX()).add("y", this.getY()).add("z", this.getZ()).toString();
+     }
+ 
+-    public int compareTo(Object object) {
+-        return this.i((BaseBlockPosition) object);
++    public int compareTo(BaseBlockPosition object) {
++        return this.i(object);
+     }
+ }
+
+diff --git a/src/main/java/net/minecraft/server/BlockPosition.java b/src/main/java/net/minecraft/server/BlockPosition.java
+index aaaaaaa..e7a95f3 100644
+--- a/src/main/java/net/minecraft/server/BlockPosition.java
++++ b/src/main/java/net/minecraft/server/BlockPosition.java
+@@ -139,23 +139,23 @@ public class BlockPosition extends BaseBlockPosition {
+ 
+                     protected BlockPosition a() {
+                         if (this.b == null) {
+-                            this.b = blockposition;
++                            this.b = blockposition2;
+                             return this.b;
+-                        } else if (this.b.equals(blockposition1)) {
++                        } else if (this.b.equals(blockposition3)) {
+                             return (BlockPosition) this.endOfData();
+                         } else {
+                             int i = this.b.getX();
+                             int j = this.b.getY();
+                             int k = this.b.getZ();
+ 
+-                            if (i < blockposition1.getX()) {
++                            if (i < blockposition3.getX()) {
+                                 ++i;
+-                            } else if (j < blockposition1.getY()) {
+-                                i = blockposition.getX();
++                            } else if (j < blockposition3.getY()) {
++                                i = blockposition2.getX();
+                                 ++j;
+-                            } else if (k < blockposition1.getZ()) {
+-                                i = blockposition.getX();
+-                                j = blockposition.getY();
++                            } else if (k < blockposition3.getZ()) {
++                                i = blockposition2.getX();
++                                j = blockposition2.getY();
+                                 ++k;
+                             }
+ 
+@@ -187,23 +187,23 @@ public class BlockPosition extends BaseBlockPosition {
+ 
+                     protected BlockPosition.MutableBlockPosition a() {
+                         if (this.b == null) {
+-                            this.b = new BlockPosition.MutableBlockPosition(blockposition.getX(), blockposition.getY(), blockposition.getZ());
++                            this.b = new BlockPosition.MutableBlockPosition(blockposition2.getX(), blockposition2.getY(), blockposition2.getZ());
+                             return this.b;
+-                        } else if (this.b.equals(blockposition1)) {
++                        } else if (this.b.equals(blockposition3)) {
+                             return (BlockPosition.MutableBlockPosition) this.endOfData();
+                         } else {
+                             int i = this.b.getX();
+                             int j = this.b.getY();
+                             int k = this.b.getZ();
+ 
+-                            if (i < blockposition1.getX()) {
++                            if (i < blockposition3.getX()) {
+                                 ++i;
+-                            } else if (j < blockposition1.getY()) {
+-                                i = blockposition.getX();
++                            } else if (j < blockposition3.getY()) {
++                                i = blockposition2.getX();
+                                 ++j;
+-                            } else if (k < blockposition1.getZ()) {
+-                                i = blockposition.getX();
+-                                j = blockposition.getY();
++                            } else if (k < blockposition3.getZ()) {
++                                i = blockposition2.getX();
++                                j = blockposition2.getY();
+                                 ++k;
+                             }
+ 
+
+diff --git a/src/main/java/net/minecraft/server/BlockStateList.java b/src/main/java/net/minecraft/server/BlockStateList.java
+index aaaaaaa..a11c62f 100644
+--- a/src/main/java/net/minecraft/server/BlockStateList.java
++++ b/src/main/java/net/minecraft/server/BlockStateList.java
+@@ -83,22 +83,16 @@ public class BlockStateList {
+         if (!BlockStateList.a.matcher(s).matches()) {
+             throw new IllegalArgumentException("Block: " + block.getClass() + " has invalidly named property: " + s);
+         } else {
+-            Iterator iterator = iblockstate.c().iterator();
++            for (T t : iblockstate.c()) {
++                String s1 = iblockstate.a(t);
+ 
+-            String s1;
+-
+-            do {
+-                if (!iterator.hasNext()) {
+-                    return s;
++                if (!a.matcher(s1).matches())
++                {
++                    throw new IllegalArgumentException("Block: " + block.getClass() + " has property: " + s + " with invalidly named value: " + s1);
+                 }
+-
+-                Comparable comparable = (Comparable) iterator.next();
+-
+-                s1 = iblockstate.a(comparable);
+-            } while (BlockStateList.a.matcher(s1).matches());
+-
+-            throw new IllegalArgumentException("Block: " + block.getClass() + " has property: " + s + " with invalidly named value: " + s1);
++            }
+         }
++        return s;
+     }
+ 
+     public ImmutableList<IBlockData> a() {
+@@ -154,7 +148,7 @@ public class BlockStateList {
+             if (!this.b.containsKey(iblockstate)) {
+                 throw new IllegalArgumentException("Cannot get property " + iblockstate + " as it does not exist in " + this.a.t());
+             } else {
+-                return (Comparable) iblockstate.b().cast(this.b.get(iblockstate));
++                return iblockstate.b().cast(this.b.get(iblockstate));
+             }
+         }
+ 
+-- 
+2.7.2.windows.1

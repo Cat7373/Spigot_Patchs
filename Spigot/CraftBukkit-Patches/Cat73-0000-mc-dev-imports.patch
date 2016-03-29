@@ -10,7 +10,7 @@ Link：https://github.com/PaperMC/Paper/blob/master/Spigot-Server-Patches/0003-m
 
 diff --git a/src/main/java/net/minecraft/server/BlockPosition.java b/src/main/java/net/minecraft/server/BlockPosition.java
 new file mode 100644
-index 0000000..e7a95f3
+index 0000000..aaaaaaa
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/BlockPosition.java
 @@ -0,0 +1,381 @@
@@ -155,23 +155,23 @@ index 0000000..e7a95f3
 +
 +                    protected BlockPosition a() {
 +                        if (this.b == null) {
-+                            this.b = blockposition2;
++                            this.b = blockposition;
 +                            return this.b;
-+                        } else if (this.b.equals(blockposition3)) {
++                        } else if (this.b.equals(blockposition1)) {
 +                            return (BlockPosition) this.endOfData();
 +                        } else {
 +                            int i = this.b.getX();
 +                            int j = this.b.getY();
 +                            int k = this.b.getZ();
 +
-+                            if (i < blockposition3.getX()) {
++                            if (i < blockposition1.getX()) {
 +                                ++i;
-+                            } else if (j < blockposition3.getY()) {
-+                                i = blockposition2.getX();
++                            } else if (j < blockposition1.getY()) {
++                                i = blockposition.getX();
 +                                ++j;
-+                            } else if (k < blockposition3.getZ()) {
-+                                i = blockposition2.getX();
-+                                j = blockposition2.getY();
++                            } else if (k < blockposition1.getZ()) {
++                                i = blockposition.getX();
++                                j = blockposition.getY();
 +                                ++k;
 +                            }
 +
@@ -203,23 +203,23 @@ index 0000000..e7a95f3
 +
 +                    protected BlockPosition.MutableBlockPosition a() {
 +                        if (this.b == null) {
-+                            this.b = new BlockPosition.MutableBlockPosition(blockposition2.getX(), blockposition2.getY(), blockposition2.getZ());
++                            this.b = new BlockPosition.MutableBlockPosition(blockposition.getX(), blockposition.getY(), blockposition.getZ());
 +                            return this.b;
-+                        } else if (this.b.equals(blockposition3)) {
++                        } else if (this.b.equals(blockposition1)) {
 +                            return (BlockPosition.MutableBlockPosition) this.endOfData();
 +                        } else {
 +                            int i = this.b.getX();
 +                            int j = this.b.getY();
 +                            int k = this.b.getZ();
 +
-+                            if (i < blockposition3.getX()) {
++                            if (i < blockposition1.getX()) {
 +                                ++i;
-+                            } else if (j < blockposition3.getY()) {
-+                                i = blockposition2.getX();
++                            } else if (j < blockposition1.getY()) {
++                                i = blockposition.getX();
 +                                ++j;
-+                            } else if (k < blockposition3.getZ()) {
-+                                i = blockposition2.getX();
-+                                j = blockposition2.getY();
++                            } else if (k < blockposition1.getZ()) {
++                                i = blockposition.getX();
++                                j = blockposition.getY();
 +                                ++k;
 +                            }
 +
@@ -398,7 +398,7 @@ index 0000000..e7a95f3
 
 diff --git a/src/main/java/net/minecraft/server/BaseBlockPosition.java b/src/main/java/net/minecraft/server/BaseBlockPosition.java
 new file mode 100644
-index 0000000..e54e7b7
+index 0000000..aaaaaaa
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/BaseBlockPosition.java
 @@ -0,0 +1,93 @@
@@ -491,17 +491,17 @@ index 0000000..e54e7b7
 +        return Objects.toStringHelper(this).add("x", this.getX()).add("y", this.getY()).add("z", this.getZ()).toString();
 +    }
 +
-+    public int compareTo(BaseBlockPosition object) {
-+        return this.i(object);
++    public int compareTo(Object object) {
++        return this.i((BaseBlockPosition) object);
 +    }
 +}
 
 diff --git a/src/main/java/net/minecraft/server/BlockStateList.java b/src/main/java/net/minecraft/server/BlockStateList.java
 new file mode 100644
-index 0000000..a11c62f
+index 0000000..aaaaaaa
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/BlockStateList.java
-@@ -0,0 +1,325 @@
+@@ -0,0 +1,331 @@
 +package net.minecraft.server;
 +
 +import com.google.common.base.Function;
@@ -587,16 +587,22 @@ index 0000000..a11c62f
 +        if (!BlockStateList.a.matcher(s).matches()) {
 +            throw new IllegalArgumentException("Block: " + block.getClass() + " has invalidly named property: " + s);
 +        } else {
-+            for (T t : iblockstate.c()) {
-+                String s1 = iblockstate.a(t);
++            Iterator iterator = iblockstate.c().iterator();
 +
-+                if (!a.matcher(s1).matches())
-+                {
-+                    throw new IllegalArgumentException("Block: " + block.getClass() + " has property: " + s + " with invalidly named value: " + s1);
++            String s1;
++
++            do {
++                if (!iterator.hasNext()) {
++                    return s;
 +                }
-+            }
++
++                Comparable comparable = (Comparable) iterator.next();
++
++                s1 = iblockstate.a(comparable);
++            } while (BlockStateList.a.matcher(s1).matches());
++
++            throw new IllegalArgumentException("Block: " + block.getClass() + " has property: " + s + " with invalidly named value: " + s1);
 +        }
-+        return s;
 +    }
 +
 +    public ImmutableList<IBlockData> a() {
@@ -652,7 +658,7 @@ index 0000000..a11c62f
 +            if (!this.b.containsKey(iblockstate)) {
 +                throw new IllegalArgumentException("Cannot get property " + iblockstate + " as it does not exist in " + this.a.t());
 +            } else {
-+                return iblockstate.b().cast(this.b.get(iblockstate));
++                return (Comparable) iblockstate.b().cast(this.b.get(iblockstate));
 +            }
 +        }
 +
@@ -828,4 +834,4 @@ index 0000000..a11c62f
 +    }
 +}
 -- 
-2.5.0
+2.7.2.windows.1
