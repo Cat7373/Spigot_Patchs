@@ -1,2 +1,2 @@
 cd ./Spigot/
-bash ./applyPatches.sh > ../test_apply_patches.log
+bash ./applyPatches.sh | tee ../test_apply_patches.log
