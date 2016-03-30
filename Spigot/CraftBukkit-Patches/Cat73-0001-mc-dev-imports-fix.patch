@@ -4,6 +4,8 @@ Date: Fri, 19 Mar 2016 14:12:20 +0800
 Subject: [PATCH] Cat73 -> mc-dev imports-fix
 
 MC 反编译结果可能有些错误需要修复，这个 Patch 专门用于修复这些问题。
+Link：https://github.com/PaperMC/Paper/blob/master/Spigot-Server-Patches/0003-mc-dev-imports.patch
+Link：https://github.com/PaperMC/Paper/blob/master/Spigot-Server-Patches/0112-Prevent-possible-infinite-loop-in-BlockPosition-iter.patch
 
 diff --git a/src/main/java/net/minecraft/server/BaseBlockPosition.java b/src/main/java/net/minecraft/server/BaseBlockPosition.java
 index aaaaaaa..e54e7b7 100644

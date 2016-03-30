@@ -1,12 +1,12 @@
 From dc62f96b9c16fe77efbb7bbaf2ac512f8f8477d3 Mon Sep 17 00:00:00 2001
 From: Aikar <aikar@aikar.co>
 Date: Tue, 22 Mar 2016 23:41:34 -0400
-Subject: [PATCH] Paper -> Optimize isValidLocation for inlining
+Subject: [PATCH] Paper -> Optimize isValidLocation and BlockPosition getter for inlining
 
 isValidLocation 是一个非常简单的函数，但是它被调用的频率极高，这份优化可以减少每次调用中的 6 次 call，并在部分返回 false 的情况下减少几次判断次数。
+禁止 BaseBlockPosition 的子类覆盖 XYZ 的 getter 方法，这样可以让 JVM 对这个 getter 进行内联优化。
 Link：https://github.com/PaperMC/Paper/blob/master/Spigot-Server-Patches/0108-Optimize-isValidLocation-for-inlining.patch
 Link：https://github.com/PaperMC/Paper/blob/master/Spigot-Server-Patches/0077-Speedup-BlockPos-by-fixing-inlining.patch
-Link：https://github.com/PaperMC/Paper/blob/master/Spigot-Server-Patches/0112-Prevent-possible-infinite-loop-in-BlockPosition-iter.patch
 
 diff --git a/src/main/java/net/minecraft/server/BlockPosition.java b/src/main/java/net/minecraft/server/BlockPosition.java
 index e7a95f3..2d56f02 100644
