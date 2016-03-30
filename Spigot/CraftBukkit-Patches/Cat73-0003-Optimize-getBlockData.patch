@@ -3,8 +3,8 @@ From: Aikar <aikar@aikar.co>
 Date: Thu, 3 Mar 2016 02:07:55 -0600
 Subject: [PATCH] Paper -> Optimize getBlockData
 
-常用方法，目前已知的是在寻路时会大量调用该方法。
-原来的执行过程会判断世界是否为演示世界，以及通过 try catch 来实现在出现异常的时候崩溃报告里能多点信息。
+热点方法。
+执行过程会判断世界是否为演示世界，以及通过 try catch 来实现在出现异常的时候崩溃报告里能多点信息。
 这份优化把这些全部去掉了。
 Link：https://github.com/PaperMC/Paper/blob/master/Spigot-Server-Patches/0063-Optimize-Pathfinding.patch
 

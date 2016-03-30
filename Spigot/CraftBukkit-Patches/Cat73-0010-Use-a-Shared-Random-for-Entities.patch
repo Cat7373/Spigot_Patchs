@@ -3,7 +3,7 @@ From: Aikar <aikar@aikar.co>
 Date: Tue, 22 Mar 2016 00:33:47 -0400
 Subject: [PATCH] Paper -> Use a Shared Random for Entities
 
-使用一个固定的随机数生成器，而不是每次都 new 一个新的。
+实体随机数生成器使用一个固定的，而不是每次都 new 一个新的。
 Link：https://github.com/PaperMC/Paper/blob/master/Spigot-Server-Patches/0105-Use-a-Shared-Random-for-Entities.patch
 
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java

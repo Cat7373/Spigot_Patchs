@@ -3,8 +3,7 @@ From: Aikar <aikar@aikar.co>
 Date: Fri, 18 Mar 2016 19:15:44 -0400
 Subject: [PATCH] Paper -> Optimize BlockStateList/BlockData
 
-常用方法，会通过预先判断来实现在出现异常的时候崩溃报告里能多点信息。
-这份优化把这些去掉了。
+热点方法，会通过预先判断来实现在出现异常的时候崩溃报告里能多点信息，这份优化把这些去掉了。
 Link：https://github.com/PaperMC/Paper/blob/master/Spigot-Server-Patches/0092-Optimize-BlockStateList-BlockData.patch
 
 diff --git a/src/main/java/net/minecraft/server/BlockStateList.java b/src/main/java/net/minecraft/server/BlockStateList.java

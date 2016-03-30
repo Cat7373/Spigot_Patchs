@@ -3,7 +3,7 @@ From: Cat73 <1901803382@qq.com>
 Date: Fri, 19 Mar 2016 14:12:20 +0800
 Subject: [PATCH] Cat73 -> mc-dev imports-fix
 
-MC 反编译结果可能有些错误需要修复，这个 Patch 专门用于修复这些问题。
+MC 反编译结果可能有些错误需要修复，或有一些简单到不值得专门创建一个 Patch 的小优化，这个 Patch 专门用于做这些事。
 Link：https://github.com/PaperMC/Paper/blob/master/Spigot-Server-Patches/0003-mc-dev-imports.patch
 Link：https://github.com/PaperMC/Paper/blob/master/Spigot-Server-Patches/0112-Prevent-possible-infinite-loop-in-BlockPosition-iter.patch
 

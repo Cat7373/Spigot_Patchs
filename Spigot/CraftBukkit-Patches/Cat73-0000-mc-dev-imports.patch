@@ -4,8 +4,6 @@ Date: Fri, 19 Mar 2016 14:12:20 +0800
 Subject: [PATCH] Cat73 -> mc-dev imports
 
 这里的所有代码均应该直接从 MC 反编译结果里复制，并且不应做任何修改，任何 patch 都应该在其他文件里实现。
-增加文件前请先检查 0003-mc-dev-imports.patch 里有无该文件，如果有则不应再在这里添加。
-MC 版本没有更变的情况下，这里的东西都不需要变，但是 MC 版本更变如 1.9 -> 1.9.1，那就需要检查下这里的文件是否有变化。
 Link：https://github.com/PaperMC/Paper/blob/master/Spigot-Server-Patches/0003-mc-dev-imports.patch
 
 diff --git a/src/main/java/net/minecraft/server/TileEntityEnderChest.java b/src/main/java/net/minecraft/server/TileEntityEnderChest.java

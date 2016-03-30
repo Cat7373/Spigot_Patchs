@@ -3,7 +3,7 @@ From: Zach Brown <zach.brown@destroystokyo.com>
 Date: Wed, 2 Mar 2016 23:46:57 -0600
 Subject: [PATCH] Paper -> Bump thread count for chunk loading
 
-增加一个 Chunk IO 线程。
+增加一个 Chunk IO 线程，加快一些异步 IO 的处理速度。
 Link：https://github.com/PaperMC/Paper/blob/master/Spigot-Server-Patches/0051-Bump-thread-count-for-chunk-loading.patch
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/chunkio/ChunkIOExecutor.java b/src/main/java/org/bukkit/craftbukkit/chunkio/ChunkIOExecutor.java

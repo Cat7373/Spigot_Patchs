@@ -3,8 +3,8 @@ From: CullanP <cullanpage@gmail.com>
 Date: Thu, 3 Mar 2016 02:13:38 -0600
 Subject: [PATCH] Paper -> Avoid hopper searches if there are no items
 
-对漏斗进行优化
-Link：https://github.com/PaperMC/Paper/blob/master/Spigot-Server-Patches/0065-Avoid-hopper-searches-if-there-are-no-items.patch
+跳过大量不必要的搜索来降低漏斗在 tickloop 的开销
+Link：https://github.com/PaperMC/Paper/blob/master/Spigot-Server-Patches/0066-Avoid-hopper-searches-if-there-are-no-items.patch
 
 diff --git a/src/main/java/net/minecraft/server/Chunk.java b/src/main/java/net/minecraft/server/Chunk.java
 index 582e684..6d148d7 100644
