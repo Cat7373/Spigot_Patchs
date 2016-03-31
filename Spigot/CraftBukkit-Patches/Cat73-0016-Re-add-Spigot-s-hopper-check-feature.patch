@@ -1,0 +1,22 @@
+From e1ea0950cef2aa1054a3db5cb5c750602739fb22 Mon Sep 17 00:00:00 2001
+From: Byteflux <byte@byteflux.net>
+Date: Sat, 12 Mar 2016 13:37:50 -0600
+Subject: [PATCH] Paper -> Re-add Spigot's hopper-check feature
+
+重新启用 Spigot 的漏斗检测间隔，检测间隔请务必不要使用默认值 8，那太高了，经测试 4 以内比较合适。
+Link：https://github.com/PaperMC/Paper/blob/master/Spigot-Server-Patches/0081-Re-add-Spigot-s-hopper-check-feature.patch
+
+diff --git a/src/main/java/net/minecraft/server/TileEntityHopper.java b/src/main/java/net/minecraft/server/TileEntityHopper.java
+index 7b00f6a..f46be7a 100644
+--- a/src/main/java/net/minecraft/server/TileEntityHopper.java
++++ b/src/main/java/net/minecraft/server/TileEntityHopper.java
+@@ -178,6 +178,7 @@ public class TileEntityHopper extends TileEntityLootable implements IHopper, ITi
+                     this.update();
+                     return true;
+                 }
++                this.setCooldown(world.spigotConfig.hopperCheck);
+             }
+ 
+             return false;
+-- 
+2.8.0.windows.1
