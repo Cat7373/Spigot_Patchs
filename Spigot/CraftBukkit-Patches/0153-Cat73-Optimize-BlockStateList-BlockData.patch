@@ -1,16 +1,19 @@
-From 23c5437c07a1bf673509fc5f20aed2117defe615 Mon Sep 17 00:00:00 2001
-From: Aikar <aikar@aikar.co>
-Date: Fri, 18 Mar 2016 19:15:44 -0400
-Subject: [PATCH] Paper -> Optimize BlockStateList/BlockData
+From 9a756a2587d0656c6759bb893bed3da586617468 Mon Sep 17 00:00:00 2001
+From: Cat73 <1901803382@qq.com>
+Date: Tue, 12 Apr 2016 13:47:56 +0800
+Subject: [PATCH] Cat73 -> Optimize BlockStateList/BlockData
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
 热点方法，会通过预先判断来实现在出现异常的时候崩溃报告里能多点信息，这份优化把这些去掉了。
-Link：https://github.com/PaperMC/Paper/blob/master/Spigot-Server-Patches/0092-Optimize-BlockStateList-BlockData.patch
+Link：https://github.com/PaperMC/Paper/blob/cd3d8fb27e4a6717146bf7256f37034285a303d7/Spigot-Server-Patches/0062-Optimize-getBlockData.patch
 
 diff --git a/src/main/java/net/minecraft/server/BlockStateList.java b/src/main/java/net/minecraft/server/BlockStateList.java
-index a11c62f..43f198b 100644
+index 5af47d0..cd51796 100644
 --- a/src/main/java/net/minecraft/server/BlockStateList.java
 +++ b/src/main/java/net/minecraft/server/BlockStateList.java
-@@ -145,21 +145,11 @@ public class BlockStateList {
+@@ -144,21 +144,11 @@ public class BlockStateList {
          }
  
          public <T extends Comparable<T>> T get(IBlockState<T> iblockstate) {
@@ -35,4 +38,5 @@ index a11c62f..43f198b 100644
  
          public ImmutableMap<IBlockState<?>, Comparable<?>> s() {
 -- 
-2.7.4
+2.8.0.windows.1
+

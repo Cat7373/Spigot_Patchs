@@ -1,14 +1,17 @@
-From 904cf475635d450be360cb181e0e4fb6d0a19670 Mon Sep 17 00:00:00 2001
+From ab5e521ac7607b9e191f9be0b96e3764a948b999 Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
-Date: Fri, 19 Mar 2016 14:12:20 +0800
+Date: Tue, 12 Apr 2016 13:27:57 +0800
 Subject: [PATCH] Cat73 -> mc-dev imports-fix
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
 MC 反编译结果可能有些错误需要修复，或有一些简单到不值得专门创建一个 Patch 的小优化，这个 Patch 专门用于做这些事。
-Link：https://github.com/PaperMC/Paper/blob/master/Spigot-Server-Patches/0003-mc-dev-imports.patch
-Link：https://github.com/PaperMC/Paper/blob/master/Spigot-Server-Patches/0112-Prevent-possible-infinite-loop-in-BlockPosition-iter.patch
+Link: https://github.com/PaperMC/Paper/blob/fb74f6dbfd9d38f0425dc93618071be0cfc73b63/Spigot-Server-Patches/0003-MC-Dev-fixes.patch
+Link: https://github.com/PaperMC/Paper/blob/cd3d8fb27e4a6717146bf7256f37034285a303d7/Spigot-Server-Patches/0109-Prevent-possible-infinite-loop-in-BlockPosition-iter.patch
 
 diff --git a/src/main/java/net/minecraft/server/BaseBlockPosition.java b/src/main/java/net/minecraft/server/BaseBlockPosition.java
-index aaaaaaa..e54e7b7 100644
+index e54e7b7..913e720 100644
 --- a/src/main/java/net/minecraft/server/BaseBlockPosition.java
 +++ b/src/main/java/net/minecraft/server/BaseBlockPosition.java
 @@ -87,7 +87,7 @@ public class BaseBlockPosition implements Comparable<BaseBlockPosition> {
@@ -21,9 +24,8 @@ index aaaaaaa..e54e7b7 100644
 +        return this.i(object);
      }
  }
-
 diff --git a/src/main/java/net/minecraft/server/BlockPosition.java b/src/main/java/net/minecraft/server/BlockPosition.java
-index aaaaaaa..e7a95f3 100644
+index e7a95f3..0b6ddfd 100644
 --- a/src/main/java/net/minecraft/server/BlockPosition.java
 +++ b/src/main/java/net/minecraft/server/BlockPosition.java
 @@ -139,23 +139,23 @@ public class BlockPosition extends BaseBlockPosition {
@@ -90,12 +92,11 @@ index aaaaaaa..e7a95f3 100644
                                  ++k;
                              }
  
-
 diff --git a/src/main/java/net/minecraft/server/BlockStateList.java b/src/main/java/net/minecraft/server/BlockStateList.java
-index aaaaaaa..a11c62f 100644
+index 8df8b04..5af47d0 100644
 --- a/src/main/java/net/minecraft/server/BlockStateList.java
 +++ b/src/main/java/net/minecraft/server/BlockStateList.java
-@@ -83,22 +83,16 @@ public class BlockStateList {
+@@ -83,22 +83,15 @@ public class BlockStateList {
          if (!BlockStateList.a.matcher(s).matches()) {
              throw new IllegalArgumentException("Block: " + block.getClass() + " has invalidly named property: " + s);
          } else {
@@ -108,8 +109,7 @@ index aaaaaaa..a11c62f 100644
 -            do {
 -                if (!iterator.hasNext()) {
 -                    return s;
-+                if (!a.matcher(s1).matches())
-+                {
++                if (!a.matcher(s1).matches()) {
 +                    throw new IllegalArgumentException("Block: " + block.getClass() + " has property: " + s + " with invalidly named value: " + s1);
                  }
 -
@@ -125,7 +125,7 @@ index aaaaaaa..a11c62f 100644
      }
  
      public ImmutableList<IBlockData> a() {
-@@ -154,7 +148,7 @@ public class BlockStateList {
+@@ -154,7 +147,7 @@ public class BlockStateList {
              if (!this.b.containsKey(iblockstate)) {
                  throw new IllegalArgumentException("Cannot get property " + iblockstate + " as it does not exist in " + this.a.t());
              } else {
@@ -135,4 +135,5 @@ index aaaaaaa..a11c62f 100644
          }
  
 -- 
-2.7.2.windows.1
+2.8.0.windows.1
+

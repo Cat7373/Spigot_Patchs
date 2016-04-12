@@ -1,16 +1,19 @@
-From 2abc0d00312f85e3dcef3520fc9cb106ae4bad3b Mon Sep 17 00:00:00 2001
-From: Aikar <aikar@aikar.co>
-Date: Thu, 27 Aug 2015 01:15:02 -0400
-Subject: [PATCH] Paper -> Optimize Chunk Access
+From 62b3bf2f3ee7e3aff01774cb1fda1051a1db812b Mon Sep 17 00:00:00 2001
+From: Cat73 <1901803382@qq.com>
+Date: Tue, 12 Apr 2016 16:18:14 +0800
+Subject: [PATCH] Cat73 -> Optimize Chunk Access
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
 getChunkAt 是一个热点方法，很多时候会在短时间内连续多次获取同一个区块，这里将最后一次被获取的区块缓存。
-Link：https://github.com/PaperMC/Paper/blob/master/Spigot-Server-Patches/0105-Optimize-Chunk-Access.patch
+Link：https://github.com/PaperMC/Paper/blob/ef3f6a481aa19470d7d955034335c314a1a2a7eb/Spigot-Server-Patches/0103-Optimize-Chunk-Access.patch
 
 diff --git a/src/main/java/net/minecraft/server/Chunk.java b/src/main/java/net/minecraft/server/Chunk.java
-index ac35cf4..6e3d17b 100644
+index aff21a7..8c6a9d8 100644
 --- a/src/main/java/net/minecraft/server/Chunk.java
 +++ b/src/main/java/net/minecraft/server/Chunk.java
-@@ -30,6 +30,7 @@ public class Chunk {
+@@ -28,6 +28,7 @@ public class Chunk {
      private boolean i;
      public final World world;
      public final int[] heightMap;
@@ -18,46 +21,44 @@ index ac35cf4..6e3d17b 100644
      public final int locX;
      public final int locZ;
      private boolean l;
-@@ -97,6 +98,7 @@ public class Chunk {
-         this.world = world;
+@@ -91,6 +92,7 @@ public class Chunk {
          this.locX = i;
          this.locZ = j;
-+        this.chunkKey = org.bukkit.craftbukkit.util.LongHash.toLong(this.locX, this.locZ); // Paper
          this.heightMap = new int[256];
++        this.chunkKey = org.bukkit.craftbukkit.util.LongHash.toLong(this.locX, this.locZ); // Paper
  
          for (int k = 0; k < this.entitySlices.length; ++k) {
-
+             this.entitySlices[k] = new org.bukkit.craftbukkit.util.UnsafeList(); // Spigot
 diff --git a/src/main/java/net/minecraft/server/ChunkProviderServer.java b/src/main/java/net/minecraft/server/ChunkProviderServer.java
-index 83857a6..ec60d48 100644
+index 83857a6..a57438c 100644
 --- a/src/main/java/net/minecraft/server/ChunkProviderServer.java
 +++ b/src/main/java/net/minecraft/server/ChunkProviderServer.java
-@@ -23,7 +23,25 @@ public class ChunkProviderServer implements IChunkProvider {
+@@ -23,7 +23,24 @@ public class ChunkProviderServer implements IChunkProvider {
      public final LongHashSet unloadQueue = new LongHashSet(); // CraftBukkit - LongHashSet
      public final ChunkGenerator chunkGenerator; // CraftBukkit - public
      private final IChunkLoader chunkLoader;
 -    public LongObjectHashMap<Chunk> chunks = new LongObjectHashMap<Chunk>(); // CraftBukkit
-+    protected Chunk lastChunkByPos = null; // Paper
 +    public LongObjectHashMap<Chunk> chunks = new LongObjectHashMap<Chunk>() {
++        private Chunk lastChunkByPos = null; // Paper
 +        @Override
 +        public Chunk get(long key) {
-+            if (lastChunkByPos != null && key == lastChunkByPos.chunkKey) {
-+                return lastChunkByPos;
++            if (this.lastChunkByPos != null && key == this.lastChunkByPos.chunkKey) {
++                return this.lastChunkByPos;
 +            }
-+            return lastChunkByPos = super.get(key);
++            return this.lastChunkByPos = super.get(key);
 +        }
 +
 +        @Override
 +        public Chunk remove(long key) {
-+            if (lastChunkByPos != null && key == lastChunkByPos.chunkKey) {
-+                lastChunkByPos = null;
++            if (this.lastChunkByPos != null && key == this.lastChunkByPos.chunkKey) {
++                this.lastChunkByPos = null;
 +            }
 +            return super.remove(key);
 +        }
 +    }; // Paper
-+    
      // private final LongHashMap<Chunk> chunks = new LongHashMap();
      // private final List<Chunk> chunkList = Lists.newArrayList();
      public final WorldServer world;
-
 -- 
 2.8.0.windows.1
+

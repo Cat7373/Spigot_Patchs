@@ -1,24 +1,27 @@
-From 84b6a774a12374f05c0d1d02f2ca5e07f0fe40f3 Mon Sep 17 00:00:00 2001
-From: Joseph Hirschfeld <joe@ibj.io>
-Date: Thu, 3 Mar 2016 02:39:54 -0600
-Subject: [PATCH] Paper -> Change implementation of (tile)entity removal list
+From 677e0cc90eae75261b3668dc12adbca71d97e1c7 Mon Sep 17 00:00:00 2001
+From: Cat73 <1901803382@qq.com>
+Date: Tue, 12 Apr 2016 14:08:12 +0800
+Subject: [PATCH] Cat73 -> Change implementation of (tile)entity removal list
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-将需被删除的实体列表由 ArrayList 修改为 Set 存储，这个列表完全没有必要有顺序，维护一个无序列表能节约一些资源。
-Link：https://github.com/PaperMC/Paper/blob/master/Spigot-Server-Patches/0071-Change-implementation-of-tile-entity-removal-list.patch
+将需被卸载的实体列表由 ArrayList 修改为 Set 存储，这个列表完全没有必要有顺序，维护一个无序列表能节约一些资源。
+Link：https://github.com/PaperMC/Paper/blob/ef3f6a481aa19470d7d955034335c314a1a2a7eb/Spigot-Server-Patches/0069-Change-implementation-of-tile-entity-removal-list.patch
 
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index c73f0ef..2d5ca21 100644
+index c386a60..bb1c57c 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
-@@ -9,6 +9,8 @@ import java.util.Calendar;
- import java.util.Collection;
- import java.util.Iterator;
- import java.util.List;
+@@ -24,6 +24,8 @@ import org.bukkit.craftbukkit.CraftWorld;
+ import org.bukkit.craftbukkit.event.CraftEventFactory;
+ import org.bukkit.craftbukkit.util.CraftMagicNumbers;
+ import org.bukkit.event.block.BlockCanBuildEvent;
 +import java.util.Set;
 +import com.google.common.collect.Sets;
- import java.util.Random;
- import java.util.UUID;
- import java.util.concurrent.Callable;
+ import org.bukkit.event.block.BlockPhysicsEvent;
+ import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+ import org.bukkit.generator.ChunkGenerator;
 @@ -59,11 +61,11 @@ public abstract class World implements IBlockAccess {
          }
      };
@@ -33,7 +36,7 @@ index c73f0ef..2d5ca21 100644
      public final List<EntityHuman> players = Lists.newArrayList();
      public final List<Entity> j = Lists.newArrayList();
      protected final IntHashMap<Entity> entitiesById = new IntHashMap();
-@@ -1370,18 +1372,18 @@ public abstract class World implements IBlockAccess {
+@@ -1371,18 +1373,18 @@ public abstract class World implements IBlockAccess {
  
          int j;
  
@@ -60,6 +63,6 @@ index c73f0ef..2d5ca21 100644
          }
  
          this.f.clear();
-
 -- 
-2.7.2.windows.1
+2.8.0.windows.1
+

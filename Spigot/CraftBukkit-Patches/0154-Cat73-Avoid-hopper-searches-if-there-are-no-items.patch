@@ -1,27 +1,31 @@
-From f10417f375c81cec510a68204309474063d79aff Mon Sep 17 00:00:00 2001
-From: CullanP <cullanpage@gmail.com>
-Date: Thu, 3 Mar 2016 02:13:38 -0600
-Subject: [PATCH] Paper -> Avoid hopper searches if there are no items
+From 607bb804eaa940c5912321e824a25b0f457a903a Mon Sep 17 00:00:00 2001
+From: Cat73 <1901803382@qq.com>
+Date: Tue, 12 Apr 2016 13:55:31 +0800
+Subject: [PATCH] Cat73 -> Avoid hopper searches if there are no items
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
 跳过大量不必要的搜索来降低漏斗在 tickloop 的开销
-Link：https://github.com/PaperMC/Paper/blob/master/Spigot-Server-Patches/0066-Avoid-hopper-searches-if-there-are-no-items.patch
+Link：https://github.com/PaperMC/Paper/blob/cd3d8fb27e4a6717146bf7256f37034285a303d7/Spigot-Server-Patches/0063-Avoid-hopper-searches-if-there-are-no-items.patch
 
 diff --git a/src/main/java/net/minecraft/server/Chunk.java b/src/main/java/net/minecraft/server/Chunk.java
-index 582e684..6d148d7 100644
+index c4a6a85..aff21a7 100644
 --- a/src/main/java/net/minecraft/server/Chunk.java
 +++ b/src/main/java/net/minecraft/server/Chunk.java
-@@ -49,6 +49,10 @@ public class Chunk {
-     private int w;
-     private ConcurrentLinkedQueue<BlockPosition> x;
-     protected gnu.trove.map.hash.TObjectIntHashMap<Class> entityCount = new gnu.trove.map.hash.TObjectIntHashMap<Class>(); // Spigot
+@@ -47,6 +47,11 @@ public class Chunk {
+ 
+     // CraftBukkit start - Neighbor loaded cache for chunk lighting and entity ticking
+     private int neighbors = 0x1 << 12;
++    
 +    // Track the number of minecarts and items
 +    // Keep this synced with entitySlices.add() and entitySlices.remove()
 +    private final int[] itemCounts = new int[16];
 +    private final int[] inventoryEntityCounts = new int[16];
  
-     // CraftBukkit start - Neighbor loaded cache for chunk lighting and entity ticking
-     private int neighbors = 0x1 << 12;
-@@ -620,6 +624,13 @@ public class Chunk {
+     public boolean areNeighborsLoaded(final int radius) {
+         switch (radius) {
+@@ -614,6 +619,13 @@ public class Chunk {
          entity.ac = k;
          entity.ad = this.locZ;
          this.entitySlices[k].add(entity);
@@ -35,7 +39,7 @@ index 582e684..6d148d7 100644
          // Spigot start - increment creature type count
          // Keep this synced up with World.a(Class)
          if (entity instanceof EntityInsentient) {
-@@ -652,6 +663,13 @@ public class Chunk {
+@@ -646,6 +658,13 @@ public class Chunk {
          }
  
          this.entitySlices[i].remove(entity);
@@ -49,7 +53,7 @@ index 582e684..6d148d7 100644
          // Spigot start - decrement creature type count
          // Keep this synced up with World.a(Class)
          if (entity instanceof EntityInsentient) {
-@@ -841,6 +859,15 @@ public class Chunk {
+@@ -831,6 +850,15 @@ public class Chunk {
              if (!this.entitySlices[k].isEmpty()) {
                  Iterator iterator = this.entitySlices[k].iterator();
  
@@ -65,7 +69,7 @@ index 582e684..6d148d7 100644
                  while (iterator.hasNext()) {
                      Entity entity1 = (Entity) iterator.next();
  
-@@ -873,7 +900,18 @@ public class Chunk {
+@@ -863,7 +891,19 @@ public class Chunk {
          i = MathHelper.clamp(i, 0, this.entitySlices.length - 1);
          j = MathHelper.clamp(j, 0, this.entitySlices.length - 1);
  
@@ -79,10 +83,12 @@ index 582e684..6d148d7 100644
 +            counts = null;
 +        }
 +        // Paper end
++
          for (int k = i; k <= j; ++k) {
 +            if (counts != null && counts[k] <= 0) continue; // Paper - Don't check a chunk if it doesn't have the type we are looking for
              Iterator iterator = this.entitySlices[k].iterator(); // Spigot
  
              while (iterator.hasNext()) {
 -- 
-2.7.2.windows.1
+2.8.0.windows.1
+

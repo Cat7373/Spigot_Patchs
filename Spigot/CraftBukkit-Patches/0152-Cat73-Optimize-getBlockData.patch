@@ -1,24 +1,26 @@
-From 1605c01b00947016970a88f124e76ee1a93fa1ae Mon Sep 17 00:00:00 2001
-From: Aikar <aikar@aikar.co>
-Date: Thu, 3 Mar 2016 02:07:55 -0600
-Subject: [PATCH] Paper -> Optimize getBlockData
+From 2ba05d54598aa4777976696ba3d41fb5aad97a48 Mon Sep 17 00:00:00 2001
+From: Cat73 <1901803382@qq.com>
+Date: Tue, 12 Apr 2016 13:46:13 +0800
+Subject: [PATCH] Cat73 -> Optimize getBlockData
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
 热点方法。
-执行过程会判断世界是否为演示世界，以及通过 try catch 来实现在出现异常的时候崩溃报告里能多点信息。
+优化前会判断世界是否为演示世界，以及通过 try catch 来实现在出现异常的时候崩溃报告里能多点信息。
 这份优化把这些全部去掉了。
-Link：https://github.com/PaperMC/Paper/blob/master/Spigot-Server-Patches/0063-Optimize-Pathfinding.patch
+Link：https://github.com/PaperMC/Paper/blob/cd3d8fb27e4a6717146bf7256f37034285a303d7/Spigot-Server-Patches/0062-Optimize-getBlockData.patch
 
 diff --git a/src/main/java/net/minecraft/server/Chunk.java b/src/main/java/net/minecraft/server/Chunk.java
-index 582e684..19788ed 100644
+index 3c67d36..c4a6a85 100644
 --- a/src/main/java/net/minecraft/server/Chunk.java
 +++ b/src/main/java/net/minecraft/server/Chunk.java
-@@ -392,8 +392,15 @@ public class Chunk {
-         return this.a(i, j, k).c();
+@@ -387,7 +387,14 @@ public class Chunk {
      }
  
-+    // Paper - Optimize getBlockData
      public IBlockData getBlockData(BlockPosition blockposition) {
 -        return this.a(blockposition.getX(), blockposition.getY(), blockposition.getZ());
++        // Paper - Optimize getBlockData
 +        if (blockposition.getY() >= 0 && blockposition.getY() >> 4 < this.sections.length) {
 +            ChunkSection chunksection = this.sections[blockposition.getY() >> 4];
 +            if (chunksection != null) {
@@ -30,4 +32,5 @@ index 582e684..19788ed 100644
  
      public IBlockData a(final int i, final int j, final int k) {
 -- 
-2.7.2.windows.1
+2.8.0.windows.1
+

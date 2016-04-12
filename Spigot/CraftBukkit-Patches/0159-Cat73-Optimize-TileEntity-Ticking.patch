@@ -1,16 +1,19 @@
-From 97671c73d297bf6f9938d518d162b9323c1482ae Mon Sep 17 00:00:00 2001
-From: Zach Brown <zach.brown@destroystokyo.com>
-Date: Tue, 1 Mar 2016 22:01:19 -0600
-Subject: [PATCH] Paper -> Optimize TileEntity Ticking
+From 379bfca9ffeb97183124c8cac94d06687669bee9 Mon Sep 17 00:00:00 2001
+From: Cat73 <1901803382@qq.com>
+Date: Tue, 12 Apr 2016 16:08:57 +0800
+Subject: [PATCH] Cat73 -> Optimize TileEntity Ticking
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
 将箱子、末影箱计算正在看箱子的人数、播放音效的代码移出 tickloop。
-Link：https://github.com/PaperMC/Paper/blob/master/Spigot-Server-Patches/0022-Optimize-TileEntity-Ticking.patch
+Link：https://github.com/PaperMC/Paper/blob/ef3f6a481aa19470d7d955034335c314a1a2a7eb/Spigot-Server-Patches/0022-Optimize-TileEntity-Ticking.patch
 
 diff --git a/src/main/java/net/minecraft/server/TileEntityChest.java b/src/main/java/net/minecraft/server/TileEntityChest.java
-index 8f988c3..4b510b9 100644
+index e82c8e3..1956626 100644
 --- a/src/main/java/net/minecraft/server/TileEntityChest.java
 +++ b/src/main/java/net/minecraft/server/TileEntityChest.java
-@@ -8,17 +8,17 @@ import org.bukkit.craftbukkit.entity.CraftHumanEntity;
+@@ -8,7 +8,7 @@ import org.bukkit.craftbukkit.entity.CraftHumanEntity;
  import org.bukkit.entity.HumanEntity;
  // CraftBukkit end
  
@@ -19,22 +22,6 @@ index 8f988c3..4b510b9 100644
  
      private ItemStack[] items = new ItemStack[27];
      public boolean a;
--    public TileEntityChest f;
--    public TileEntityChest g;
--    public TileEntityChest h;
--    public TileEntityChest i;
--    public float j;
-+    public TileEntityChest f; // Paper - Adjacent Chest Z Neg
-+    public TileEntityChest g; // Paper - Adjacent Chest X Pos
-+    public TileEntityChest h; // Paper - Adjacent Chest X Neg
-+    public TileEntityChest i; // Paper - Adjacent Chest Z Pos
-+    public float j; // Paper - lid angle
-     public float k;
--    public int l;
-+    public int l; // Paper - Number of viewers
-     private int p;
-     private BlockChest.Type q;
-     private String r;
 @@ -231,6 +231,8 @@ public class TileEntityChest extends TileEntityLootable implements ITickable, II
      }
  
@@ -44,21 +31,20 @@ index 8f988c3..4b510b9 100644
          this.m();
          int i = this.position.getX();
          int j = this.position.getY();
-@@ -311,7 +313,8 @@ public class TileEntityChest extends TileEntityLootable implements ITickable, II
+@@ -311,7 +313,7 @@ public class TileEntityChest extends TileEntityLootable implements ITickable, II
                  this.j = 0.0F;
              }
          }
 -
 +        */
-+        // Paper end
      }
  
      public boolean c(int i, int j) {
-@@ -331,6 +334,29 @@ public class TileEntityChest extends TileEntityLootable implements ITickable, II
-             int oldPower = Math.max(0, Math.min(15, this.l)); // CraftBukkit - Get power before new viewer is added
+@@ -332,6 +334,29 @@ public class TileEntityChest extends TileEntityLootable implements ITickable, II
  
              ++this.l;
-+
+             if (this.world == null) return; // CraftBukkit
++            
 +            // Paper start - Move chest open sound out of the tick loop
 +            this.m();
 +
@@ -81,10 +67,10 @@ index 8f988c3..4b510b9 100644
 +            }
 +            // Paper end
 +
-             if (this.world == null) return; // CraftBukkit
              this.world.playBlockAction(this.position, this.getBlock(), 1, this.l);
  
-@@ -354,6 +380,34 @@ public class TileEntityChest extends TileEntityLootable implements ITickable, II
+             // CraftBukkit start - Call redstone event
+@@ -354,6 +379,34 @@ public class TileEntityChest extends TileEntityLootable implements ITickable, II
              int oldPower = Math.max(0, Math.min(15, this.l)); // CraftBukkit - Get power before new viewer is added
              --this.l;
              if (this.world == null) return; // CraftBukkit
@@ -115,28 +101,23 @@ index 8f988c3..4b510b9 100644
 +                this.j = 0.0F;
 +            }
 +            // Paper end
-+
++            
              this.world.playBlockAction(this.position, this.getBlock(), 1, this.l);
  
              // CraftBukkit start - Call redstone event
-
 diff --git a/src/main/java/net/minecraft/server/TileEntityEnderChest.java b/src/main/java/net/minecraft/server/TileEntityEnderChest.java
-index e454622..d01b65a 100644
+index d9a0346..4261c24 100644
 --- a/src/main/java/net/minecraft/server/TileEntityEnderChest.java
 +++ b/src/main/java/net/minecraft/server/TileEntityEnderChest.java
-@@ -1,15 +1,17 @@
+@@ -1,6 +1,6 @@
  package net.minecraft.server;
  
 -public class TileEntityEnderChest extends TileEntity implements ITickable {
 +public class TileEntityEnderChest extends TileEntity { // Paper - Remove ITickable
  
--    public float a;
-+    public float a; // Paper - lid angle
+     public float a;
      public float f;
--    public int g;
-+    public int g; // Paper - Number of viewers
-     private int h;
- 
+@@ -10,6 +10,8 @@ public class TileEntityEnderChest extends TileEntity implements ITickable {
      public TileEntityEnderChest() {}
  
      public void c() {
@@ -145,16 +126,16 @@ index e454622..d01b65a 100644
          if (++this.h % 20 * 4 == 0) {
              this.world.playBlockAction(this.position, Blocks.ENDER_CHEST, 1, this.g);
          }
-@@ -54,6 +56,8 @@ public class TileEntityEnderChest extends TileEntity implements ITickable {
+@@ -54,7 +56,7 @@ public class TileEntityEnderChest extends TileEntity implements ITickable {
                  this.a = 0.0F;
              }
          }
+-
 +        */
-+        // Paper end
- 
      }
  
-@@ -73,11 +77,34 @@ public class TileEntityEnderChest extends TileEntity implements ITickable {
+     public boolean c(int i, int j) {
+@@ -73,11 +75,34 @@ public class TileEntityEnderChest extends TileEntity implements ITickable {
  
      public void b() {
          ++this.g;
@@ -190,4 +171,5 @@ index e454622..d01b65a 100644
      }
  
 -- 
-2.7.2.windows.1
+2.8.0.windows.1
+

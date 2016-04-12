@@ -1,14 +1,17 @@
-From c6bc76ac60f1cfae931ab39397e133033488b43c Mon Sep 17 00:00:00 2001
-From: Aikar <aikar@aikar.co>
-Date: Tue, 5 Apr 2016 21:38:58 -0400
-Subject: [PATCH] Paper -> Remove Debug checks from DataBits
+From ac34569c5e970f6c2c6ef6a68092f28a55f09af0 Mon Sep 17 00:00:00 2001
+From: Cat73 <1901803382@qq.com>
+Date: Tue, 12 Apr 2016 16:31:40 +0800
+Subject: [PATCH] Cat73 -> Remove Debug checks from DataBits
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
 getType 是一个热点方法，去掉里面的边界检查能将降低 90% 以上的执行时间。
-这个边界检查会在超出边界时直接抛异常导致服务器崩溃，因而应该是没必要的。
-Link：https://github.com/PaperMC/Paper/blob/539e1e024c8a00828473b53f20b6c906c6e548e8/Spigot-Server-Patches/0121-Use-Optimized-Collections.patch
+这个边界检查会在超出边界时直接抛异常导致服务器崩溃，因此应该可以安全的移除。
+Link：https://github.com/PaperMC/Paper/blob/ef3f6a481aa19470d7d955034335c314a1a2a7eb/Spigot-Server-Patches/0121-Use-Optimized-Collections.patch
 
 diff --git a/src/main/java/net/minecraft/server/DataBits.java b/src/main/java/net/minecraft/server/DataBits.java
-index f3a6799..fa0fd8a 100644
+index f3a6799..5d01490 100644
 --- a/src/main/java/net/minecraft/server/DataBits.java
 +++ b/src/main/java/net/minecraft/server/DataBits.java
 @@ -10,7 +10,7 @@ public class DataBits {
@@ -16,7 +19,7 @@ index f3a6799..fa0fd8a 100644
  
      public DataBits(int i, int j) {
 -        Validate.inclusiveBetween(1L, 32L, (long) i);
-+        //Validate.inclusiveBetween(1L, 32L, (long) i); // Paper
++        // Validate.inclusiveBetween(1L, 32L, (long) i);
          this.d = j;
          this.b = i;
          this.c = (1L << i) - 1L;
@@ -26,8 +29,8 @@ index f3a6799..fa0fd8a 100644
      public void a(int i, int j) {
 -        Validate.inclusiveBetween(0L, (long) (this.d - 1), (long) i);
 -        Validate.inclusiveBetween(0L, this.c, (long) j);
-+        //Validate.inclusiveBetween(0L, (long) (this.d - 1), (long) i); // Paper
-+        //Validate.inclusiveBetween(0L, this.c, (long) j); // Paper
++        // Validate.inclusiveBetween(0L, (long) (this.d - 1), (long) i);
++        // Validate.inclusiveBetween(0L, this.c, (long) j);
          int k = i * this.b;
          int l = k / 64;
          int i1 = ((i + 1) * this.b - 1) / 64;
@@ -36,9 +39,10 @@ index f3a6799..fa0fd8a 100644
  
      public int a(int i) {
 -        Validate.inclusiveBetween(0L, (long) (this.d - 1), (long) i);
-+        //Validate.inclusiveBetween(0L, (long) (this.d - 1), (long) i); // Paper
++        // Validate.inclusiveBetween(0L, (long) (this.d - 1), (long) i);
          int j = i * this.b;
          int k = j / 64;
          int l = ((i + 1) * this.b - 1) / 64;
 -- 
-2.8.0
+2.8.0.windows.1
+
