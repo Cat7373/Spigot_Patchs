@@ -1,4 +1,4 @@
-From ac34569c5e970f6c2c6ef6a68092f28a55f09af0 Mon Sep 17 00:00:00 2001
+From 79b6330c70e209efe55788029a14f40042c57469 Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
 Date: Tue, 12 Apr 2016 16:31:40 +0800
 Subject: [PATCH] Cat73 -> Remove Debug checks from DataBits

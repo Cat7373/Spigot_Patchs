@@ -1,4 +1,4 @@
-From 62b3bf2f3ee7e3aff01774cb1fda1051a1db812b Mon Sep 17 00:00:00 2001
+From 9faebed837ccf0985718d62f0c57241bc371ccbb Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
 Date: Tue, 12 Apr 2016 16:18:14 +0800
 Subject: [PATCH] Cat73 -> Optimize Chunk Access
@@ -30,7 +30,7 @@ index aff21a7..8c6a9d8 100644
          for (int k = 0; k < this.entitySlices.length; ++k) {
              this.entitySlices[k] = new org.bukkit.craftbukkit.util.UnsafeList(); // Spigot
 diff --git a/src/main/java/net/minecraft/server/ChunkProviderServer.java b/src/main/java/net/minecraft/server/ChunkProviderServer.java
-index 83857a6..a57438c 100644
+index 7d3adde..a879735 100644
 --- a/src/main/java/net/minecraft/server/ChunkProviderServer.java
 +++ b/src/main/java/net/minecraft/server/ChunkProviderServer.java
 @@ -23,7 +23,24 @@ public class ChunkProviderServer implements IChunkProvider {

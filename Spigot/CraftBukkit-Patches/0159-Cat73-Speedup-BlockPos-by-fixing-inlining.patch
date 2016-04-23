@@ -1,4 +1,4 @@
-From 1ded6e1ad34c23e2a6c427ccafaf69a074d22da7 Mon Sep 17 00:00:00 2001
+From 84e613a4ca17fd334227b90576beb7ac9e766672 Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
 Date: Tue, 12 Apr 2016 14:44:07 +0800
 Subject: [PATCH] Cat73 -> Speedup BlockPos by fixing inlining
