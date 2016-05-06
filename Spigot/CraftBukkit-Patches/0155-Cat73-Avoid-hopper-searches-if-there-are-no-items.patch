@@ -1,4 +1,4 @@
-From 853505560cfd45efcc899da6dbd7f0e4c1a6b73b Mon Sep 17 00:00:00 2001
+From df54d9f4a3097727cc61536b4c56cf698b9ee9e4 Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
 Date: Tue, 12 Apr 2016 13:55:31 +0800
 Subject: [PATCH] Cat73 -> Avoid hopper searches if there are no items
@@ -10,7 +10,7 @@ Content-Transfer-Encoding: 8bit
 Link：https://github.com/PaperMC/Paper/blob/cd3d8fb27e4a6717146bf7256f37034285a303d7/Spigot-Server-Patches/0063-Avoid-hopper-searches-if-there-are-no-items.patch
 
 diff --git a/src/main/java/net/minecraft/server/Chunk.java b/src/main/java/net/minecraft/server/Chunk.java
-index c4a6a85..aff21a7 100644
+index c4a6a85..7c65f32 100644
 --- a/src/main/java/net/minecraft/server/Chunk.java
 +++ b/src/main/java/net/minecraft/server/Chunk.java
 @@ -47,6 +47,11 @@ public class Chunk {
@@ -75,7 +75,7 @@ index c4a6a85..aff21a7 100644
  
 +        // Paper start
 +        int[] counts;
-+        if (ItemStack.class.isAssignableFrom(oclass)) {
++        if (EntityItem.class.isAssignableFrom(oclass)) {
 +            counts = itemCounts;
 +        } else if (IInventory.class.isAssignableFrom(oclass)) {
 +            counts = inventoryEntityCounts;

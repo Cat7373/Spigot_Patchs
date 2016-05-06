@@ -1,4 +1,4 @@
-From 9faebed837ccf0985718d62f0c57241bc371ccbb Mon Sep 17 00:00:00 2001
+From 288a7fb3a845b1d8c15a737a121eb6243d10428a Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
 Date: Tue, 12 Apr 2016 16:18:14 +0800
 Subject: [PATCH] Cat73 -> Optimize Chunk Access
@@ -10,7 +10,7 @@ getChunkAt 是一个热点方法，很多时候会在短时间内连续多次获
 Link：https://github.com/PaperMC/Paper/blob/ef3f6a481aa19470d7d955034335c314a1a2a7eb/Spigot-Server-Patches/0103-Optimize-Chunk-Access.patch
 
 diff --git a/src/main/java/net/minecraft/server/Chunk.java b/src/main/java/net/minecraft/server/Chunk.java
-index aff21a7..8c6a9d8 100644
+index 7c65f32..92ea962 100644
 --- a/src/main/java/net/minecraft/server/Chunk.java
 +++ b/src/main/java/net/minecraft/server/Chunk.java
 @@ -28,6 +28,7 @@ public class Chunk {
