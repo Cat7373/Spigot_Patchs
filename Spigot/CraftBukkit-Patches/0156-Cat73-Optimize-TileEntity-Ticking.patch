@@ -1,4 +1,4 @@
-From 3b1c657f5800fbd84eb193a4136dcc2df6d0a38c Mon Sep 17 00:00:00 2001
+From 4cf7444bd988c91b6b3548e68a330e3b6ffdb61d Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
 Date: Tue, 12 Apr 2016 16:08:57 +0800
 Subject: [PATCH] Cat73 -> Optimize TileEntity Ticking
@@ -7,13 +7,13 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 将箱子、末影箱计算正在看箱子的人数、播放音效的代码移出 tickloop。
-Link：https://github.com/PaperMC/Paper/blob/ef3f6a481aa19470d7d955034335c314a1a2a7eb/Spigot-Server-Patches/0022-Optimize-TileEntity-Ticking.patch
+Link：https://github.com/PaperMC/Paper/blob/74a73b72237c0c6f27b692a37e2ec39dbd850337/Spigot-Server-Patches/0022-Optimize-TileEntity-Ticking.patch
 
 diff --git a/src/main/java/net/minecraft/server/TileEntityChest.java b/src/main/java/net/minecraft/server/TileEntityChest.java
-index e82c8e3..1956626 100644
+index 0b70d16..9037847 100644
 --- a/src/main/java/net/minecraft/server/TileEntityChest.java
 +++ b/src/main/java/net/minecraft/server/TileEntityChest.java
-@@ -8,7 +8,7 @@ import org.bukkit.craftbukkit.entity.CraftHumanEntity;
+@@ -9,7 +9,7 @@ import org.bukkit.craftbukkit.entity.CraftHumanEntity;
  import org.bukkit.entity.HumanEntity;
  // CraftBukkit end
  
@@ -22,7 +22,7 @@ index e82c8e3..1956626 100644
  
      private ItemStack[] items = new ItemStack[27];
      public boolean a;
-@@ -231,6 +231,8 @@ public class TileEntityChest extends TileEntityLootable implements ITickable, II
+@@ -237,6 +237,8 @@ public class TileEntityChest extends TileEntityLootable implements ITickable, II
      }
  
      public void c() {
@@ -31,7 +31,7 @@ index e82c8e3..1956626 100644
          this.m();
          int i = this.position.getX();
          int j = this.position.getY();
-@@ -311,7 +313,7 @@ public class TileEntityChest extends TileEntityLootable implements ITickable, II
+@@ -317,7 +319,7 @@ public class TileEntityChest extends TileEntityLootable implements ITickable, II
                  this.j = 0.0F;
              }
          }
@@ -40,7 +40,7 @@ index e82c8e3..1956626 100644
      }
  
      public boolean c(int i, int j) {
-@@ -332,6 +334,29 @@ public class TileEntityChest extends TileEntityLootable implements ITickable, II
+@@ -338,6 +340,29 @@ public class TileEntityChest extends TileEntityLootable implements ITickable, II
  
              ++this.l;
              if (this.world == null) return; // CraftBukkit
@@ -70,7 +70,7 @@ index e82c8e3..1956626 100644
              this.world.playBlockAction(this.position, this.getBlock(), 1, this.l);
  
              // CraftBukkit start - Call redstone event
-@@ -354,6 +379,34 @@ public class TileEntityChest extends TileEntityLootable implements ITickable, II
+@@ -360,6 +385,34 @@ public class TileEntityChest extends TileEntityLootable implements ITickable, II
              int oldPower = Math.max(0, Math.min(15, this.l)); // CraftBukkit - Get power before new viewer is added
              --this.l;
              if (this.world == null) return; // CraftBukkit
@@ -106,7 +106,7 @@ index e82c8e3..1956626 100644
  
              // CraftBukkit start - Call redstone event
 diff --git a/src/main/java/net/minecraft/server/TileEntityEnderChest.java b/src/main/java/net/minecraft/server/TileEntityEnderChest.java
-index d9a0346..4261c24 100644
+index eca71c0..8d91b6b 100644
 --- a/src/main/java/net/minecraft/server/TileEntityEnderChest.java
 +++ b/src/main/java/net/minecraft/server/TileEntityEnderChest.java
 @@ -1,6 +1,6 @@
@@ -137,7 +137,7 @@ index d9a0346..4261c24 100644
      public boolean c(int i, int j) {
 @@ -73,11 +75,34 @@ public class TileEntityEnderChest extends TileEntity implements ITickable {
  
-     public void b() {
+     public void d() {
          ++this.g;
 +
 +        // Paper start - Move enderchest open sounds out of the tick loop
@@ -154,7 +154,7 @@ index d9a0346..4261c24 100644
          this.world.playBlockAction(this.position, Blocks.ENDER_CHEST, 1, this.g);
      }
  
-     public void d() {
+     public void e() {
          --this.g;
 +
 +        // Paper start - Move enderchest close sounds out of the tick loop
@@ -171,5 +171,5 @@ index d9a0346..4261c24 100644
      }
  
 -- 
-2.8.0.windows.1
+2.8.2.windows.1
 

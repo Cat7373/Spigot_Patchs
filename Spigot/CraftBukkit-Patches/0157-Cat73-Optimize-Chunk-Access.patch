@@ -1,4 +1,4 @@
-From 288a7fb3a845b1d8c15a737a121eb6243d10428a Mon Sep 17 00:00:00 2001
+From 0dff3008a8c22b89047d9c77f97c8742988d3b15 Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
 Date: Tue, 12 Apr 2016 16:18:14 +0800
 Subject: [PATCH] Cat73 -> Optimize Chunk Access
@@ -7,21 +7,21 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 getChunkAt 是一个热点方法，很多时候会在短时间内连续多次获取同一个区块，这里将最后一次被获取的区块缓存。
-Link：https://github.com/PaperMC/Paper/blob/ef3f6a481aa19470d7d955034335c314a1a2a7eb/Spigot-Server-Patches/0103-Optimize-Chunk-Access.patch
+Link：https://github.com/PaperMC/Paper/blob/74a73b72237c0c6f27b692a37e2ec39dbd850337/Spigot-Server-Patches/0098-Optimize-Chunk-Access.patch
 
 diff --git a/src/main/java/net/minecraft/server/Chunk.java b/src/main/java/net/minecraft/server/Chunk.java
-index 7c65f32..92ea962 100644
+index 7b71894..bf971bb 100644
 --- a/src/main/java/net/minecraft/server/Chunk.java
 +++ b/src/main/java/net/minecraft/server/Chunk.java
 @@ -28,6 +28,7 @@ public class Chunk {
-     private boolean i;
+     private boolean j;
      public final World world;
      public final int[] heightMap;
 +    public final long chunkKey; // Paper
      public final int locX;
      public final int locZ;
-     private boolean l;
-@@ -91,6 +92,7 @@ public class Chunk {
+     private boolean m;
+@@ -92,6 +93,7 @@ public class Chunk {
          this.locX = i;
          this.locZ = j;
          this.heightMap = new int[256];
@@ -30,16 +30,17 @@ index 7c65f32..92ea962 100644
          for (int k = 0; k < this.entitySlices.length; ++k) {
              this.entitySlices[k] = new org.bukkit.craftbukkit.util.UnsafeList(); // Spigot
 diff --git a/src/main/java/net/minecraft/server/ChunkProviderServer.java b/src/main/java/net/minecraft/server/ChunkProviderServer.java
-index 7d3adde..a879735 100644
+index 6c2a3e8..d868941 100644
 --- a/src/main/java/net/minecraft/server/ChunkProviderServer.java
 +++ b/src/main/java/net/minecraft/server/ChunkProviderServer.java
-@@ -23,7 +23,24 @@ public class ChunkProviderServer implements IChunkProvider {
-     public final LongHashSet unloadQueue = new LongHashSet(); // CraftBukkit - LongHashSet
-     public final ChunkGenerator chunkGenerator; // CraftBukkit - public
+@@ -26,7 +26,25 @@ public class ChunkProviderServer implements IChunkProvider {
+     public final Set<Long> unloadQueue = Sets.newHashSet(); // PAIL: private -> public
+     public final ChunkGenerator chunkGenerator;
      private final IChunkLoader chunkLoader;
--    public LongObjectHashMap<Chunk> chunks = new LongObjectHashMap<Chunk>(); // CraftBukkit
-+    public LongObjectHashMap<Chunk> chunks = new LongObjectHashMap<Chunk>() {
-+        private Chunk lastChunkByPos = null; // Paper
+-    public final Long2ObjectMap<Chunk> chunks = new Long2ObjectOpenHashMap(8192);
++    public final Long2ObjectMap<Chunk> chunks = new Long2ObjectOpenHashMap<Chunk>(8192) {
++        private Chunk lastChunkByPos = null;
++
 +        @Override
 +        public Chunk get(long key) {
 +            if (this.lastChunkByPos != null && key == this.lastChunkByPos.chunkKey) {
@@ -55,10 +56,10 @@ index 7d3adde..a879735 100644
 +            }
 +            return super.remove(key);
 +        }
-+    }; // Paper
-     // private final LongHashMap<Chunk> chunks = new LongHashMap();
-     // private final List<Chunk> chunkList = Lists.newArrayList();
++    };
      public final WorldServer world;
+ 
+     public ChunkProviderServer(WorldServer worldserver, IChunkLoader ichunkloader, ChunkGenerator chunkgenerator) {
 -- 
-2.8.0.windows.1
+2.8.2.windows.1
 

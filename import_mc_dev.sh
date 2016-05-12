@@ -4,7 +4,7 @@
 basedir="$(cd "$1" && pwd -P)"
 
 # nms 文件目录
-nmsdir="$basedir/work/decompile-82634944/net/minecraft/server"
+nmsdir="$basedir/work/decompile-8a44ec4c/net/minecraft/server"
 # 工作目录
 workdir="$basedir/Spigot/Spigot-Server"
 
@@ -20,9 +20,6 @@ function import {
 # imports
 import DataBits
 import TileEntityEnderChest
-import BlockPosition
-import BaseBlockPosition
-import BlockStateList
 
 # 生成 diff
 cd $workdir

@@ -1,4 +1,4 @@
-From 0db5acc6c8bddf620673d3b552e1e8e76ce51c7a Mon Sep 17 00:00:00 2001
+From dc75ea0f79f8f56b00776fbb77371282e6982dcf Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
 Date: Tue, 12 Apr 2016 13:46:13 +0800
 Subject: [PATCH] Cat73 -> Optimize getBlockData
@@ -9,13 +9,13 @@ Content-Transfer-Encoding: 8bit
 热点方法。
 优化前会判断世界是否为演示世界，以及通过 try catch 来实现在出现异常的时候崩溃报告里能多点信息。
 这份优化把这些全部去掉了。
-Link：https://github.com/PaperMC/Paper/blob/cd3d8fb27e4a6717146bf7256f37034285a303d7/Spigot-Server-Patches/0062-Optimize-getBlockData.patch
+Link：https://github.com/PaperMC/Paper/blob/74a73b72237c0c6f27b692a37e2ec39dbd850337/Spigot-Server-Patches/0060-Optimize-getBlockData.patch
 
 diff --git a/src/main/java/net/minecraft/server/Chunk.java b/src/main/java/net/minecraft/server/Chunk.java
-index 3c67d36..c4a6a85 100644
+index 00fb20d..2525773 100644
 --- a/src/main/java/net/minecraft/server/Chunk.java
 +++ b/src/main/java/net/minecraft/server/Chunk.java
-@@ -387,7 +387,14 @@ public class Chunk {
+@@ -388,7 +388,14 @@ public class Chunk {
      }
  
      public IBlockData getBlockData(BlockPosition blockposition) {
@@ -32,5 +32,5 @@ index 3c67d36..c4a6a85 100644
  
      public IBlockData a(final int i, final int j, final int k) {
 -- 
-2.8.0.windows.1
+2.8.2.windows.1
 

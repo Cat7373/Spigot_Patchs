@@ -1,6 +1,6 @@
-From c3a1b310ee8bc913eeafd6b70b6eec2f5ecf0c1c Mon Sep 17 00:00:00 2001
+From e79d3cdade4a61e8483e63f9d4c83ad2913b14f1 Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
-Date: Sat, 23 Apr 2016 13:24:41 +0800
+Date: Thu, 12 May 2016 16:06:11 +0800
 Subject: [PATCH] Cat73 -> Fix "Failed to save chunk"
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -11,24 +11,23 @@ Content-Transfer-Encoding: 8bit
 Link：https://hub.spigotmc.org/jira/browse/SPIGOT-1942
 
 diff --git a/src/main/java/net/minecraft/server/MerchantRecipe.java b/src/main/java/net/minecraft/server/MerchantRecipe.java
-index 0855e70..a282924 100644
+index e3a8b1d..09a77cd 100644
 --- a/src/main/java/net/minecraft/server/MerchantRecipe.java
 +++ b/src/main/java/net/minecraft/server/MerchantRecipe.java
-@@ -1,9 +1,13 @@
- package net.minecraft.server;
+@@ -2,9 +2,12 @@ package net.minecraft.server;
  
- import org.bukkit.craftbukkit.inventory.CraftMerchantRecipe;
+ import javax.annotation.Nullable;
+ import org.bukkit.craftbukkit.inventory.CraftMerchantRecipe; // CraftBukkit
 +import org.apache.logging.log4j.LogManager;
 +import org.apache.logging.log4j.Logger;
  
  public class MerchantRecipe {
  
 +    private static final Logger logger = LogManager.getLogger();
-+
      public ItemStack buyingItem1;
      public ItemStack buyingItem2;
      public ItemStack sellingItem;
-@@ -120,6 +124,20 @@ public class MerchantRecipe {
+@@ -121,6 +124,20 @@ public class MerchantRecipe {
      public NBTTagCompound k() {
          NBTTagCompound nbttagcompound = new NBTTagCompound();
  
@@ -50,5 +49,5 @@ index 0855e70..a282924 100644
          nbttagcompound.set("sell", this.sellingItem.save(new NBTTagCompound()));
          if (this.buyingItem2 != null) {
 -- 
-2.8.0.windows.1
+2.8.2.windows.1
 

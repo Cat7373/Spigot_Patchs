@@ -1,4 +1,4 @@
-From 18102601e0875ab1b4ad9a189ac794f675a9afce Mon Sep 17 00:00:00 2001
+From a8e6e81d184f9c8a51673e0d0a94c3d66fca10db Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
 Date: Tue, 12 Apr 2016 14:08:12 +0800
 Subject: [PATCH] Cat73 -> Change implementation of (tile)entity removal list
@@ -7,10 +7,10 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 将需被卸载的实体列表由 ArrayList 修改为 Set 存储，这个列表完全没有必要有顺序，维护一个无序列表能节约一些资源。
-Link：https://github.com/PaperMC/Paper/blob/ef3f6a481aa19470d7d955034335c314a1a2a7eb/Spigot-Server-Patches/0069-Change-implementation-of-tile-entity-removal-list.patch
+Link：https://github.com/PaperMC/Paper/blob/74a73b72237c0c6f27b692a37e2ec39dbd850337/Spigot-Server-Patches/0067-Change-implementation-of-tile-entity-removal-list.patch
 
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index c386a60..bb1c57c 100644
+index a7ab03d..c219c75 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
 @@ -24,6 +24,8 @@ import org.bukkit.craftbukkit.CraftWorld;
@@ -36,7 +36,7 @@ index c386a60..bb1c57c 100644
      public final List<EntityHuman> players = Lists.newArrayList();
      public final List<Entity> j = Lists.newArrayList();
      protected final IntHashMap<Entity> entitiesById = new IntHashMap();
-@@ -1371,18 +1373,18 @@ public abstract class World implements IBlockAccess {
+@@ -1376,18 +1378,18 @@ public abstract class World implements IBlockAccess {
  
          int j;
  
@@ -64,5 +64,5 @@ index c386a60..bb1c57c 100644
  
          this.f.clear();
 -- 
-2.8.0.windows.1
+2.8.2.windows.1
 
