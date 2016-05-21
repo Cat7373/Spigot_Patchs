@@ -1,4 +1,4 @@
-From ed798d200e10abf180d90d6c3765997a0de6781f Mon Sep 17 00:00:00 2001
+From 72399aa4fc8a16cd7cf75ae29635a195b26ada66 Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
 Date: Tue, 12 Apr 2016 13:55:31 +0800
 Subject: [PATCH] Cat73 -> Avoid hopper searches if there are no items

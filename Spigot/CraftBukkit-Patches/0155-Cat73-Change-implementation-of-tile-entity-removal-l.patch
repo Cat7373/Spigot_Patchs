@@ -1,4 +1,4 @@
-From a8e6e81d184f9c8a51673e0d0a94c3d66fca10db Mon Sep 17 00:00:00 2001
+From f7709ac9c8266bd335207c58a756e2dd85a54f87 Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
 Date: Tue, 12 Apr 2016 14:08:12 +0800
 Subject: [PATCH] Cat73 -> Change implementation of (tile)entity removal list
@@ -10,7 +10,7 @@ Content-Transfer-Encoding: 8bit
 Link：https://github.com/PaperMC/Paper/blob/74a73b72237c0c6f27b692a37e2ec39dbd850337/Spigot-Server-Patches/0067-Change-implementation-of-tile-entity-removal-list.patch
 
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index a7ab03d..c219c75 100644
+index a7ab03d..9a23ad4 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
 @@ -24,6 +24,8 @@ import org.bukkit.craftbukkit.CraftWorld;
