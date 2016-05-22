@@ -1,4 +1,4 @@
-From 9e511cbda10db780d8e77d407473361df9849e76 Mon Sep 17 00:00:00 2001
+From a1ecb303ed687fd3cb4886ac57184b10b2634403 Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
 Date: Sat, 21 May 2016 18:40:03 +0800
 Subject: [PATCH] Cat73 -> Do-not-mark-chunks-as-active-for-neighbor-updates
@@ -76,28 +76,6 @@ index bf971bb..e4bd50d 100644
  
              if (chunk4 != null) {
                  chunk4.a(chunkgenerator);
-diff --git a/src/main/java/net/minecraft/server/ChunkProviderServer.java b/src/main/java/net/minecraft/server/ChunkProviderServer.java
-index 5014acd..2b52a90 100644
---- a/src/main/java/net/minecraft/server/ChunkProviderServer.java
-+++ b/src/main/java/net/minecraft/server/ChunkProviderServer.java
-@@ -194,7 +194,7 @@ public class ChunkProviderServer implements IChunkProvider {
-                         continue;
-                     }
- 
--                    Chunk neighbor = this.getLoadedChunkAt(chunk.locX + x, chunk.locZ + z);
-+                    Chunk neighbor = Chunk.getLoadedChunkWithoutMarkingActive(this, chunk.locX + x, chunk.locZ + z); // Paper
-                     if (neighbor != null) {
-                         neighbor.setNeighborLoaded(-x, -z);
-                         chunk.setNeighborLoaded(x, z);
-@@ -301,7 +301,7 @@ public class ChunkProviderServer implements IChunkProvider {
-                                     continue;
-                                 }
- 
--                                Chunk neighbor = this.chunks.get(ChunkCoordIntPair.a(chunk.locX + x, chunk.locZ + z));
-+                                Chunk neighbor = Chunk.getLoadedChunkWithoutMarkingActive(this, chunk.locX + x, chunk.locZ + z); // Paper
-                                 if (neighbor != null) {
-                                     neighbor.setNeighborUnloaded(-x, -z);
-                                     chunk.setNeighborUnloaded(x, z);
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 index afbdb5c..5d92092 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
