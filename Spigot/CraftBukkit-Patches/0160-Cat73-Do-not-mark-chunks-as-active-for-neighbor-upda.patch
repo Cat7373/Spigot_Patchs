@@ -80,15 +80,6 @@ diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/jav
 index afbdb5c..5d92092 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-@@ -215,7 +215,7 @@ public class CraftWorld implements World {
-                     continue;
-                 }
- 
--                net.minecraft.server.Chunk neighbor = world.getChunkProviderServer().getLoadedChunkAt(chunk.locX + x, chunk.locZ + z);
-+                net.minecraft.server.Chunk neighbor = net.minecraft.server.Chunk.getLoadedChunkWithoutMarkingActive(world, chunk.locX + x, chunk.locZ + z); // Paper
-                 if (neighbor != null) {
-                     neighbor.setNeighborUnloaded(-xx, -zz);
-                     chunk.setNeighborUnloaded(xx, zz);
 @@ -302,7 +302,7 @@ public class CraftWorld implements World {
                          continue;
                      }
