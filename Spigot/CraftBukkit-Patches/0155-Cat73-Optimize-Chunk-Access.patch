@@ -1,4 +1,4 @@
-From 5c12e0288e79a18e487c418858818c2a15ad436d Mon Sep 17 00:00:00 2001
+From 821d6007b46b47930ea83aeb9c4770af887c3bf1 Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
 Date: Tue, 12 Apr 2016 16:18:14 +0800
 Subject: [PATCH] Cat73 -> Optimize Chunk Access
@@ -10,7 +10,7 @@ getChunkAt 是一个热点方法，很多时候会在短时间内连续多次获
 Link：https://github.com/PaperMC/Paper/blob/74a73b72237c0c6f27b692a37e2ec39dbd850337/Spigot-Server-Patches/0098-Optimize-Chunk-Access.patch
 
 diff --git a/src/main/java/net/minecraft/server/Chunk.java b/src/main/java/net/minecraft/server/Chunk.java
-index 7b71894..bf971bb 100644
+index db6e1c5..20b7ee0 100644
 --- a/src/main/java/net/minecraft/server/Chunk.java
 +++ b/src/main/java/net/minecraft/server/Chunk.java
 @@ -28,6 +28,7 @@ public class Chunk {
@@ -21,45 +21,47 @@ index 7b71894..bf971bb 100644
      public final int locX;
      public final int locZ;
      private boolean m;
-@@ -92,6 +93,7 @@ public class Chunk {
+@@ -86,6 +87,7 @@ public class Chunk {
+         this.world = world;
          this.locX = i;
          this.locZ = j;
-         this.heightMap = new int[256];
 +        this.chunkKey = org.bukkit.craftbukkit.util.LongHash.toLong(this.locX, this.locZ); // Paper
+         this.heightMap = new int[256];
  
          for (int k = 0; k < this.entitySlices.length; ++k) {
-             this.entitySlices[k] = new org.bukkit.craftbukkit.util.UnsafeList(); // Spigot
 diff --git a/src/main/java/net/minecraft/server/ChunkProviderServer.java b/src/main/java/net/minecraft/server/ChunkProviderServer.java
-index 6c94565..5014acd 100644
+index fe50511..ec6c40a 100644
 --- a/src/main/java/net/minecraft/server/ChunkProviderServer.java
 +++ b/src/main/java/net/minecraft/server/ChunkProviderServer.java
-@@ -26,7 +26,25 @@ public class ChunkProviderServer implements IChunkProvider {
-     public final Set<Long> unloadQueue = Sets.newHashSet(); // PAIL: private -> public
+@@ -26,7 +26,27 @@ public class ChunkProviderServer implements IChunkProvider {
+     public final Set<Long> unloadQueue = Sets.newHashSet();
      public final ChunkGenerator chunkGenerator;
      private final IChunkLoader chunkLoader;
 -    public final Long2ObjectMap<Chunk> chunks = new Long2ObjectOpenHashMap(8192);
-+    public final Long2ObjectMap<Chunk> chunks = new Long2ObjectOpenHashMap<Chunk>(8192) {
-+        private Chunk lastChunkByPos = null;
++    // Paper start
++    protected Chunk lastChunkByPos = null;
++    public Long2ObjectOpenHashMap<Chunk> chunks = new Long2ObjectOpenHashMap<Chunk>(8192) {
 +
 +        @Override
 +        public Chunk get(long key) {
-+            if (this.lastChunkByPos != null && key == this.lastChunkByPos.chunkKey) {
-+                return this.lastChunkByPos;
++            if (lastChunkByPos != null && key == lastChunkByPos.chunkKey) {
++                return lastChunkByPos;
 +            }
-+            return this.lastChunkByPos = super.get(key);
++            return lastChunkByPos = super.get(key);
 +        }
 +
 +        @Override
 +        public Chunk remove(long key) {
-+            if (this.lastChunkByPos != null && key == this.lastChunkByPos.chunkKey) {
-+                this.lastChunkByPos = null;
++            if (lastChunkByPos != null && key == lastChunkByPos.chunkKey) {
++                lastChunkByPos = null;
 +            }
 +            return super.remove(key);
 +        }
-+    };
++    }; // CraftBukkit
++    // Paper end
      public final WorldServer world;
  
      public ChunkProviderServer(WorldServer worldserver, IChunkLoader ichunkloader, ChunkGenerator chunkgenerator) {
 -- 
-2.8.2.windows.1
+2.8.3.windows.1
 

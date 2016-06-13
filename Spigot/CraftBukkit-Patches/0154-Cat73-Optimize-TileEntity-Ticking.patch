@@ -1,4 +1,4 @@
-From 321bd10c5e5e4110b079494f722dd7c1fd43812b Mon Sep 17 00:00:00 2001
+From 5055e41abb0d89c4fc0b4e0dc25c1687ea8e0491 Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
 Date: Tue, 12 Apr 2016 16:08:57 +0800
 Subject: [PATCH] Cat73 -> Optimize TileEntity Ticking
@@ -10,10 +10,10 @@ Content-Transfer-Encoding: 8bit
 Link：https://github.com/PaperMC/Paper/blob/74a73b72237c0c6f27b692a37e2ec39dbd850337/Spigot-Server-Patches/0022-Optimize-TileEntity-Ticking.patch
 
 diff --git a/src/main/java/net/minecraft/server/TileEntityChest.java b/src/main/java/net/minecraft/server/TileEntityChest.java
-index 0b70d16..9037847 100644
+index 5014903..81db929 100644
 --- a/src/main/java/net/minecraft/server/TileEntityChest.java
 +++ b/src/main/java/net/minecraft/server/TileEntityChest.java
-@@ -9,7 +9,7 @@ import org.bukkit.craftbukkit.entity.CraftHumanEntity;
+@@ -9,17 +9,17 @@ import org.bukkit.craftbukkit.entity.CraftHumanEntity;
  import org.bukkit.entity.HumanEntity;
  // CraftBukkit end
  
@@ -22,29 +22,46 @@ index 0b70d16..9037847 100644
  
      private ItemStack[] items = new ItemStack[27];
      public boolean a;
-@@ -237,6 +237,8 @@ public class TileEntityChest extends TileEntityLootable implements ITickable, II
+-    public TileEntityChest f;
+-    public TileEntityChest g;
+-    public TileEntityChest h;
+-    public TileEntityChest i;
+-    public float j;
++    public TileEntityChest f; // Paper - Adjacent Chest Z Neg
++    public TileEntityChest g; // Paper - Adjacent Chest X Pos
++    public TileEntityChest h; // Paper - Adjacent Chest X Neg
++    public TileEntityChest i; // Paper - Adjacent Chest Z Pos
++    public float j; // Paper - lid angle
+     public float k;
+-    public int l;
++    public int l; // Paper - Number of viewers
+     private int p;
+     private BlockChest.Type q;
+     private String r;
+@@ -241,6 +241,8 @@ public class TileEntityChest extends TileEntityLootable implements ITickable, II
      }
  
-     public void c() {
+     public void E_() {
 +        // Paper - Disable all of this, just in case this does get ticked
 +        /*
          this.m();
          int i = this.position.getX();
          int j = this.position.getY();
-@@ -317,7 +319,7 @@ public class TileEntityChest extends TileEntityLootable implements ITickable, II
+@@ -321,7 +323,8 @@ public class TileEntityChest extends TileEntityLootable implements ITickable, II
                  this.j = 0.0F;
              }
          }
 -
 +        */
++        // Paper end
      }
  
      public boolean c(int i, int j) {
-@@ -338,6 +340,29 @@ public class TileEntityChest extends TileEntityLootable implements ITickable, II
+@@ -341,6 +344,28 @@ public class TileEntityChest extends TileEntityLootable implements ITickable, II
+             int oldPower = Math.max(0, Math.min(15, this.l)); // CraftBukkit - Get power before new viewer is added
  
              ++this.l;
-             if (this.world == null) return; // CraftBukkit
-+            
++
 +            // Paper start - Move chest open sound out of the tick loop
 +            this.m();
 +
@@ -53,7 +70,6 @@ index 0b70d16..9037847 100644
 +
 +                double d0 = (double) this.position.getZ() + 0.5D;
 +                double d1 = (double) this.position.getX() + 0.5D;
-+                int yLoc = this.position.getY();
 +
 +                if (this.i != null) {
 +                    d0 += 0.5D;
@@ -63,14 +79,14 @@ index 0b70d16..9037847 100644
 +                    d1 += 0.5D;
 +                }
 +
-+                this.world.a((EntityHuman) null, d1, (double) yLoc + 0.5D, d0, SoundEffects.X, SoundCategory.BLOCKS, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
++                this.world.a((EntityHuman) null, d1, (double) this.position.getY() + 0.5D, d0, SoundEffects.X, SoundCategory.BLOCKS, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
 +            }
 +            // Paper end
 +
+             if (this.world == null) return; // CraftBukkit
              this.world.playBlockAction(this.position, this.getBlock(), 1, this.l);
  
-             // CraftBukkit start - Call redstone event
-@@ -360,6 +385,34 @@ public class TileEntityChest extends TileEntityLootable implements ITickable, II
+@@ -364,6 +389,34 @@ public class TileEntityChest extends TileEntityLootable implements ITickable, II
              int oldPower = Math.max(0, Math.min(15, this.l)); // CraftBukkit - Get power before new viewer is added
              --this.l;
              if (this.world == null) return; // CraftBukkit
@@ -101,41 +117,45 @@ index 0b70d16..9037847 100644
 +                this.j = 0.0F;
 +            }
 +            // Paper end
-+            
++
              this.world.playBlockAction(this.position, this.getBlock(), 1, this.l);
  
              // CraftBukkit start - Call redstone event
 diff --git a/src/main/java/net/minecraft/server/TileEntityEnderChest.java b/src/main/java/net/minecraft/server/TileEntityEnderChest.java
-index eca71c0..8d91b6b 100644
+index d5f0d61..b257bc4 100644
 --- a/src/main/java/net/minecraft/server/TileEntityEnderChest.java
 +++ b/src/main/java/net/minecraft/server/TileEntityEnderChest.java
-@@ -1,6 +1,6 @@
+@@ -1,15 +1,17 @@
  package net.minecraft.server;
  
 -public class TileEntityEnderChest extends TileEntity implements ITickable {
 +public class TileEntityEnderChest extends TileEntity { // Paper - Remove ITickable
  
-     public float a;
+-    public float a;
++    public float a; // Paper - lid angle
      public float f;
-@@ -10,6 +10,8 @@ public class TileEntityEnderChest extends TileEntity implements ITickable {
+-    public int g;
++    public int g; // Paper - Number of viewers
+     private int h;
+ 
      public TileEntityEnderChest() {}
  
-     public void c() {
+     public void E_() {
 +        // Paper start - Disable all of this, just in case this does get ticked
 +        /*
          if (++this.h % 20 * 4 == 0) {
              this.world.playBlockAction(this.position, Blocks.ENDER_CHEST, 1, this.g);
          }
-@@ -54,7 +56,7 @@ public class TileEntityEnderChest extends TileEntity implements ITickable {
+@@ -54,6 +56,8 @@ public class TileEntityEnderChest extends TileEntity implements ITickable {
                  this.a = 0.0F;
              }
          }
--
 +        */
++        // Paper end
+ 
      }
  
-     public boolean c(int i, int j) {
-@@ -73,11 +75,34 @@ public class TileEntityEnderChest extends TileEntity implements ITickable {
+@@ -73,11 +77,34 @@ public class TileEntityEnderChest extends TileEntity implements ITickable {
  
      public void d() {
          ++this.g;
@@ -147,7 +167,7 @@ index eca71c0..8d91b6b 100644
 +            double d1 = (double) this.getPosition().getX() + 0.5D;
 +            double d0 = (double) this.getPosition().getZ() + 0.5D;
 +
-+            this.world.a((EntityHuman) null, d1, (double) this.getPosition().getY() + 0.5D, d0, SoundEffects.aM, SoundCategory.BLOCKS, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
++            this.world.a((EntityHuman) null, d1, (double) this.getPosition().getY() + 0.5D, d0, SoundEffects.aN, SoundCategory.BLOCKS, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
 +        }
 +        // Paper end
 +
@@ -162,7 +182,7 @@ index eca71c0..8d91b6b 100644
 +            double d0 = (double) this.getPosition().getX() + 0.5D;
 +            double d2 = (double) this.getPosition().getZ() + 0.5D;
 +
-+            this.world.a((EntityHuman) null, d0, (double) this.getPosition().getY() + 0.5D, d2, SoundEffects.aL, SoundCategory.BLOCKS, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
++            this.world.a((EntityHuman) null, d0, (double) this.getPosition().getY() + 0.5D, d2, SoundEffects.aM, SoundCategory.BLOCKS, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
 +            this.a = 0.0F;
 +        }
 +        // Paper end
@@ -171,5 +191,5 @@ index eca71c0..8d91b6b 100644
      }
  
 -- 
-2.8.2.windows.1
+2.8.3.windows.1
 
