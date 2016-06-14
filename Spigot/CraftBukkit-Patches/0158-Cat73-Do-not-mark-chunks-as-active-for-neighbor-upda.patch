@@ -1,21 +1,21 @@
-From a1ecb303ed687fd3cb4886ac57184b10b2634403 Mon Sep 17 00:00:00 2001
+From e69d4900b90ec0108a48b32e7cf1627cbd6a2b54 Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
-Date: Sat, 21 May 2016 18:40:03 +0800
+Date: Tue, 14 Jun 2016 15:11:51 +0800
 Subject: [PATCH] Cat73 -> Do-not-mark-chunks-as-active-for-neighbor-updates
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-修复 Chunk 泄漏的问题，具体改动我也没研究，建议看下面的 Link
-Link: https://github.com/PaperMC/Paper/blob/e56bbcdcda3c65ad594cce156d1506e30940dc02/Spigot-Server-Patches/0152-Do-not-mark-chunks-as-active-for-neighbor-updates.patch
+不要在更新临近区块的时候加载区块
+Link: https://github.com/PaperMC/Paper/blob/14ffaf5d2c66491ef0f5f1aef4430621e375a804/Spigot-Server-Patches/0149-Do-not-mark-chunks-as-active-for-neighbor-updates.patch
 
 diff --git a/src/main/java/net/minecraft/server/Chunk.java b/src/main/java/net/minecraft/server/Chunk.java
-index bf971bb..e4bd50d 100644
+index 20b7ee0..30e3986 100644
 --- a/src/main/java/net/minecraft/server/Chunk.java
 +++ b/src/main/java/net/minecraft/server/Chunk.java
-@@ -55,6 +55,28 @@ public class Chunk {
-     private final int[] itemCounts = new int[16];
-     private final int[] inventoryEntityCounts = new int[16];
+@@ -50,6 +50,28 @@ public class Chunk {
+     // CraftBukkit start - Neighbor loaded cache for chunk lighting and entity ticking
+     private int neighbors = 0x1 << 12;
  
 +    /**
 +     * Gets a chunk without changing its boolean for should unload
@@ -42,7 +42,7 @@ index bf971bb..e4bd50d 100644
      public boolean areNeighborsLoaded(final int radius) {
          switch (radius) {
              case 2:
-@@ -945,25 +967,25 @@ public class Chunk {
+@@ -906,25 +928,25 @@ public class Chunk {
  
      public void loadNearby(IChunkProvider ichunkprovider, ChunkGenerator chunkgenerator) {
          world.timings.syncChunkLoadPostTimer.startTiming(); // Spigot
@@ -77,7 +77,7 @@ index bf971bb..e4bd50d 100644
              if (chunk4 != null) {
                  chunk4.a(chunkgenerator);
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index afbdb5c..5d92092 100644
+index 54c4c27..c3d5343 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 @@ -302,7 +302,7 @@ public class CraftWorld implements World {
@@ -103,5 +103,5 @@ index 7b61b14..2de3b10 100644
                      neighbor.setNeighborLoaded(-x, -z);
                      chunk.setNeighborLoaded(x, z);
 -- 
-2.8.2.windows.1
+2.8.3.windows.1
 
