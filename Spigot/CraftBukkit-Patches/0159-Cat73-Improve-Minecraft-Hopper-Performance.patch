@@ -1,0 +1,57 @@
+From a51899624f1d230962152a7e31a2126c08ccf394 Mon Sep 17 00:00:00 2001
+From: Cat73 <1901803382@qq.com>
+Date: Wed, 15 Jun 2016 20:45:33 +0800
+Subject: [PATCH] Cat73 -> Improve-Minecraft-Hopper-Performance
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+减少不必要的漏斗更新
+Link: https://github.com/PaperMC/Paper/blob/47db868df1000d5515470094e37776e257f7b2d9/Spigot-Server-Patches/0142-Improve-Minecraft-Hopper-Performance.patch
+
+diff --git a/src/main/java/net/minecraft/server/TileEntity.java b/src/main/java/net/minecraft/server/TileEntity.java
+index 42f37df..595f4a0 100644
+--- a/src/main/java/net/minecraft/server/TileEntity.java
++++ b/src/main/java/net/minecraft/server/TileEntity.java
+@@ -20,6 +20,7 @@ public abstract class TileEntity {
+     protected boolean d;
+     private int h;
+     protected Block e;
++    protected static boolean IGNORE_TILE_UPDATES = false; // paper
+ 
+     public TileEntity() {
+         this.position = BlockPosition.ZERO;
+@@ -112,6 +113,7 @@ public abstract class TileEntity {
+ 
+     public void update() {
+         if (this.world != null) {
++            if (IGNORE_TILE_UPDATES) return; // Paper
+             IBlockData iblockdata = this.world.getType(this.position);
+ 
+             this.h = iblockdata.getBlock().toLegacyData(iblockdata);
+diff --git a/src/main/java/net/minecraft/server/TileEntityHopper.java b/src/main/java/net/minecraft/server/TileEntityHopper.java
+index d1ce2b9..9d1fd0c 100644
+--- a/src/main/java/net/minecraft/server/TileEntityHopper.java
++++ b/src/main/java/net/minecraft/server/TileEntityHopper.java
+@@ -499,7 +499,9 @@ public class TileEntityHopper extends TileEntityLootable implements IHopper, ITi
+             boolean flag = false;
+ 
+             if (itemstack1 == null) {
++                IGNORE_TILE_UPDATES = true; // Paper
+                 iinventory.setItem(i, itemstack);
++                IGNORE_TILE_UPDATES = false; // Paper
+                 itemstack = null;
+                 flag = true;
+             } else if (a(itemstack1, itemstack)) {
+@@ -519,7 +521,7 @@ public class TileEntityHopper extends TileEntityLootable implements IHopper, ITi
+                         tileentityhopper.setCooldown(tileentityhopper.world.spigotConfig.hopperTransfer); // Spigot
+                     }
+ 
+-                    iinventory.update();
++                    // iinventory.update();
+                 }
+ 
+                 iinventory.update();
+-- 
+2.8.3.windows.1
+
