@@ -9,7 +9,7 @@ Content-Transfer-Encoding: 8bit
 热点方法。
 优化前会判断世界是否为演示世界，以及通过 try catch 来实现在出现异常的时候崩溃报告里能多点信息。
 这份优化把这些全部去掉了。
-Link：https://github.com/PaperMC/Paper/blob/74a73b72237c0c6f27b692a37e2ec39dbd850337/Spigot-Server-Patches/0060-Optimize-getBlockData.patch
+Link：https://github.com/PaperMC/Paper/blob/c8643cef2eb0fe2c315b950728441791a397b0c0/Spigot-Server-Patches/0060-Optimize-getBlockData.patch
 
 diff --git a/src/main/java/net/minecraft/server/Chunk.java b/src/main/java/net/minecraft/server/Chunk.java
 index 9343615..db6e1c5 100644

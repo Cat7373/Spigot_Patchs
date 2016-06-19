@@ -7,7 +7,7 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 getChunkAt 是一个热点方法，很多时候会在短时间内连续多次获取同一个区块，这里将最后一次被获取的区块缓存。
-Link：https://github.com/PaperMC/Paper/blob/74a73b72237c0c6f27b692a37e2ec39dbd850337/Spigot-Server-Patches/0098-Optimize-Chunk-Access.patch
+Link：https://github.com/PaperMC/Paper/blob/c8643cef2eb0fe2c315b950728441791a397b0c0/Spigot-Server-Patches/0098-Optimize-Chunk-Access.patch
 
 diff --git a/src/main/java/net/minecraft/server/Chunk.java b/src/main/java/net/minecraft/server/Chunk.java
 index db6e1c5..20b7ee0 100644

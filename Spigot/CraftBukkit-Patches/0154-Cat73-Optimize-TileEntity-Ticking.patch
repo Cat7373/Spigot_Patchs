@@ -7,7 +7,7 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 将箱子、末影箱计算正在看箱子的人数、播放音效的代码移出 tickloop。
-Link：https://github.com/PaperMC/Paper/blob/74a73b72237c0c6f27b692a37e2ec39dbd850337/Spigot-Server-Patches/0022-Optimize-TileEntity-Ticking.patch
+Link：https://github.com/PaperMC/Paper/blob/c8643cef2eb0fe2c315b950728441791a397b0c0/Spigot-Server-Patches/0022-Optimize-TileEntity-Ticking.patch
 
 diff --git a/src/main/java/net/minecraft/server/TileEntityChest.java b/src/main/java/net/minecraft/server/TileEntityChest.java
 index 5014903..81db929 100644

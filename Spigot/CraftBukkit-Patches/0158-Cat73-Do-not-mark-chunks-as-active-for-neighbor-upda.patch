@@ -7,7 +7,7 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 不要在更新临近区块的时候加载区块
-Link: https://github.com/PaperMC/Paper/blob/14ffaf5d2c66491ef0f5f1aef4430621e375a804/Spigot-Server-Patches/0149-Do-not-mark-chunks-as-active-for-neighbor-updates.patch
+Link: https://github.com/PaperMC/Paper/blob/c8643cef2eb0fe2c315b950728441791a397b0c0/Spigot-Server-Patches/0149-Do-not-mark-chunks-as-active-for-neighbor-updates.patch
 
 diff --git a/src/main/java/net/minecraft/server/Chunk.java b/src/main/java/net/minecraft/server/Chunk.java
 index 20b7ee0..30e3986 100644

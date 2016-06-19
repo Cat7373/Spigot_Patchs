@@ -6,8 +6,15 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-减少不必要的漏斗更新
-Link: https://github.com/PaperMC/Paper/blob/47db868df1000d5515470094e37776e257f7b2d9/Spigot-Server-Patches/0142-Improve-Minecraft-Hopper-Performance.patch
+在漏斗传输物品的时候不再调用目标容器的 update 方法
+简单看了看似乎这个 update 在传输物品的时候并没有什么卵用。。。
+1. 更新方块的损害值。
+2. 更新 Chunk 里是否有过方块更新的标记为 true。
+   然而只有很低的概率影响 MC 每隔一段时间的自动保存，卸载 Chunk 时一定会保存。
+   AutoSaveWorld 也是无视这个值直接保存的，服务器崩溃时 AutoSaveWorld 会先保存一次再关闭服务器。
+   而且服务器当前已经在 bukkit.yml 里禁用了这种自动保存。。。
+3. 进行 Physics 计算。
+Link: https://github.com/PaperMC/Paper/blob/c8643cef2eb0fe2c315b950728441791a397b0c0/Spigot-Server-Patches/0142-Improve-Minecraft-Hopper-Performance.patch
 
 diff --git a/src/main/java/net/minecraft/server/TileEntity.java b/src/main/java/net/minecraft/server/TileEntity.java
 index 42f37df..595f4a0 100644

@@ -7,7 +7,7 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 不要在寻路时加载区块
-Link: https://github.com/PaperMC/Paper/blob/b59e2a51de6cef42c00fd04a0aec8ce7b8030b13/Spigot-Server-Patches/0149-Do-not-load-chunks-for-pathfinding.patch
+Link: https://github.com/PaperMC/Paper/blob/c8643cef2eb0fe2c315b950728441791a397b0c0/Spigot-Server-Patches/0146-Do-not-load-chunks-for-pathfinding.patch
 
 diff --git a/src/main/java/net/minecraft/server/ChunkCache.java b/src/main/java/net/minecraft/server/ChunkCache.java
 index a8fd64c..11c11cf 100644

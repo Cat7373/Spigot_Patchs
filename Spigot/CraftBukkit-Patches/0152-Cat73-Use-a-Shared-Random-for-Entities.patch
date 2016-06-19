@@ -8,7 +8,7 @@ Content-Transfer-Encoding: 8bit
 
 实体随机数生成器使用一个固定的，而不是每次都 new 一个新的。
 略微增加 new 实体时的效率，略微降低内存占用。
-Link：https://github.com/PaperMC/Paper/blob/74a73b72237c0c6f27b692a37e2ec39dbd850337/Spigot-Server-Patches/0096-Use-a-Shared-Random-for-Entities.patch
+Link：https://github.com/PaperMC/Paper/blob/c8643cef2eb0fe2c315b950728441791a397b0c0/Spigot-Server-Patches/0096-Use-a-Shared-Random-for-Entities.patch
 
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
 index 064b7a9..44407df 100644

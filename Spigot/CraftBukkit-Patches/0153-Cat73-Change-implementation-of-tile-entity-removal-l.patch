@@ -7,7 +7,7 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 将需被卸载的实体列表由 ArrayList 修改为 Set 存储，这个列表完全没有必要有顺序，维护一个无序列表能节约一些资源。
-Link：https://github.com/PaperMC/Paper/blob/74a73b72237c0c6f27b692a37e2ec39dbd850337/Spigot-Server-Patches/0067-Change-implementation-of-tile-entity-removal-list.patch
+Link：https://github.com/PaperMC/Paper/blob/c8643cef2eb0fe2c315b950728441791a397b0c0/Spigot-Server-Patches/0067-Change-implementation-of-tile-entity-removal-list.patch
 
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
 index 44407df..b9b56d9 100644
