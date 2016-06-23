@@ -1,4 +1,4 @@
-From 1123cb05dc1f737b6689e76201797d371317a89c Mon Sep 17 00:00:00 2001
+From 47ba28042c3d4153d70ea1783187cb4f64ab431b Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
 Date: Tue, 12 Apr 2016 14:02:53 +0800
 Subject: [PATCH] Cat73 -> Use a Shared Random for Entities
@@ -11,7 +11,7 @@ Content-Transfer-Encoding: 8bit
 Link：https://github.com/PaperMC/Paper/blob/c8643cef2eb0fe2c315b950728441791a397b0c0/Spigot-Server-Patches/0096-Use-a-Shared-Random-for-Entities.patch
 
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index 064b7a9..44407df 100644
+index 6ac7f42..01e4f45 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
 @@ -43,6 +43,7 @@ public abstract class Entity implements ICommandListener {
@@ -32,5 +32,5 @@ index 064b7a9..44407df 100644
          this.justCreated = true;
          this.uniqueID = MathHelper.a(this.random);
 -- 
-2.8.3.windows.1
+2.9.0.windows.1
 

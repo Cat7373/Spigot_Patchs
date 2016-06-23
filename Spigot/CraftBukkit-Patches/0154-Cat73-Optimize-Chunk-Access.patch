@@ -1,4 +1,4 @@
-From 821d6007b46b47930ea83aeb9c4770af887c3bf1 Mon Sep 17 00:00:00 2001
+From b2f1e1d5730ba6532d62b356f8ea67225b3cda7f Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
 Date: Tue, 12 Apr 2016 16:18:14 +0800
 Subject: [PATCH] Cat73 -> Optimize Chunk Access
@@ -9,31 +9,11 @@ Content-Transfer-Encoding: 8bit
 getChunkAt 是一个热点方法，很多时候会在短时间内连续多次获取同一个区块，这里将最后一次被获取的区块缓存。
 Link：https://github.com/PaperMC/Paper/blob/c8643cef2eb0fe2c315b950728441791a397b0c0/Spigot-Server-Patches/0098-Optimize-Chunk-Access.patch
 
-diff --git a/src/main/java/net/minecraft/server/Chunk.java b/src/main/java/net/minecraft/server/Chunk.java
-index db6e1c5..20b7ee0 100644
---- a/src/main/java/net/minecraft/server/Chunk.java
-+++ b/src/main/java/net/minecraft/server/Chunk.java
-@@ -28,6 +28,7 @@ public class Chunk {
-     private boolean j;
-     public final World world;
-     public final int[] heightMap;
-+    public final long chunkKey; // Paper
-     public final int locX;
-     public final int locZ;
-     private boolean m;
-@@ -86,6 +87,7 @@ public class Chunk {
-         this.world = world;
-         this.locX = i;
-         this.locZ = j;
-+        this.chunkKey = org.bukkit.craftbukkit.util.LongHash.toLong(this.locX, this.locZ); // Paper
-         this.heightMap = new int[256];
- 
-         for (int k = 0; k < this.entitySlices.length; ++k) {
 diff --git a/src/main/java/net/minecraft/server/ChunkProviderServer.java b/src/main/java/net/minecraft/server/ChunkProviderServer.java
-index fe50511..ec6c40a 100644
+index 2ee5c92..9423c14 100644
 --- a/src/main/java/net/minecraft/server/ChunkProviderServer.java
 +++ b/src/main/java/net/minecraft/server/ChunkProviderServer.java
-@@ -26,7 +26,27 @@ public class ChunkProviderServer implements IChunkProvider {
+@@ -25,7 +25,27 @@ public class ChunkProviderServer implements IChunkProvider {
      public final Set<Long> unloadQueue = Sets.newHashSet();
      public final ChunkGenerator chunkGenerator;
      private final IChunkLoader chunkLoader;
@@ -63,5 +43,5 @@ index fe50511..ec6c40a 100644
  
      public ChunkProviderServer(WorldServer worldserver, IChunkLoader ichunkloader, ChunkGenerator chunkgenerator) {
 -- 
-2.8.3.windows.1
+2.9.0.windows.1
 

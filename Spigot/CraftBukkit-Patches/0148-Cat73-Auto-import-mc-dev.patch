@@ -1,4 +1,4 @@
-From a6378fe418c837b89d54ce20f33ba89b1a3b6123 Mon Sep 17 00:00:00 2001
+From 254710e318e3d6e47f7ef6e5e9fe0ff4f1881ceb Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
 Date: Mon, 13 Jun 2016 20:02:15 +0800
 Subject: [PATCH] Cat73 -> Auto import mc-dev
@@ -247,5 +247,5 @@ index 0000000..d5f0d61
 +    }
 +}
 -- 
-2.8.3.windows.1
+2.9.0.windows.1
 

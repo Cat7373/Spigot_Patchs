@@ -1,0 +1,53 @@
+From 0fdc60a09f06d4d09afd1be183441cbc6c676373 Mon Sep 17 00:00:00 2001
+From: Cat73 <1901803382@qq.com>
+Date: Thu, 23 Jun 2016 12:42:34 +0800
+Subject: [PATCH] Cat73 -> Do-not-mark-chunks-as-active-for-neighbor-updates
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+不要在更新临近区块的时候加载区块
+Link: https://github.com/PaperMC/Paper/blob/0973e46de1d6dfba2bc6df1c49f973205e408911/Spigot-Server-Patches/0148-Do-not-mark-chunks-as-active-for-neighbor-updates.patch
+
+diff --git a/src/main/java/net/minecraft/server/Chunk.java b/src/main/java/net/minecraft/server/Chunk.java
+index e787225..a940963 100644
+--- a/src/main/java/net/minecraft/server/Chunk.java
++++ b/src/main/java/net/minecraft/server/Chunk.java
+@@ -933,25 +933,26 @@ public class Chunk {
+         }
+         // CraftBukkit end
+ 
+-        Chunk chunk = ichunkprovider.getLoadedChunkAt(this.locX, this.locZ - 1);
+-        Chunk chunk1 = ichunkprovider.getLoadedChunkAt(this.locX + 1, this.locZ);
+-        Chunk chunk2 = ichunkprovider.getLoadedChunkAt(this.locX, this.locZ + 1);
+-        Chunk chunk3 = ichunkprovider.getLoadedChunkAt(this.locX - 1, this.locZ);
++        final ChunkProviderServer chunkprovider = (ChunkProviderServer) ichunkprovider;
++        Chunk chunk = chunkprovider.getChunkIfLoaded(this.locX, this.locZ - 1);
++        Chunk chunk1 = chunkprovider.getChunkIfLoaded(this.locX + 1, this.locZ);
++        Chunk chunk2 = chunkprovider.getChunkIfLoaded(this.locX, this.locZ + 1);
++        Chunk chunk3 = chunkprovider.getChunkIfLoaded(this.locX - 1, this.locZ);
+ 
+-        if (chunk1 != null && chunk2 != null && ichunkprovider.getLoadedChunkAt(this.locX + 1, this.locZ + 1) != null) {
++        if (chunk1 != null && chunk2 != null && chunkprovider.getChunkIfLoaded(this.locX + 1, this.locZ + 1) != null) {
+             this.a(chunkgenerator);
+         }
+ 
+-        if (chunk3 != null && chunk2 != null && ichunkprovider.getLoadedChunkAt(this.locX - 1, this.locZ + 1) != null) {
++        if (chunk3 != null && chunk2 != null && chunkprovider.getChunkIfLoaded(this.locX - 1, this.locZ + 1) != null) {
+             chunk3.a(chunkgenerator);
+         }
+ 
+-        if (chunk != null && chunk1 != null && ichunkprovider.getLoadedChunkAt(this.locX + 1, this.locZ - 1) != null) {
++        if (chunk != null && chunk1 != null && chunkprovider.getChunkIfLoaded(this.locX + 1, this.locZ - 1) != null) {
+             chunk.a(chunkgenerator);
+         }
+ 
+         if (chunk != null && chunk3 != null) {
+-            Chunk chunk4 = ichunkprovider.getLoadedChunkAt(this.locX - 1, this.locZ - 1);
++            Chunk chunk4 = chunkprovider.getChunkIfLoaded(this.locX - 1, this.locZ - 1);
+ 
+             if (chunk4 != null) {
+                 chunk4.a(chunkgenerator);
+-- 
+2.9.0.windows.1
+

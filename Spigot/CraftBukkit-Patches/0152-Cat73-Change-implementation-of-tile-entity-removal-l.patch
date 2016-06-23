@@ -1,4 +1,4 @@
-From 7edb939a71461d6b53704a3adc12366f9af5918a Mon Sep 17 00:00:00 2001
+From 0f8d1d89f09cf2ede6945ed77cf5993cec8d25bc Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
 Date: Tue, 12 Apr 2016 14:08:12 +0800
 Subject: [PATCH] Cat73 -> Change implementation of (tile)entity removal list
@@ -10,7 +10,7 @@ Content-Transfer-Encoding: 8bit
 Link：https://github.com/PaperMC/Paper/blob/c8643cef2eb0fe2c315b950728441791a397b0c0/Spigot-Server-Patches/0067-Change-implementation-of-tile-entity-removal-list.patch
 
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index 44407df..b9b56d9 100644
+index 01e4f45..3e3f5d1 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
 @@ -119,10 +119,10 @@ public abstract class Entity implements ICommandListener {
@@ -29,7 +29,7 @@ index 44407df..b9b56d9 100644
      public boolean impulse;
      public int portalCooldown;
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index b5b0fd7..4bb2963 100644
+index f5ab0e8..b39f92e 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
 @@ -29,6 +29,11 @@ import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
@@ -89,5 +89,5 @@ index b5b0fd7..4bb2963 100644
          this.f.clear();
          this.l();
 -- 
-2.8.3.windows.1
+2.9.0.windows.1
 
