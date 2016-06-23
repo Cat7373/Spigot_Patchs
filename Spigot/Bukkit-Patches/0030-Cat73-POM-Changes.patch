@@ -1,0 +1,77 @@
+From 6e99464c45757e2330d6620f7ac53cc54c0f7f76 Mon Sep 17 00:00:00 2001
+From: Cat73 <1901803382@qq.com>
+Date: Sun, 19 Jun 2016 11:15:47 +0800
+Subject: [PATCH] Cat73 -> POM-Changes
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+用 Java8 编译
+
+diff --git a/pom.xml b/pom.xml
+index 0f5b26c..01e6228 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -19,8 +19,9 @@
+     <description>An enhanced plugin API for Minecraft servers.</description>
+ 
+     <properties>
+-        <maven.compiler.source>1.6</maven.compiler.source>
+-        <maven.compiler.target>1.6</maven.compiler.target>
++        <additionalparam>-Xdoclint:none</additionalparam>
++        <maven.compiler.source>1.8</maven.compiler.source>
++        <maven.compiler.target>1.8</maven.compiler.target>
+         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+     </properties>
+ 
+@@ -107,46 +108,13 @@
+     </dependencies>
+ 
+     <build>
++        <defaultGoal>clean install</defaultGoal>
+         <plugins>
+             <plugin>
+                 <groupId>org.apache.maven.plugins</groupId>
+                 <artifactId>maven-compiler-plugin</artifactId>
+                 <!-- versions after this appear to be broken -->
+                 <version>3.1</version>
+-                <configuration>
+-                    <!-- we use the Eclipse compiler as it doesn't need a JDK -->
+-                    <compilerId>eclipse</compilerId>
+-                    <!-- source and target are ignored if this isn't true -->
+-                    <optimize>true</optimize>
+-                </configuration>
+-                <dependencies>
+-                    <!-- we need our custom version as it fixes some bugs on case sensitive file systems -->
+-                    <dependency>
+-                        <groupId>org.codehaus.plexus</groupId>
+-                        <artifactId>plexus-compiler-eclipse</artifactId>
+-                        <version>2.5.0-spigotmc</version>
+-                    </dependency>
+-                </dependencies>
+-            </plugin>
+-            <plugin>
+-                <groupId>org.codehaus.mojo</groupId>
+-                <artifactId>animal-sniffer-maven-plugin</artifactId>
+-                <version>1.14</version>
+-                <executions>
+-                    <execution>
+-                        <phase>process-classes</phase>
+-                        <goals>
+-                            <goal>check</goal>
+-                        </goals>
+-                    </execution>
+-                </executions>
+-                <configuration>
+-                    <signature>
+-                        <groupId>org.codehaus.mojo.signature</groupId>
+-                        <artifactId>java16</artifactId>
+-                        <version>1.1</version>
+-                    </signature>
+-                </configuration>
+             </plugin>
+             <plugin>
+                 <groupId>org.apache.maven.plugins</groupId>
+-- 
+2.9.0.windows.1
+

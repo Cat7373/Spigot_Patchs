@@ -18,9 +18,9 @@ function import {
 }
 
 # imports
+import ChunkCache
 import DataBits
 import TileEntityEnderChest
-import ChunkCache
 
 # Éú³É diff
 cd $workdir
