@@ -4,7 +4,7 @@
 basedir="$(cd "$1" && pwd -P)"
 
 # nms 文件目录
-nmsdir="$basedir/work/decompile-ccff07d8/net/minecraft/server"
+nmsdir="$basedir/work/decompile-1ae486b6/net/minecraft/server"
 # 工作目录
 workdir="$basedir/Spigot/Spigot-Server"
 

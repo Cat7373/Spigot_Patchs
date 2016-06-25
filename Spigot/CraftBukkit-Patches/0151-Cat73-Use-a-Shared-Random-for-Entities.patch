@@ -1,4 +1,4 @@
-From 47ba28042c3d4153d70ea1783187cb4f64ab431b Mon Sep 17 00:00:00 2001
+From ef959c9703ab1ab9bd043daba017b88c4d0a06f6 Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
 Date: Tue, 12 Apr 2016 14:02:53 +0800
 Subject: [PATCH] Cat73 -> Use a Shared Random for Entities

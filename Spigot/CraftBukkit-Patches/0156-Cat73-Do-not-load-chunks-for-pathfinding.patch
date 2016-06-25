@@ -1,4 +1,4 @@
-From dd21baf2ad96fa444e3f6491f94c0fe4bb7dd0d2 Mon Sep 17 00:00:00 2001
+From 95686e9058f72f6af2648efa2776c243c0df981f Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
 Date: Sat, 21 May 2016 19:34:11 +0800
 Subject: [PATCH] Cat73 -> Do not load chunks for pathfinding
@@ -10,7 +10,7 @@ Content-Transfer-Encoding: 8bit
 Link: https://github.com/PaperMC/Paper/blob/c8643cef2eb0fe2c315b950728441791a397b0c0/Spigot-Server-Patches/0146-Do-not-load-chunks-for-pathfinding.patch
 
 diff --git a/src/main/java/net/minecraft/server/ChunkCache.java b/src/main/java/net/minecraft/server/ChunkCache.java
-index a8fd64c..11c11cf 100644
+index 08b986f..786d1dd 100644
 --- a/src/main/java/net/minecraft/server/ChunkCache.java
 +++ b/src/main/java/net/minecraft/server/ChunkCache.java
 @@ -25,7 +25,7 @@ public class ChunkCache implements IBlockAccess {

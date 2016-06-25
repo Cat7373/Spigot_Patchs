@@ -1,15 +1,15 @@
-From 254710e318e3d6e47f7ef6e5e9fe0ff4f1881ceb Mon Sep 17 00:00:00 2001
+From d398f76fa3036981b1bc679e54b9762939310208 Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
-Date: Mon, 13 Jun 2016 20:02:15 +0800
+Date: Sat, 25 Jun 2016 11:57:27 +0800
 Subject: [PATCH] Cat73 -> Auto import mc-dev
 
 
 diff --git a/src/main/java/net/minecraft/server/ChunkCache.java b/src/main/java/net/minecraft/server/ChunkCache.java
 new file mode 100644
-index 0000000..a8fd64c
+index 0000000..08b986f
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/ChunkCache.java
-@@ -0,0 +1,76 @@
+@@ -0,0 +1,81 @@
 +package net.minecraft.server;
 +
 +import javax.annotation.Nullable;
@@ -55,10 +55,15 @@ index 0000000..a8fd64c
 +
 +    @Nullable
 +    public TileEntity getTileEntity(BlockPosition blockposition) {
++        return this.a(blockposition, Chunk.EnumTileEntityState.IMMEDIATE);
++    }
++
++    @Nullable
++    public TileEntity a(BlockPosition blockposition, Chunk.EnumTileEntityState chunk_enumtileentitystate) {
 +        int i = (blockposition.getX() >> 4) - this.a;
 +        int j = (blockposition.getZ() >> 4) - this.b;
 +
-+        return this.c[i][j].a(blockposition, Chunk.EnumTileEntityState.IMMEDIATE);
++        return this.c[i][j].a(blockposition, chunk_enumtileentitystate);
 +    }
 +
 +    public IBlockData getType(BlockPosition blockposition) {

@@ -1,4 +1,4 @@
-From 01f861e25e88afb11085392bc4cbe1637117cb72 Mon Sep 17 00:00:00 2001
+From 96ce79eab5f2488539ae40f3fe10b186e70ff4ec Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
 Date: Thu, 23 Jun 2016 13:25:55 +0800
 Subject: [PATCH] Cat73 -> Use-Optimized-Collections
@@ -23,18 +23,18 @@ index 9423c14..cf522ed 100644
      private final IChunkLoader chunkLoader;
      // Paper start
 diff --git a/src/main/java/net/minecraft/server/DataWatcher.java b/src/main/java/net/minecraft/server/DataWatcher.java
-index ec77a5c..8c67015 100644
+index 47968a8..415e19f 100644
 --- a/src/main/java/net/minecraft/server/DataWatcher.java
 +++ b/src/main/java/net/minecraft/server/DataWatcher.java
-@@ -18,7 +18,7 @@ public class DataWatcher {
- 
-     private static final Map<Class<? extends Entity>, Integer> a = Maps.newHashMap();
-     private final Entity b;
--    private final Map<Integer, DataWatcher.Item<?>> c = Maps.newHashMap();
-+    private final Map<Integer, DataWatcher.Item<?>> c = new it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap<DataWatcher.Item<?>>(); // Paper
-     private final ReadWriteLock d = new ReentrantReadWriteLock();
-     private boolean e = true;
-     private boolean f;
+@@ -21,7 +21,7 @@ public class DataWatcher {
+     private static final Logger a = LogManager.getLogger();
+     private static final Map<Class<? extends Entity>, Integer> b = Maps.newHashMap();
+     private final Entity c;
+-    private final Map<Integer, DataWatcher.Item<?>> d = Maps.newHashMap();
++    private final Map<Integer, DataWatcher.Item<?>> d = new it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap<DataWatcher.Item<?>>(); // Paper
+     private final ReadWriteLock e = new ReentrantReadWriteLock();
+     private boolean f = true;
+     private boolean g;
 -- 
 2.9.0.windows.1
 

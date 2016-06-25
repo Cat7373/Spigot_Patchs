@@ -1,4 +1,4 @@
-From 0f8d1d89f09cf2ede6945ed77cf5993cec8d25bc Mon Sep 17 00:00:00 2001
+From 78064546a1ec369f62bf54b586f32050e637eaac Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
 Date: Tue, 12 Apr 2016 14:08:12 +0800
 Subject: [PATCH] Cat73 -> Change implementation of (tile)entity removal list
@@ -29,7 +29,7 @@ index 01e4f45..3e3f5d1 100644
      public boolean impulse;
      public int portalCooldown;
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index f5ab0e8..b39f92e 100644
+index fcd90be..76c1e30 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
 @@ -29,6 +29,11 @@ import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
