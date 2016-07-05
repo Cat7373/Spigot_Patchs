@@ -1,0 +1,149 @@
+From cf65f1c129ce8121c6e9c216da3dad88e7b45938 Mon Sep 17 00:00:00 2001
+From: Cat73 <1901803382@qq.com>
+Date: Tue, 5 Jul 2016 19:56:45 +0800
+Subject: [PATCH] Cat73 -> allow online login
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+[实验版] 允许正版玩家跳过登陆插件的登陆
+
+diff --git a/src/main/java/net/minecraft/server/LoginListener.java b/src/main/java/net/minecraft/server/LoginListener.java
+index 1425a48..f56cc1a 100644
+--- a/src/main/java/net/minecraft/server/LoginListener.java
++++ b/src/main/java/net/minecraft/server/LoginListener.java
+@@ -18,12 +18,14 @@ import javax.crypto.SecretKey;
+ import org.apache.commons.lang3.Validate;
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+-
++import org.bukkit.Bukkit;
+ // CraftBukkit start
+ import org.bukkit.craftbukkit.util.Waitable;
+ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+ import org.bukkit.event.player.PlayerPreLoginEvent;
+ // CraftBukkit end
++import org.xjcraft.event.login.OnlinePlayerLoginSuccessEvent;
++import org.xjcraft.event.login.PlayerLoginStartEvent;
+ 
+ public class LoginListener implements PacketLoginInListener, ITickable {
+ 
+@@ -40,7 +42,8 @@ public class LoginListener implements PacketLoginInListener, ITickable {
+     private SecretKey loginKey;
+     private EntityPlayer l;
+     public String hostname = ""; // CraftBukkit - add field
+-
++    private boolean isOnlinePlayer;
++    
+     public LoginListener(MinecraftServer minecraftserver, NetworkManager networkmanager) {
+         this.g = LoginListener.EnumProtocolState.HELLO;
+         this.j = "";
+@@ -134,6 +137,9 @@ public class LoginListener implements PacketLoginInListener, ITickable {
+                 }, new GenericFutureListener[0]);
+             }
+ 
++            if(this.isOnlinePlayer) {
++                Bukkit.getPluginManager().callEvent(new OnlinePlayerLoginSuccessEvent(this.i.getName()));
++            }
+             this.networkManager.sendPacket(new PacketLoginOutSuccess(this.i));
+             EntityPlayer entityplayer = this.server.getPlayerList().a(this.i.getId());
+ 
+@@ -158,7 +164,10 @@ public class LoginListener implements PacketLoginInListener, ITickable {
+     public void a(PacketLoginInStart packetlogininstart) {
+         Validate.validState(this.g == LoginListener.EnumProtocolState.HELLO, "Unexpected hello packet", new Object[0]);
+         this.i = packetlogininstart.a();
+-        if (this.server.getOnlineMode() && !this.networkManager.isLocal()) {
++        PlayerLoginStartEvent event = new PlayerLoginStartEvent(this.i.getName());
++        Bukkit.getPluginManager().callEvent(event);
++        this.isOnlinePlayer = event.isOnlinePlayer();
++        if (this.isOnlinePlayer && !this.networkManager.isLocal()) {
+             this.g = LoginListener.EnumProtocolState.KEY;
+             this.networkManager.sendPacket(new PacketLoginOutEncryptionBegin("", this.server.O().getPublic(), this.e));
+         } else {
+diff --git a/src/main/java/org/xjcraft/event/login/OnlinePlayerLoginSuccessEvent.java b/src/main/java/org/xjcraft/event/login/OnlinePlayerLoginSuccessEvent.java
+new file mode 100644
+index 0000000..ba55a7e
+--- /dev/null
++++ b/src/main/java/org/xjcraft/event/login/OnlinePlayerLoginSuccessEvent.java
+@@ -0,0 +1,30 @@
++package org.xjcraft.event.login;
++
++import org.bukkit.event.Event;
++import org.bukkit.event.HandlerList;
++
++public class OnlinePlayerLoginSuccessEvent extends Event {
++    private static final HandlerList HANDLERS = new HandlerList();
++    
++    private final String playerName;
++    
++    /**
++     * @param playerName 玩家名
++     */
++    public OnlinePlayerLoginSuccessEvent(String playerName) {
++        this.playerName = playerName;
++    }
++    
++    public String getPlayerName() {
++        return this.playerName;
++    }
++    
++    @Override
++    public HandlerList getHandlers() {
++        return HANDLERS;
++    }
++
++    public static HandlerList getHandlerList() {
++        return HANDLERS;
++    }
++}
+diff --git a/src/main/java/org/xjcraft/event/login/PlayerLoginStartEvent.java b/src/main/java/org/xjcraft/event/login/PlayerLoginStartEvent.java
+new file mode 100644
+index 0000000..c7a8cef
+--- /dev/null
++++ b/src/main/java/org/xjcraft/event/login/PlayerLoginStartEvent.java
+@@ -0,0 +1,42 @@
++package org.xjcraft.event.login;
++
++import org.bukkit.event.Event;
++import org.bukkit.event.HandlerList;
++
++/**
++ * 玩家登陆事件
++ */
++public class PlayerLoginStartEvent extends Event {
++    private static final HandlerList HANDLERS = new HandlerList();
++    
++    private final String playerName;
++    private boolean isOnlinePlayer = false;
++    
++    /**
++     * @param playerName 玩家名
++     */
++    public PlayerLoginStartEvent(String playerName) {
++        this.playerName = playerName;
++    }
++    
++    public String getPlayerName() {
++        return this.playerName;
++    }
++    
++    public boolean isOnlinePlayer() {
++        return this.isOnlinePlayer;
++    }
++    
++    public void setOnlinePlayer(boolean isOnlinePlayer) {
++        this.isOnlinePlayer = isOnlinePlayer;
++    }
++    
++    @Override
++    public HandlerList getHandlers() {
++        return HANDLERS;
++    }
++    
++    public static HandlerList getHandlerList() {
++        return HANDLERS;
++    }
++}
+-- 
+2.9.0.windows.1
+
