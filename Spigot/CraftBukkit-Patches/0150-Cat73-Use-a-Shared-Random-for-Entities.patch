@@ -1,4 +1,4 @@
-From ef959c9703ab1ab9bd043daba017b88c4d0a06f6 Mon Sep 17 00:00:00 2001
+From 7fdad5f85ec734cc082f7d2908b81bd13e148972 Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
 Date: Tue, 12 Apr 2016 14:02:53 +0800
 Subject: [PATCH] Cat73 -> Use a Shared Random for Entities
@@ -11,10 +11,10 @@ Content-Transfer-Encoding: 8bit
 Link：https://github.com/PaperMC/Paper/blob/c8643cef2eb0fe2c315b950728441791a397b0c0/Spigot-Server-Patches/0096-Use-a-Shared-Random-for-Entities.patch
 
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index 6ac7f42..01e4f45 100644
+index bb9e6b9..62c665a 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
-@@ -43,6 +43,7 @@ public abstract class Entity implements ICommandListener {
+@@ -44,6 +44,7 @@ public abstract class Entity implements ICommandListener {
  
      // CraftBukkit start
      private static final int CURRENT_LEVEL = 2;
@@ -22,7 +22,7 @@ index 6ac7f42..01e4f45 100644
      static boolean isLevelAtLeast(NBTTagCompound tag, int level) {
          return tag.hasKey("Bukkit.updateLevel") && tag.getInt("Bukkit.updateLevel") >= level;
      }
-@@ -159,7 +160,7 @@ public abstract class Entity implements ICommandListener {
+@@ -160,7 +161,7 @@ public abstract class Entity implements ICommandListener {
          this.width = 0.6F;
          this.length = 1.8F;
          this.ax = 1;

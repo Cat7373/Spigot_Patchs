@@ -1,4 +1,4 @@
-From 95686e9058f72f6af2648efa2776c243c0df981f Mon Sep 17 00:00:00 2001
+From 0867622b4f74b3ac9585dc756e2b66c98dfed86a Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
 Date: Sat, 21 May 2016 19:34:11 +0800
 Subject: [PATCH] Cat73 -> Do not load chunks for pathfinding

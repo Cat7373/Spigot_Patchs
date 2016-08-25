@@ -1,4 +1,4 @@
-From 96ce79eab5f2488539ae40f3fe10b186e70ff4ec Mon Sep 17 00:00:00 2001
+From 46b76a1e4d89c793e101158f6d2ecb07cf1bed26 Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
 Date: Thu, 23 Jun 2016 13:25:55 +0800
 Subject: [PATCH] Cat73 -> Use-Optimized-Collections
@@ -10,7 +10,7 @@ Content-Transfer-Encoding: 8bit
 Link: https://github.com/PaperMC/Paper/blob/0973e46de1d6dfba2bc6df1c49f973205e408911/Spigot-Server-Patches/0114-Use-Optimized-Collections.patch#L6
 
 diff --git a/src/main/java/net/minecraft/server/ChunkProviderServer.java b/src/main/java/net/minecraft/server/ChunkProviderServer.java
-index 9423c14..cf522ed 100644
+index 9a57c5c..58a4dfd 100644
 --- a/src/main/java/net/minecraft/server/ChunkProviderServer.java
 +++ b/src/main/java/net/minecraft/server/ChunkProviderServer.java
 @@ -22,7 +22,7 @@ import org.bukkit.event.world.ChunkUnloadEvent;
