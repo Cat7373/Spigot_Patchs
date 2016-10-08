@@ -1,4 +1,4 @@
-From 1e4ca33ef342e242acd91c10609e79469c60c119 Mon Sep 17 00:00:00 2001
+From 91467f533c28e6808d66b78b118b27ef68f85cca Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
 Date: Tue, 12 Apr 2016 13:59:39 +0800
 Subject: [PATCH] Cat73 -> Bump thread count for chunk loading
@@ -23,5 +23,5 @@ index e4fd9bc..50409c3 100644
  
      private static final AsynchronousExecutor<QueuedChunk, Chunk, Runnable, RuntimeException> instance = new AsynchronousExecutor<QueuedChunk, Chunk, Runnable, RuntimeException>(new ChunkIOProvider(), BASE_THREADS);
 -- 
-2.9.0.windows.1
+2.10.0.windows.1
 

@@ -1,4 +1,4 @@
-From 1400c57d62fb40c13889550a697394c29787e4ba Mon Sep 17 00:00:00 2001
+From b023a8f03c87a61b4b68fdb7c8831d3acf8e4c91 Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
 Date: Tue, 12 Apr 2016 14:08:12 +0800
 Subject: [PATCH] Cat73 -> Change implementation of (tile)entity removal list
@@ -10,7 +10,7 @@ Content-Transfer-Encoding: 8bit
 Link：https://github.com/PaperMC/Paper/blob/c8643cef2eb0fe2c315b950728441791a397b0c0/Spigot-Server-Patches/0067-Change-implementation-of-tile-entity-removal-list.patch
 
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index 62c665a..a9719ef 100644
+index 5027f2c..4c6339c 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
 @@ -120,10 +120,10 @@ public abstract class Entity implements ICommandListener {
@@ -89,5 +89,5 @@ index fcd90be..76c1e30 100644
          this.f.clear();
          this.l();
 -- 
-2.9.0.windows.1
+2.10.0.windows.1
 

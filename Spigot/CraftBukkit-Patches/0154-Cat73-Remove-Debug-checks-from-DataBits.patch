@@ -1,4 +1,4 @@
-From bfa487df63f96a46e6156ec5236d00f6ba8aca3a Mon Sep 17 00:00:00 2001
+From acebcca69f78291f55661deb6141ad9736bad822 Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
 Date: Tue, 12 Apr 2016 16:31:40 +0800
 Subject: [PATCH] Cat73 -> Remove Debug checks from DataBits
@@ -44,5 +44,5 @@ index f3a6799..5d01490 100644
          int k = j / 64;
          int l = ((i + 1) * this.b - 1) / 64;
 -- 
-2.9.0.windows.1
+2.10.0.windows.1
 
