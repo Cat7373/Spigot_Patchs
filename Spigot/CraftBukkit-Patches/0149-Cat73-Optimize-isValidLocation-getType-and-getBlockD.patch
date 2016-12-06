@@ -1,0 +1,67 @@
+From 4fa45809d17b9be803020583c5bda1329334f909 Mon Sep 17 00:00:00 2001
+From: Cat73 <1901803382@qq.com>
+Date: Tue, 6 Dec 2016 14:28:53 +0800
+Subject: [PATCH] Cat73 -> Optimize isValidLocation, getType and getBlockData
+ for inling
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+热点方法。
+优化前会判断世界是否为演示世界，以及通过 try catch 来实现在出现异常的时候崩溃报告里能多点信息。
+这份优化把这些全部去掉了。
+顺便优化了下内联。
+Link: https://github.com/PaperMC/Paper/blob/ebf1094ea5dea6f3c8ad0ed5a1344089cb7ecfc7/Spigot-Server-Patches/0092-Optimize-isValidLocation-getType-and-getBlockData-fo.patch
+
+diff --git a/src/main/java/net/minecraft/server/Chunk.java b/src/main/java/net/minecraft/server/Chunk.java
+index b0aba608..2e5a644a 100644
+--- a/src/main/java/net/minecraft/server/Chunk.java
++++ b/src/main/java/net/minecraft/server/Chunk.java
+@@ -389,11 +389,29 @@ public class Chunk {
+         return this.a(i, j, k).c();
+     }
+ 
+-    public IBlockData getBlockData(BlockPosition blockposition) {
+-        return this.a(blockposition.getX(), blockposition.getY(), blockposition.getZ());
++    // Paper start - Optimize getBlockData to reduce instructions
++    public final IBlockData getBlockData(final BlockPosition pos) {
++        return getBlockData(pos.getX(), pos.getY(), pos.getZ());
++    }
++
++    public final IBlockData getBlockData(final int x, final int y, final int z) {
++        // Method body / logic copied from below
++        final int i = y >> 4;
++
++        if (y >= 0 && i < this.sections.length && this.sections[i] != null) {
++            // Inlined ChunkSection.getType() and DataPaletteBlock.a(int,int,int)
++            return this.sections[i].blockIds.a((y & 15) << 8 | (z & 15) << 4 | x & 15);
++        }
++
++        return Blocks.AIR.getBlockData();
+     }
+ 
+     public IBlockData a(final int i, final int j, final int k) {
++        return getBlockData(i, j, k);
++    }
++
++    public IBlockData unused(final int i, final int j, final int k) {
++        // Paper end
+         if (this.world.L() == WorldType.DEBUG_ALL_BLOCK_STATES) {
+             IBlockData iblockdata = null;
+ 
+diff --git a/src/main/java/net/minecraft/server/ChunkSection.java b/src/main/java/net/minecraft/server/ChunkSection.java
+index 3d784d0d..dcb2d0a7 100644
+--- a/src/main/java/net/minecraft/server/ChunkSection.java
++++ b/src/main/java/net/minecraft/server/ChunkSection.java
+@@ -5,7 +5,7 @@ public class ChunkSection {
+     private final int yPos;
+     private int nonEmptyBlockCount;
+     private int tickingBlockCount;
+-    private final DataPaletteBlock blockIds;
++    final DataPaletteBlock blockIds;
+     private NibbleArray emittedLight;
+     private NibbleArray skyLight;
+ 
+-- 
+2.11.0.windows.1
+

@@ -3,8 +3,8 @@
 # 当前目录
 basedir="$(cd "$1" && pwd -P)"
 
-# nms 文件目录
-nmsdir="$basedir/work/decompile-1ae486b6/net/minecraft/server"
+# nms 文件目录 # TODO 自动找目标目录，省的每个版本都要手动改
+nmsdir="$basedir/work/decompile-f23dd046/net/minecraft/server"
 # 工作目录
 workdir="$basedir/Spigot/Spigot-Server"
 

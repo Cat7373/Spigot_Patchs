@@ -1,26 +1,26 @@
-From c8e30a5f81e3be97632cbe946936b38f7602737c Mon Sep 17 00:00:00 2001
+From a32621082b1f6eadf8888557124688775618605c Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
-Date: Tue, 12 Apr 2016 16:18:14 +0800
+Date: Tue, 6 Dec 2016 13:57:15 +0800
 Subject: [PATCH] Cat73 -> Optimize Chunk Access
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 getChunkAt 是一个热点方法，很多时候会在短时间内连续多次获取同一个区块，这里将最后一次被获取的区块缓存。
-Link：https://github.com/PaperMC/Paper/blob/c8643cef2eb0fe2c315b950728441791a397b0c0/Spigot-Server-Patches/0098-Optimize-Chunk-Access.patch
+Link: https://github.com/PaperMC/Paper/blob/ebf1094ea5dea6f3c8ad0ed5a1344089cb7ecfc7/Spigot-Server-Patches/0090-Optimize-Chunk-Access.patch
 
 diff --git a/src/main/java/net/minecraft/server/ChunkProviderServer.java b/src/main/java/net/minecraft/server/ChunkProviderServer.java
-index 5682f03..9a57c5c 100644
+index b39937f3..ac64232b 100644
 --- a/src/main/java/net/minecraft/server/ChunkProviderServer.java
 +++ b/src/main/java/net/minecraft/server/ChunkProviderServer.java
-@@ -25,7 +25,27 @@ public class ChunkProviderServer implements IChunkProvider {
+@@ -26,7 +26,27 @@ public class ChunkProviderServer implements IChunkProvider {
      public final Set<Long> unloadQueue = Sets.newHashSet();
      public final ChunkGenerator chunkGenerator;
      private final IChunkLoader chunkLoader;
 -    public final Long2ObjectMap<Chunk> chunks = new Long2ObjectOpenHashMap(8192);
 +    // Paper start
-+    protected Chunk lastChunkByPos = null;
 +    public Long2ObjectOpenHashMap<Chunk> chunks = new Long2ObjectOpenHashMap<Chunk>(8192) {
++        Chunk lastChunkByPos;
 +
 +        @Override
 +        public Chunk get(long key) {
@@ -43,5 +43,5 @@ index 5682f03..9a57c5c 100644
  
      public ChunkProviderServer(WorldServer worldserver, IChunkLoader ichunkloader, ChunkGenerator chunkgenerator) {
 -- 
-2.10.0.windows.1
+2.11.0.windows.1
 

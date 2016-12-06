@@ -1,16 +1,16 @@
-From 91467f533c28e6808d66b78b118b27ef68f85cca Mon Sep 17 00:00:00 2001
+From 97b2b3678813c510d9f6de4fcf612c9188f204ad Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
-Date: Tue, 12 Apr 2016 13:59:39 +0800
+Date: Tue, 6 Dec 2016 11:24:13 +0800
 Subject: [PATCH] Cat73 -> Bump thread count for chunk loading
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-增加一个 Chunk IO 线程，加快一些异步 IO 的处理速度。
-Link：https://github.com/PaperMC/Paper/blob/c8643cef2eb0fe2c315b950728441791a397b0c0/Spigot-Server-Patches/0051-Configurable-Chunk-IO-Thread-Base-Count.patch
+将最小 ChunkIO 线程从 1 改为 2
+Link: https://github.com/PaperMC/Paper/blob/ebf1094ea5dea6f3c8ad0ed5a1344089cb7ecfc7/Spigot-Server-Patches/0047-Configurable-Chunk-IO-Thread-Base-Count.patch
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/chunkio/ChunkIOExecutor.java b/src/main/java/org/bukkit/craftbukkit/chunkio/ChunkIOExecutor.java
-index e4fd9bc..50409c3 100644
+index e4fd9bc6..50409c3f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/chunkio/ChunkIOExecutor.java
 +++ b/src/main/java/org/bukkit/craftbukkit/chunkio/ChunkIOExecutor.java
 @@ -7,7 +7,7 @@ import net.minecraft.server.World;
@@ -23,5 +23,5 @@ index e4fd9bc..50409c3 100644
  
      private static final AsynchronousExecutor<QueuedChunk, Chunk, Runnable, RuntimeException> instance = new AsynchronousExecutor<QueuedChunk, Chunk, Runnable, RuntimeException>(new ChunkIOProvider(), BASE_THREADS);
 -- 
-2.10.0.windows.1
+2.11.0.windows.1
 

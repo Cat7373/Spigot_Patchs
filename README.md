@@ -1,6 +1,6 @@
 # 如何制作一个 Patch
-1. 首先构建一次 Spigot。
-2. 然后在 Spigot/Spigot-Server/src/main/java/ 里查找有没有目标文件。
+1. 首先构建一次`Spigot`。
+2. 然后在`Spigot/Spigot-Server/src/main/java/`里查找有没有目标文件。
   * 如果没有
     * `NMS`的文件：你需要将文件添加到`import_mc_dev.sh`中。
       然后清理库到`Spigot`原始的状态后执行一次重新生成`NMS`导入的`Patch`。

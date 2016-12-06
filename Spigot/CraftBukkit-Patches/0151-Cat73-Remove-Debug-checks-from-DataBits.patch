@@ -1,6 +1,6 @@
-From acebcca69f78291f55661deb6141ad9736bad822 Mon Sep 17 00:00:00 2001
+From 77377d46fc974f83c149809301e40c5e60cb1cfc Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
-Date: Tue, 12 Apr 2016 16:31:40 +0800
+Date: Tue, 6 Dec 2016 15:08:41 +0800
 Subject: [PATCH] Cat73 -> Remove Debug checks from DataBits
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -8,10 +8,10 @@ Content-Transfer-Encoding: 8bit
 
 getType 是一个热点方法，去掉里面的边界检查能将降低 90% 以上的执行时间。
 这个边界检查会在超出边界时直接抛异常导致服务器崩溃，因此应该可以安全的移除。
-Link：https://github.com/PaperMC/Paper/blob/c8643cef2eb0fe2c315b950728441791a397b0c0/Spigot-Server-Patches/0123-Remove-Debug-checks-from-DataBits.patch
+Link: https://github.com/PaperMC/Paper/blob/ebf1094ea5dea6f3c8ad0ed5a1344089cb7ecfc7/Spigot-Server-Patches/0114-Remove-Debug-checks-from-DataBits.patch
 
 diff --git a/src/main/java/net/minecraft/server/DataBits.java b/src/main/java/net/minecraft/server/DataBits.java
-index f3a6799..5d01490 100644
+index f3a6799a..5d01490a 100644
 --- a/src/main/java/net/minecraft/server/DataBits.java
 +++ b/src/main/java/net/minecraft/server/DataBits.java
 @@ -10,7 +10,7 @@ public class DataBits {
@@ -44,5 +44,5 @@ index f3a6799..5d01490 100644
          int k = j / 64;
          int l = ((i + 1) * this.b - 1) / 64;
 -- 
-2.10.0.windows.1
+2.11.0.windows.1
 
