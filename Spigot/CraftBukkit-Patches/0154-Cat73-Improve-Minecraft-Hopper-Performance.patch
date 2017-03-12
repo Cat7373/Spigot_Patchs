@@ -1,4 +1,4 @@
-From de764ac86dc6ecb311b896f770134755dc022bac Mon Sep 17 00:00:00 2001
+From 8449e39a6f99d8a933498094f6270608ebac692b Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
 Date: Tue, 6 Dec 2016 15:13:03 +0800
 Subject: [PATCH] Cat73 -> Improve Minecraft Hopper Performance
@@ -17,7 +17,7 @@ Content-Transfer-Encoding: 8bit
 Link: https://github.com/PaperMC/Paper/blob/ebf1094ea5dea6f3c8ad0ed5a1344089cb7ecfc7/Spigot-Server-Patches/0131-Improve-Minecraft-Hopper-Performance.patch
 
 diff --git a/src/main/java/net/minecraft/server/TileEntity.java b/src/main/java/net/minecraft/server/TileEntity.java
-index 8d54eb36..6cdf1442 100644
+index 6958a2e0..f85f98d5 100644
 --- a/src/main/java/net/minecraft/server/TileEntity.java
 +++ b/src/main/java/net/minecraft/server/TileEntity.java
 @@ -108,8 +108,10 @@ public abstract class TileEntity {
@@ -46,5 +46,5 @@ index f12bc709..c86bddb1 100644
                  flag = true;
              } else if (a(itemstack1, itemstack)) {
 -- 
-2.11.0.windows.1
+2.12.0.windows.1
 

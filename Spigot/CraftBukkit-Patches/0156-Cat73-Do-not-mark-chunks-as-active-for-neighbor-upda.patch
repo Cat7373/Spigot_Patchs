@@ -1,4 +1,4 @@
-From bda01ece7d92f3a25f6d033510f1a72d7e7c9dd7 Mon Sep 17 00:00:00 2001
+From 0a26e5362d19242847bb14d19cd8f412c3d9cd9d Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
 Date: Tue, 6 Dec 2016 15:24:12 +0800
 Subject: [PATCH] Cat73 -> Do not mark chunks as active for neighbor updates
@@ -49,5 +49,5 @@ index 2e5a644a..8e9a7118 100644
              if (chunk4 != null) {
                  chunk4.a(chunkgenerator);
 -- 
-2.11.0.windows.1
+2.12.0.windows.1
 

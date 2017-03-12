@@ -1,4 +1,4 @@
-From 4fa45809d17b9be803020583c5bda1329334f909 Mon Sep 17 00:00:00 2001
+From e45d0fef434487c7c872660811aca3824b776b2c Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
 Date: Tue, 6 Dec 2016 14:28:53 +0800
 Subject: [PATCH] Cat73 -> Optimize isValidLocation, getType and getBlockData
@@ -63,5 +63,5 @@ index 3d784d0d..dcb2d0a7 100644
      private NibbleArray skyLight;
  
 -- 
-2.11.0.windows.1
+2.12.0.windows.1
 
