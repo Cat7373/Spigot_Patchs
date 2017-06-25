@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-# µ±Ç°Ä¿Â¼
+# å½“å‰ç›®å½•
 basedir="$(cd "$1" && pwd -P)"
 
-# nms ÎÄ¼þÄ¿Â¼ # TODO ×Ô¶¯ÕÒÄ¿±êÄ¿Â¼£¬Ê¡µÄÃ¿¸ö°æ±¾¶¼ÒªÊÖ¶¯¸Ä
-nmsdir="$basedir/work/decompile-f23dd046/net/minecraft/server"
-# ¹¤×÷Ä¿Â¼
+# nms æ–‡ä»¶ç›®å½• # TODO è‡ªåŠ¨æ‰¾ç›®æ ‡ç›®å½•ï¼Œçœçš„æ¯ä¸ªç‰ˆæœ¬éƒ½è¦æ‰‹åŠ¨æ”¹
+nmsdir="$basedir/work/decompile-323675e4/net/minecraft/server"
+# å·¥ä½œç›®å½•
 workdir="$basedir/Spigot/Spigot-Server"
 
 # Auto import
@@ -22,7 +22,7 @@ import DataBits
 import TileEntityEnderChest
 import ChunkCache
 
-# Éú³É diff
+# ç”Ÿæˆ diff
 cd $workdir
 git add . -A
 git commit -a -m "Cat73 -> Auto import mc-dev"

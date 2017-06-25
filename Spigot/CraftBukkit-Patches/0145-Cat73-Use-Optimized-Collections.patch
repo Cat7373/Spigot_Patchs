@@ -1,4 +1,4 @@
-From 4bc7fbe05000cbb1c04b8d69176c012ce460535e Mon Sep 17 00:00:00 2001
+From d06270788742584355f3ed26e886c079fd3c1d96 Mon Sep 17 00:00:00 2001
 From: Cat73 <1901803382@qq.com>
 Date: Tue, 6 Dec 2016 14:33:11 +0800
 Subject: [PATCH] Cat73 -> Use Optimized Collections
@@ -10,7 +10,7 @@ Content-Transfer-Encoding: 8bit
 Link: https://github.com/PaperMC/Paper/blob/ebf1094ea5dea6f3c8ad0ed5a1344089cb7ecfc7/Spigot-Server-Patches/0106-Use-Optimized-Collections.patch
 
 diff --git a/src/main/java/net/minecraft/server/ChunkProviderServer.java b/src/main/java/net/minecraft/server/ChunkProviderServer.java
-index ff564dab..a4df2799 100644
+index ff01aa5c..56408654 100644
 --- a/src/main/java/net/minecraft/server/ChunkProviderServer.java
 +++ b/src/main/java/net/minecraft/server/ChunkProviderServer.java
 @@ -2,6 +2,8 @@ package net.minecraft.server;
@@ -32,7 +32,7 @@ index ff564dab..a4df2799 100644
      private final IChunkLoader chunkLoader;
      // Paper start
 diff --git a/src/main/java/net/minecraft/server/DataWatcher.java b/src/main/java/net/minecraft/server/DataWatcher.java
-index 419add5d..d2f0e623 100644
+index 1507f97f..2e526b4b 100644
 --- a/src/main/java/net/minecraft/server/DataWatcher.java
 +++ b/src/main/java/net/minecraft/server/DataWatcher.java
 @@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
@@ -53,5 +53,5 @@ index 419add5d..d2f0e623 100644
      private boolean f = true;
      private boolean g;
 -- 
-2.12.0.windows.1
+2.13.0
 
