@@ -1,6 +1,6 @@
-From e08da149210bf554af3748f38858fd70d43f189d Mon Sep 17 00:00:00 2001
+From 4f2fbaffb4de54461199ffe6af37cb8b6d6e1f92 Mon Sep 17 00:00:00 2001
 From: Cat73 <cat73@cat73.org>
-Date: Sun, 25 Jun 2017 15:45:59 +0800
+Date: Sun, 25 Jun 2017 17:35:56 +0800
 Subject: [PATCH] Cat73 -> Make entities look for hoppers
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -113,7 +113,7 @@ index 14caa86a..7fabd13b 100644
          int elapsedTicks = MinecraftServer.currentTick - this.lastTick;
          if (this.pickupDelay != 32767) this.pickupDelay -= elapsedTicks;
 diff --git a/src/main/java/net/minecraft/server/EntityMinecartContainer.java b/src/main/java/net/minecraft/server/EntityMinecartContainer.java
-index ce501098..86998ae7 100644
+index ce501098..37a0ad8e 100644
 --- a/src/main/java/net/minecraft/server/EntityMinecartContainer.java
 +++ b/src/main/java/net/minecraft/server/EntityMinecartContainer.java
 @@ -10,8 +10,27 @@ import org.bukkit.craftbukkit.entity.CraftHumanEntity;
@@ -124,7 +124,7 @@ index ce501098..86998ae7 100644
  
 -public abstract class EntityMinecartContainer extends EntityMinecartAbstract implements ITileInventory, ILootable {
 +// Paper start - push into hoppers
-+public abstract class EntityMinecartContainer extends EntityMinecartAbstract implements ITileInventory, ILootable, CraftLootableInventory, HopperPusher { // Paper - CraftLootableInventory
++public abstract class EntityMinecartContainer extends EntityMinecartAbstract implements ITileInventory, ILootable, HopperPusher { // Paper - CraftLootableInventory
 +    @Override
 +    public boolean acceptItem(TileEntityHopper hopper) {
 +        return TileEntityHopper.acceptItem(hopper, this);
@@ -163,7 +163,7 @@ index 804215a1..e830d839 100644
 +    double G(); default double getZ() { return G(); } // Paper - OBFHELPER
  }
 diff --git a/src/main/java/net/minecraft/server/TileEntityHopper.java b/src/main/java/net/minecraft/server/TileEntityHopper.java
-index f94c9777..8562932f 100644
+index f94c9777..bbb61970 100644
 --- a/src/main/java/net/minecraft/server/TileEntityHopper.java
 +++ b/src/main/java/net/minecraft/server/TileEntityHopper.java
 @@ -126,6 +126,7 @@ public class TileEntityHopper extends TileEntityLootable implements IHopper, ITi
@@ -190,19 +190,20 @@ index f94c9777..8562932f 100644
 +    private boolean mayAcceptItems = false;
 +
 +    public boolean canAcceptItems() {
-+        return this.mayAcceptItems;
++        return this.mayAcceptItems && !this.J();
 +    }
 +    // Paper end
 +
      private boolean p() {
          Iterator iterator = this.items.iterator();
  
-@@ -303,7 +313,15 @@ public class TileEntityHopper extends TileEntityLootable implements IHopper, ITi
+@@ -303,8 +313,15 @@ public class TileEntityHopper extends TileEntityLootable implements IHopper, ITi
          return true;
      }
  
 +    // Paper start - split methods, and only do entity lookup if in pull mode
      public static boolean a(IHopper ihopper) {
+-        IInventory iinventory = b(ihopper);
 +        IInventory iinventory = getInventory(ihopper, !(ihopper instanceof TileEntityHopper));
 +
 +        return acceptItem(ihopper, iinventory);
@@ -210,10 +211,10 @@ index f94c9777..8562932f 100644
 +
 +    public static boolean acceptItem(IHopper ihopper, IInventory iinventory) {
 +        // Paper end
-         IInventory iinventory = b(ihopper);
  
          if (iinventory != null) {
-@@ -335,8 +353,8 @@ public class TileEntityHopper extends TileEntityLootable implements IHopper, ITi
+             EnumDirection enumdirection = EnumDirection.DOWN;
+@@ -335,8 +352,8 @@ public class TileEntityHopper extends TileEntityLootable implements IHopper, ITi
                      }
                  }
              }
@@ -224,7 +225,7 @@ index f94c9777..8562932f 100644
  
              while (iterator.hasNext()) {
                  EntityItem entityitem = (EntityItem) iterator.next();
-@@ -403,6 +421,7 @@ public class TileEntityHopper extends TileEntityLootable implements IHopper, ITi
+@@ -403,6 +420,7 @@ public class TileEntityHopper extends TileEntityLootable implements IHopper, ITi
          return false;
      }
  
@@ -232,7 +233,7 @@ index f94c9777..8562932f 100644
      public static boolean a(IInventory iinventory, IInventory iinventory1, EntityItem entityitem) {
          boolean flag = false;
  
-@@ -508,18 +527,44 @@ public class TileEntityHopper extends TileEntityLootable implements IHopper, ITi
+@@ -508,18 +526,44 @@ public class TileEntityHopper extends TileEntityLootable implements IHopper, ITi
      private IInventory I() {
          EnumDirection enumdirection = BlockHopper.b(this.v());
  
@@ -281,7 +282,7 @@ index f94c9777..8562932f 100644
          Object object = null;
          int i = MathHelper.floor(d0);
          int j = MathHelper.floor(d1);
-@@ -539,7 +584,7 @@ public class TileEntityHopper extends TileEntityLootable implements IHopper, ITi
+@@ -539,7 +583,7 @@ public class TileEntityHopper extends TileEntityLootable implements IHopper, ITi
              }
          }
  
@@ -290,6 +291,44 @@ index f94c9777..8562932f 100644
              List list = world.getEntities((Entity) null, new AxisAlignedBB(d0 - 0.5D, d1 - 0.5D, d2 - 0.5D, d0 + 0.5D, d1 + 0.5D, d2 + 0.5D), IEntitySelector.c);
  
              if (!list.isEmpty()) {
+diff --git a/src/main/java/org/spigotmc/HopperPusher.java b/src/main/java/org/spigotmc/HopperPusher.java
+index 489d5617..3c44742d 100644
+--- a/src/main/java/org/spigotmc/HopperPusher.java
++++ b/src/main/java/org/spigotmc/HopperPusher.java
+@@ -2,11 +2,23 @@ package org.spigotmc;
+ 
+ import net.minecraft.server.AxisAlignedBB;
+ import net.minecraft.server.BlockPosition;
+-import net.minecraft.server.MCUtil;
+ import net.minecraft.server.TileEntityHopper;
+ import net.minecraft.server.World;
++import net.minecraft.server.Chunk;
++import net.minecraft.server.Blocks;
++import net.minecraft.server.TileEntity;
+ 
+ public interface HopperPusher {
++    public static TileEntityHopper getHopper(World world, BlockPosition pos) {
++        Chunk chunk = world.getChunkIfLoaded(pos.getX() >> 4, pos.getZ() >> 4);
++        if (chunk != null && chunk.getBlockData(pos).getBlock() == Blocks.HOPPER) {
++            TileEntity tileEntity = chunk.a(pos, Chunk.EnumTileEntityState.IMMEDIATE);
++            if (tileEntity instanceof TileEntityHopper) {
++                return (TileEntityHopper) tileEntity;
++            }
++        }
++        return null;
++    }
+ 
+     default TileEntityHopper findHopper() {
+         BlockPosition pos = new BlockPosition(getX(), getY(), getZ());
+@@ -21,7 +33,7 @@ public interface HopperPusher {
+             for (int y = startY; y <= endY; y++) {
+                 for (int z = startZ; z <= endZ; z++) {
+                     adjacentPos.setValues(x, y, z);
+-                    TileEntityHopper hopper = MCUtil.getHopper(getWorld(), adjacentPos);
++                    TileEntityHopper hopper = HopperPusher.getHopper(getWorld(), adjacentPos);
+                     if (hopper == null) continue; // Avoid playing with the bounding boxes, if at all possible
+                     AxisAlignedBB hopperBoundingBox = hopper.getHopperLookupBoundingBox();
+                     /*
 -- 
 2.13.0
 
