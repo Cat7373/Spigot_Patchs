@@ -1,6 +1,6 @@
-From 219f9aef6a7b828550c0f85f335c7a29aad644f5 Mon Sep 17 00:00:00 2001
+From ef61e2167c4f9b9f0102c40a2fa50a8df091497b Mon Sep 17 00:00:00 2001
 From: Cat73 <cat73@cat73.org>
-Date: Sun, 25 Jun 2017 14:37:16 +0800
+Date: Sun, 25 Jun 2017 15:05:30 +0800
 Subject: [PATCH] Cat73 -> Improve Minecraft Hopper Performance
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -8,13 +8,8 @@ Content-Transfer-Encoding: 8bit
 
 在漏斗传输物品的时候不再调用目标容器的 update 方法
 简单看了看似乎这个 update 在传输物品的时候并没有什么卵用。。。
-1. 更新方块的损害值。
-2. 更新 Chunk 里是否有过方块更新的标记为 true。
-   然而只有很低的概率影响 MC 每隔一段时间的自动保存，卸载 Chunk 时一定会保存。
-   AutoSaveWorld 也是无视这个值直接保存的，服务器崩溃时 AutoSaveWorld 会先保存一次再关闭服务器。
-   而且服务器当前已经在 bukkit.yml 里禁用了这种自动保存。。。
-3. 进行 Physics 计算。
-Link: https://github.com/PaperMC/Paper/blob/ebf1094ea5dea6f3c8ad0ed5a1344089cb7ecfc7/Spigot-Server-Patches/0131-Improve-Minecraft-Hopper-Performance.patch
+不要一直 clone ItemStacks，这没有任何意义
+Link: https://github.com/PaperMC/Paper/blob/master/Spigot-Server-Patches/0122-Improve-Minecraft-Hopper-Performance.patch
 
 diff --git a/src/main/java/net/minecraft/server/TileEntity.java b/src/main/java/net/minecraft/server/TileEntity.java
 index 591f4ad7..44dd20ca 100644
@@ -32,10 +27,46 @@ index 591f4ad7..44dd20ca 100644
  
              this.g = iblockdata.getBlock().toLegacyData(iblockdata);
 diff --git a/src/main/java/net/minecraft/server/TileEntityHopper.java b/src/main/java/net/minecraft/server/TileEntityHopper.java
-index e38411f3..f156d07e 100644
+index e38411f3..f94c9777 100644
 --- a/src/main/java/net/minecraft/server/TileEntityHopper.java
 +++ b/src/main/java/net/minecraft/server/TileEntityHopper.java
-@@ -459,7 +459,9 @@ public class TileEntityHopper extends TileEntityLootable implements IHopper, ITi
+@@ -220,11 +220,14 @@ public class TileEntityHopper extends TileEntityLootable implements IHopper, ITi
+                             this.setCooldown(world.spigotConfig.hopperTransfer); // Spigot
+                             return false;
+                         }
+-                        int origCount = event.getItem().getAmount(); // Spigot
+-                        ItemStack itemstack1 = addItem(this, iinventory, CraftItemStack.asNMSCopy(event.getItem()), enumdirection);
++                        // Paper start
++                        org.bukkit.inventory.ItemStack eventStack = event.getItem();
++                        int origCount = eventStack.getAmount(); // Spigot
++                        ItemStack itemstack1 = addItem(this, iinventory, CraftItemStack.asNMSCopy(eventStack), enumdirection);
++                        // Paper end
+ 
+                         if (itemstack1.isEmpty()) {
+-                            if (event.getItem().equals(oitemstack)) {
++                            if (eventStack.equals(oitemstack)) { // Paper
+                                 iinventory.update();
+                             } else {
+                                 this.setItem(i, itemstack);
+@@ -377,11 +380,14 @@ public class TileEntityHopper extends TileEntityLootable implements IHopper, ITi
+                 }
+                 return false;
+             }
+-            int origCount = event.getItem().getAmount(); // Spigot
+-            ItemStack itemstack2 = addItem(iinventory, ihopper, CraftItemStack.asNMSCopy(event.getItem()), null);
++            // Paper start
++            org.bukkit.inventory.ItemStack eventStack = event.getItem();
++            int origCount = eventStack.getAmount(); // Spigot
++            ItemStack itemstack2 = addItem(iinventory, ihopper, CraftItemStack.asNMSCopy(eventStack), null);
++            // Paper end
+ 
+             if (itemstack2.isEmpty()) {
+-                if (event.getItem().equals(oitemstack)) {
++                if (eventStack.equals(oitemstack)) { // Paper
+                     iinventory.update();
+                 } else {
+                     iinventory.setItem(i, itemstack1);
+@@ -459,7 +465,9 @@ public class TileEntityHopper extends TileEntityLootable implements IHopper, ITi
              boolean flag1 = iinventory1.x_();
  
              if (itemstack1.isEmpty()) {
