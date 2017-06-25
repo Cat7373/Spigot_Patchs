@@ -21,6 +21,9 @@ function import {
 import DataBits
 import TileEntityEnderChest
 import ChunkCache
+import AxisAlignedBB
+import BlockPosition
+import IHopper
 
 # 生成 diff
 cd $workdir
