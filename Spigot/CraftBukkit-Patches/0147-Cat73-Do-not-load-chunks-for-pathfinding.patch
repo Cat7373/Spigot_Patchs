@@ -1,0 +1,30 @@
+From d5ea07e4ff198c0b2d5b4c624c6fbd2e40616853 Mon Sep 17 00:00:00 2001
+From: Cat73 <cat7373x@gmail.com>
+Date: Sat, 16 Jun 2018 16:43:02 +0800
+Subject: [PATCH] Cat73 -> Do not load chunks for pathfinding
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+不要在寻路时加载区块
+寻路时加载区块主要有两种情况
+1. 已经到正加载的区块边界了，寻路时会继续往外找路，这明显没啥乱用，一出加载范围区块就会被卸载掉
+2. MC 的村庄刷新导致的区块加载当中的实体寻路，这类区块加载本来就算是 bug，而且会浪费大量资源，还不如就这么干掉
+Link: https://github.com/PaperMC/Paper/blob/4f29a0ce0a470ae3ac6be1d69ee7843a78bb9ae1/Spigot-Server-Patches/0124-Do-not-load-chunks-for-pathfinding.patch
+
+diff --git a/src/main/java/net/minecraft/server/ChunkCache.java b/src/main/java/net/minecraft/server/ChunkCache.java
+index 08b986fd..786d1dd2 100644
+--- a/src/main/java/net/minecraft/server/ChunkCache.java
++++ b/src/main/java/net/minecraft/server/ChunkCache.java
+@@ -25,7 +25,7 @@ public class ChunkCache implements IBlockAccess {
+ 
+         for (l = this.a; l <= j; ++l) {
+             for (i1 = this.b; i1 <= k; ++i1) {
+-                this.c[l - this.a][i1 - this.b] = world.getChunkAt(l, i1);
++                this.c[l - this.a][i1 - this.b] = world.getChunkIfLoaded(l, i1); // Paper
+             }
+         }
+ 
+-- 
+2.15.2 (Apple Git-101.1)
+
