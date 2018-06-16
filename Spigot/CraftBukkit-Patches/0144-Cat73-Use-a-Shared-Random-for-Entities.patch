@@ -1,0 +1,37 @@
+From 8f9c63d609ed13328c30a969450d9518c87bbfc3 Mon Sep 17 00:00:00 2001
+From: Cat73 <cat7373x@gmail.com>
+Date: Sat, 16 Jun 2018 15:58:26 +0800
+Subject: [PATCH] Cat73 -> Use a Shared Random for Entities
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+所有实体使用一个统一的随机数生成器，略微降低内存开销
+MC 目前只有一个主线程，因此不会出现线程安全问题，且 Random 本身就是线程安全的，因此完全没有必要没个实体都重新 new 一个
+而且 new Random() 的时候需要执行高开销的 System.nanoTime()，很不值得 0.0
+Link: https://github.com/PaperMC/Paper/blob/4f29a0ce0a470ae3ac6be1d69ee7843a78bb9ae1/Spigot-Server-Patches/0082-Use-a-Shared-Random-for-Entities.patch
+
+diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
+index 462abfc1..97a0183e 100644
+--- a/src/main/java/net/minecraft/server/Entity.java
++++ b/src/main/java/net/minecraft/server/Entity.java
+@@ -45,6 +45,7 @@ public abstract class Entity implements ICommandListener {
+ 
+     // CraftBukkit start
+     private static final int CURRENT_LEVEL = 2;
++    public static Random SHARED_RANDOM = new Random(); // Paper
+     static boolean isLevelAtLeast(NBTTagCompound tag, int level) {
+         return tag.hasKey("Bukkit.updateLevel") && tag.getInt("Bukkit.updateLevel") >= level;
+     }
+@@ -169,7 +170,7 @@ public abstract class Entity implements ICommandListener {
+         this.length = 1.8F;
+         this.ax = 1;
+         this.ay = 1.0F;
+-        this.random = new Random();
++        this.random = SHARED_RANDOM; // Paper
+         this.fireTicks = -this.getMaxFireTicks();
+         this.justCreated = true;
+         this.uniqueID = MathHelper.a(this.random);
+-- 
+2.15.2 (Apple Git-101.1)
+
