@@ -18,12 +18,7 @@ function import {
 }
 
 # imports
-import DataBits
-import TileEntityEnderChest
-import ChunkCache
-import AxisAlignedBB
-import BlockPosition
-import IHopper
+import PersistentVillage
 
 # 生成 diff
 cd $workdir
