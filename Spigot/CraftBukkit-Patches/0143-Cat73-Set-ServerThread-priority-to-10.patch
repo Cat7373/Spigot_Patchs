@@ -1,0 +1,25 @@
+From 46b36d78a2354d7749fa7654b7706d044895aaef Mon Sep 17 00:00:00 2001
+From: Cat73 <cat7373x@gmail.com>
+Date: Sat, 16 Jun 2018 15:50:09 +0800
+Subject: [PATCH] Cat73 -> Set ServerThread priority to 10
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+提升主线程优先级，由 5(默认, 中等) 提升到 10(最高)，可能能让主线程抢到更多的 CPU
+
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index c1a8816b..7bcfd7f7 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -543,6 +543,7 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IAs
+     public void run() {
+         try {
+             if (this.init()) {
++                Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+                 this.ab = aw();
+                 long i = 0L;
+ 
+-- 
+2.15.2 (Apple Git-101.1)
+
