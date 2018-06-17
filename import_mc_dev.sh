@@ -22,6 +22,7 @@ import PersistentVillage
 import DataBits
 import ChunkCache
 import NavigationAbstract
+import TileEntityEnderChest
 
 # 生成 diff
 cd $workdir
