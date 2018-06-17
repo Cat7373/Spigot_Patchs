@@ -1,4 +1,4 @@
-From e047b1624aa9cabcaa4e3f6d15301d0e570343e9 Mon Sep 17 00:00:00 2001
+From 3acd70fdc1f849ad5d96d0adcb365871f148d9f0 Mon Sep 17 00:00:00 2001
 From: Cat73 <cat7373x@gmail.com>
 Date: Sat, 16 Jun 2018 16:24:27 +0800
 Subject: [PATCH] Cat73 -> Remove Debug checks from DataBits
@@ -11,7 +11,7 @@ Content-Transfer-Encoding: 8bit
 Link: https://github.com/PaperMC/Paper/blob/4f29a0ce0a470ae3ac6be1d69ee7843a78bb9ae1/Spigot-Server-Patches/0105-Remove-Debug-checks-from-DataBits.patch
 
 diff --git a/src/main/java/net/minecraft/server/DataBits.java b/src/main/java/net/minecraft/server/DataBits.java
-index f3a6799a..5d01490a 100644
+index f3a6799a..15ce2a62 100644
 --- a/src/main/java/net/minecraft/server/DataBits.java
 +++ b/src/main/java/net/minecraft/server/DataBits.java
 @@ -10,7 +10,7 @@ public class DataBits {
