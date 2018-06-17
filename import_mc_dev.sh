@@ -19,6 +19,9 @@ function import {
 
 # imports
 import PersistentVillage
+import DataBits
+import ChunkCache
+import NavigationAbstract
 
 # 生成 diff
 cd $workdir
