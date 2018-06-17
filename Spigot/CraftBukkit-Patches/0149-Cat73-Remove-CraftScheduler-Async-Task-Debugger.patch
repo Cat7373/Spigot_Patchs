@@ -1,0 +1,63 @@
+From 71f781cece4652b618d458d74baa06b80e3dbc64 Mon Sep 17 00:00:00 2001
+From: Cat73 <cat7373x@gmail.com>
+Date: Sun, 17 Jun 2018 07:39:56 +0800
+Subject: [PATCH] Cat73 -> Remove CraftScheduler Async Task Debugger
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+移除 CraftBukkit 中 Schedule 的调试代码
+Link: https://github.com/PaperMC/Paper/blob/4f29a0ce0a470ae3ac6be1d69ee7843a78bb9ae1/Spigot-Server-Patches/0198-Remove-CraftScheduler-Async-Task-Debugger.patch
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java b/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java
+index 71ee1fdd..db94a1e9 100644
+--- a/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java
++++ b/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java
+@@ -76,8 +76,8 @@ public class CraftScheduler implements BukkitScheduler {
+     private final ConcurrentHashMap<Integer, CraftTask> runners = new ConcurrentHashMap<Integer, CraftTask>();
+     private volatile int currentTick = -1;
+     private final Executor executor = Executors.newCachedThreadPool(new com.google.common.util.concurrent.ThreadFactoryBuilder().setNameFormat("Craft Scheduler Thread - %1$d").build()); // Spigot
+-    private CraftAsyncDebugger debugHead = new CraftAsyncDebugger(-1, null, null) {@Override StringBuilder debugTo(StringBuilder string) {return string;}};
+-    private CraftAsyncDebugger debugTail = debugHead;
++    // private CraftAsyncDebugger debugHead = new CraftAsyncDebugger(-1, null, null) {@Override StringBuilder debugTo(StringBuilder string) {return string;}}; // Paper
++    // private CraftAsyncDebugger debugTail = debugHead; // Paper
+     private static final int RECENT_TICKS;
+ 
+     static {
+@@ -363,7 +363,7 @@ public class CraftScheduler implements BukkitScheduler {
+                 }
+                 parsePending();
+             } else {
+-                debugTail = debugTail.setNext(new CraftAsyncDebugger(currentTick + RECENT_TICKS, task.getOwner(), task.getTaskClass()));
++                // debugTail = debugTail.setNext(new CraftAsyncDebugger(currentTick + RECENT_TICKS, task.getOwner(), task.getTaskClass())); // Paper
+                 executor.execute(task);
+                 // We don't need to parse pending
+                 // (async tasks must live with race-conditions if they attempt to cancel between these few lines of code)
+@@ -378,7 +378,7 @@ public class CraftScheduler implements BukkitScheduler {
+         }
+         pending.addAll(temp);
+         temp.clear();
+-        debugHead = debugHead.getNextHead(currentTick);
++        // debugHead = debugHead.getNextHead(currentTick); // Paper
+     }
+ 
+     private void addTask(final CraftTask task) {
+@@ -435,10 +435,15 @@ public class CraftScheduler implements BukkitScheduler {
+ 
+     @Override
+     public String toString() {
++        // Paper start
++        return "";
++        /*
+         int debugTick = currentTick;
+         StringBuilder string = new StringBuilder("Recent tasks from ").append(debugTick - RECENT_TICKS).append('-').append(debugTick).append('{');
+         debugHead.debugTo(string);
+         return string.append('}').toString();
++        */
++        // Paper end
+     }
+ 
+     @Deprecated
+-- 
+2.15.2 (Apple Git-101.1)
+

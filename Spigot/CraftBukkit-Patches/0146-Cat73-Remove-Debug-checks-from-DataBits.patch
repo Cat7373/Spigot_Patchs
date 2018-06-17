@@ -6,7 +6,7 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-去掉热点方法中的边界检查
+去掉热点方法(getType)中的边界检查
 这个边界检查如果失败会导致服务器直接崩溃，然而从来没遇到过因为这个检查导致的崩溃，因此这个检查应该没啥乱用
 Link: https://github.com/PaperMC/Paper/blob/4f29a0ce0a470ae3ac6be1d69ee7843a78bb9ae1/Spigot-Server-Patches/0105-Remove-Debug-checks-from-DataBits.patch
 
@@ -19,7 +19,7 @@ index f3a6799a..5d01490a 100644
  
      public DataBits(int i, int j) {
 -        Validate.inclusiveBetween(1L, 32L, (long) i);
-+        // Validate.inclusiveBetween(1L, 32L, (long) i);
++        // Validate.inclusiveBetween(1L, 32L, (long) i); // Paper
          this.d = j;
          this.b = i;
          this.c = (1L << i) - 1L;
@@ -29,8 +29,8 @@ index f3a6799a..5d01490a 100644
      public void a(int i, int j) {
 -        Validate.inclusiveBetween(0L, (long) (this.d - 1), (long) i);
 -        Validate.inclusiveBetween(0L, this.c, (long) j);
-+        // Validate.inclusiveBetween(0L, (long) (this.d - 1), (long) i);
-+        // Validate.inclusiveBetween(0L, this.c, (long) j);
++        // Validate.inclusiveBetween(0L, (long) (this.d - 1), (long) i); // Paper
++        // Validate.inclusiveBetween(0L, this.c, (long) j); // Paper
          int k = i * this.b;
          int l = k / 64;
          int i1 = ((i + 1) * this.b - 1) / 64;
@@ -39,7 +39,7 @@ index f3a6799a..5d01490a 100644
  
      public int a(int i) {
 -        Validate.inclusiveBetween(0L, (long) (this.d - 1), (long) i);
-+        // Validate.inclusiveBetween(0L, (long) (this.d - 1), (long) i);
++        // Validate.inclusiveBetween(0L, (long) (this.d - 1), (long) i); // Paper
          int j = i * this.b;
          int k = j / 64;
          int l = ((i + 1) * this.b - 1) / 64;
