@@ -1,4 +1,4 @@
-From 04d0082a3a1103cb35c8a50eaf66ceca6d966127 Mon Sep 17 00:00:00 2001
+From a8fea44faaf77f4f447c324709fa5b2f284c55f2 Mon Sep 17 00:00:00 2001
 From: Cat73 <cat7373x@gmail.com>
 Date: Mon, 18 Jun 2018 13:02:26 +0800
 Subject: [PATCH] Cat73 -> TpsConfigure
@@ -9,7 +9,7 @@ Content-Transfer-Encoding: 8bit
 根据不同的 TPS 设定不同的服务器限制参数，虽然这种控制有些滞后，但应该能缓解 TPS 下降的情况，防止 TPS 继续降低
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 7bcfd7f7..314c8150 100644
+index 7bcfd7f7..0bf196b7 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -572,6 +572,8 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IAs
@@ -21,7 +21,7 @@ index 7bcfd7f7..314c8150 100644
                      }
                      lastTick = curTime;
  
-@@ -628,6 +630,179 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IAs
+@@ -628,6 +630,167 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IAs
  
      }
  
@@ -128,22 +128,6 @@ index 7bcfd7f7..314c8150 100644
 +            spigotWorldConfig.tileMaxTickTime = this.maxTickTimeTile;
 +            spigotWorldConfig.entityMaxTickTime = this.maxTickTimeEntity;
 +        }
-+
-+        @Override
-+        public String toString() {
-+            return "minTps: " + minTps +
-+                    ", spawnLimitsMonsters: " + spawnLimitsMonsters +
-+                    ", spawnLimitsAnimals: " + spawnLimitsAnimals +
-+                    ", spawnLimitsWaterAnimals: " + spawnLimitsWaterAnimals +
-+                    ", spawnLimitsAmbient: " + spawnLimitsAmbient +
-+                    ", ticksPerAnimalSpawns: " + ticksPerAnimalSpawns +
-+                    ", ticksPerMonsterSpawns: " + ticksPerMonsterSpawns +
-+                    ", entityActivationRangeAnimals: " + entityActivationRangeAnimals +
-+                    ", entityActivationRangeMonsters: " + entityActivationRangeMonsters +
-+                    ", entityActivationRangeMisc: " + entityActivationRangeMisc +
-+                    ", maxTickTimeTile: " + maxTickTimeTile +
-+                    ", maxTickTimeEntity: " + maxTickTimeEntity;
-+        }
 +    }
 +
 +    /**
@@ -159,20 +143,24 @@ index 7bcfd7f7..314c8150 100644
 +        org.spigotmc.SpigotWorldConfig spigotWorldConfig = world.spigotConfig;
 +
 +        this.tpsConfigures = Arrays.asList(
-+            // 18 ~ 20 1.0x
-+            new TpsConfigure(18.0D, 1.0D, craftServer, spigotWorldConfig),
-+            // 16 ~ 18 0.9x
-+            new TpsConfigure(16.0D, 0.9D, craftServer, spigotWorldConfig),
-+            // 14 ~ 16 0.8x
-+            new TpsConfigure(14.0D, 0.8D, craftServer, spigotWorldConfig),
-+            // 12 ~ 14 0.7x
-+            new TpsConfigure(12.0D, 0.7D, craftServer, spigotWorldConfig),
-+            // 10 ~ 12 0.6x
-+            new TpsConfigure(10.0D, 0.6D, craftServer, spigotWorldConfig),
-+            // 5 ~ 10 0.5x
-+            new TpsConfigure(5.0D, 0.5D, craftServer, spigotWorldConfig),
-+            // 0 ~ 5 0.4x
-+            new TpsConfigure(Double.MIN_VALUE, 0.4D, craftServer, spigotWorldConfig)
++            // 18 ~ 20 1.00x
++            new TpsConfigure(18.0D, 1.00D, craftServer, spigotWorldConfig),
++            // 16 ~ 18 0.92x
++            new TpsConfigure(16.0D, 0.92D, craftServer, spigotWorldConfig),
++            // 14 ~ 16 0.80x
++            new TpsConfigure(14.0D, 0.80D, craftServer, spigotWorldConfig),
++            // 12 ~ 14 0.68x
++            new TpsConfigure(12.0D, 0.68D, craftServer, spigotWorldConfig),
++            // 10 ~ 12 0.56x
++            new TpsConfigure(10.0D, 0.56D, craftServer, spigotWorldConfig),
++            // 8 ~ 10 0.44x
++            new TpsConfigure(8.0D, 0.44D, craftServer, spigotWorldConfig),
++            // 5 ~ 8 0.35x
++            new TpsConfigure(5.0D, 0.35D, craftServer, spigotWorldConfig),
++            // 3 ~ 5 0.25x
++            new TpsConfigure(3.0D, 0.25D, craftServer, spigotWorldConfig),
++            // 0 ~ 3 0.10x
++            new TpsConfigure(Double.MIN_VALUE, 0.10D, craftServer, spigotWorldConfig)
 +        );
 +
 +        this.tpsConfigures
