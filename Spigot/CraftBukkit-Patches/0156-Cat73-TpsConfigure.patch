@@ -1,4 +1,4 @@
-From a8fea44faaf77f4f447c324709fa5b2f284c55f2 Mon Sep 17 00:00:00 2001
+From a62a10fdf5e631f9bcd6f8f0dcd68b2f02f06000 Mon Sep 17 00:00:00 2001
 From: Cat73 <cat7373x@gmail.com>
 Date: Mon, 18 Jun 2018 13:02:26 +0800
 Subject: [PATCH] Cat73 -> TpsConfigure
@@ -9,7 +9,7 @@ Content-Transfer-Encoding: 8bit
 根据不同的 TPS 设定不同的服务器限制参数，虽然这种控制有些滞后，但应该能缓解 TPS 下降的情况，防止 TPS 继续降低
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 7bcfd7f7..0bf196b7 100644
+index 7bcfd7f7..1633dccb 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -572,6 +572,8 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IAs
@@ -21,7 +21,7 @@ index 7bcfd7f7..0bf196b7 100644
                      }
                      lastTick = curTime;
  
-@@ -628,6 +630,167 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IAs
+@@ -628,6 +630,184 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IAs
  
      }
  
@@ -127,6 +127,23 @@ index 7bcfd7f7..0bf196b7 100644
 +            spigotWorldConfig.miscActivationRange = this.entityActivationRangeMisc;
 +            spigotWorldConfig.tileMaxTickTime = this.maxTickTimeTile;
 +            spigotWorldConfig.entityMaxTickTime = this.maxTickTimeEntity;
++        }
++
++        @Override
++        public String toString() {
++            return "minTps: " + minTps +
++                    ", rate: " + rate +
++                    ", spawnLimitsMonsters: " + spawnLimitsMonsters +
++                    ", spawnLimitsAnimals: " + spawnLimitsAnimals +
++                    ", spawnLimitsWaterAnimals: " + spawnLimitsWaterAnimals +
++                    ", spawnLimitsAmbient: " + spawnLimitsAmbient +
++                    ", ticksPerAnimalSpawns: " + ticksPerAnimalSpawns +
++                    ", ticksPerMonsterSpawns: " + ticksPerMonsterSpawns +
++                    ", entityActivationRangeAnimals: " + entityActivationRangeAnimals +
++                    ", entityActivationRangeMonsters: " + entityActivationRangeMonsters +
++                    ", entityActivationRangeMisc: " + entityActivationRangeMisc +
++                    ", maxTickTimeTile: " + maxTickTimeTile +
++                    ", maxTickTimeEntity: " + maxTickTimeEntity;
 +        }
 +    }
 +
