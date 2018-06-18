@@ -1,4 +1,4 @@
-From 28048dd8dabbf3a209f1d502338e71109dc4b7ac Mon Sep 17 00:00:00 2001
+From 04d0082a3a1103cb35c8a50eaf66ceca6d966127 Mon Sep 17 00:00:00 2001
 From: Cat73 <cat7373x@gmail.com>
 Date: Mon, 18 Jun 2018 13:02:26 +0800
 Subject: [PATCH] Cat73 -> TpsConfigure
@@ -9,7 +9,7 @@ Content-Transfer-Encoding: 8bit
 根据不同的 TPS 设定不同的服务器限制参数，虽然这种控制有些滞后，但应该能缓解 TPS 下降的情况，防止 TPS 继续降低
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 7bcfd7f7..bdf8101b 100644
+index 7bcfd7f7..314c8150 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -572,6 +572,8 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IAs
@@ -21,7 +21,7 @@ index 7bcfd7f7..bdf8101b 100644
                      }
                      lastTick = curTime;
  
-@@ -628,6 +630,170 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IAs
+@@ -628,6 +630,179 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IAs
  
      }
  
@@ -37,7 +37,10 @@ index 7bcfd7f7..bdf8101b 100644
 +    private TpsConfigure lastLimit;
 +
 +    private static class TpsConfigure {
++        private static final CraftServer craftServer = (CraftServer) Bukkit.getServer();
++
 +        private final double minTps;
++        private final double rate;
 +
 +        // bukkit.yml
 +        // spawn-limits
@@ -59,10 +62,11 @@ index 7bcfd7f7..bdf8101b 100644
 +        private final int maxTickTimeTile;
 +        private final int maxTickTimeEntity;
 +
-+        private TpsConfigure(double minTps, int spawnLimitsMonsters, int spawnLimitsAnimals, int spawnLimitsWaterAnimals,
++        private TpsConfigure(double minTps, double rate, int spawnLimitsMonsters, int spawnLimitsAnimals, int spawnLimitsWaterAnimals,
 +                int spawnLimitsAmbient, int ticksPerAnimalSpawns, int ticksPerMonsterSpawns, int entityActivationRangeAnimals,
 +                int entityActivationRangeMonsters, int entityActivationRangeMisc, int maxTickTimeTile, int maxTickTimeEntity) {
 +            this.minTps = minTps;
++            this.rate = rate;
 +            this.spawnLimitsMonsters = spawnLimitsMonsters;
 +            this.spawnLimitsAnimals = spawnLimitsAnimals;
 +            this.spawnLimitsWaterAnimals = spawnLimitsWaterAnimals;
@@ -79,6 +83,7 @@ index 7bcfd7f7..bdf8101b 100644
 +        private TpsConfigure(double minTps, double rate, CraftServer craftServer, org.spigotmc.SpigotWorldConfig spigotWorldConfig) {
 +            this(
 +                    minTps,
++                    rate,
 +                    subLimit(craftServer.monsterSpawn, rate, 1),
 +                    subLimit(craftServer.animalSpawn, rate, 1),
 +                    subLimit(craftServer.waterAnimalSpawn, rate, 1),
@@ -102,7 +107,6 @@ index 7bcfd7f7..bdf8101b 100644
 +        }
 +
 +        private void apply() {
-+            CraftServer craftServer = (CraftServer) Bukkit.getServer();
 +            WorldServer world = ((org.bukkit.craftbukkit.CraftWorld) craftServer.getWorlds().get(0)).getHandle();
 +            org.spigotmc.SpigotWorldConfig spigotWorldConfig = world.spigotConfig;
 +
@@ -155,17 +159,24 @@ index 7bcfd7f7..bdf8101b 100644
 +        org.spigotmc.SpigotWorldConfig spigotWorldConfig = world.spigotConfig;
 +
 +        this.tpsConfigures = Arrays.asList(
++            // 18 ~ 20 1.0x
 +            new TpsConfigure(18.0D, 1.0D, craftServer, spigotWorldConfig),
++            // 16 ~ 18 0.9x
 +            new TpsConfigure(16.0D, 0.9D, craftServer, spigotWorldConfig),
++            // 14 ~ 16 0.8x
 +            new TpsConfigure(14.0D, 0.8D, craftServer, spigotWorldConfig),
++            // 12 ~ 14 0.7x
 +            new TpsConfigure(12.0D, 0.7D, craftServer, spigotWorldConfig),
++            // 10 ~ 12 0.6x
 +            new TpsConfigure(10.0D, 0.6D, craftServer, spigotWorldConfig),
++            // 5 ~ 10 0.5x
 +            new TpsConfigure(5.0D, 0.5D, craftServer, spigotWorldConfig),
++            // 0 ~ 5 0.4x
 +            new TpsConfigure(Double.MIN_VALUE, 0.4D, craftServer, spigotWorldConfig)
 +        );
 +
 +        this.tpsConfigures
-+                .forEach(c -> MinecraftServer.LOGGER.info("[TpsConfigure] AddLimit: {}", c));
++                .forEach(c -> MinecraftServer.LOGGER.info("[TpsConfigure] addLimit: {}", c));
 +    }
 +
 +    /**
@@ -179,9 +190,7 @@ index 7bcfd7f7..bdf8101b 100644
 +                .findFirst()
 +                .filter(c -> c != this.lastLimit)
 +                .ifPresent(c -> {
-+                    MinecraftServer.LOGGER.info("[TpsConfigure] Tps: {}", tps);
-+                    MinecraftServer.LOGGER.info("[TpsConfigure] OldLimit: {}", this.lastLimit);
-+                    MinecraftServer.LOGGER.info("[TpsConfigure] NewLimit: {}", c);
++                    MinecraftServer.LOGGER.info("[TpsConfigure] TPS: {}, useMinTps: {}, useRate: {}", tps, c.minTps, c.rate);
 +
 +                    c.apply();
 +                    this.lastLimit = c;
