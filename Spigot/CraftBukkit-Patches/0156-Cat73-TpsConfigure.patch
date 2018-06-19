@@ -1,4 +1,4 @@
-From a62a10fdf5e631f9bcd6f8f0dcd68b2f02f06000 Mon Sep 17 00:00:00 2001
+From aff3f9f078ba936d88e937f5ad114c0953215f79 Mon Sep 17 00:00:00 2001
 From: Cat73 <cat7373x@gmail.com>
 Date: Mon, 18 Jun 2018 13:02:26 +0800
 Subject: [PATCH] Cat73 -> TpsConfigure
@@ -9,7 +9,7 @@ Content-Transfer-Encoding: 8bit
 根据不同的 TPS 设定不同的服务器限制参数，虽然这种控制有些滞后，但应该能缓解 TPS 下降的情况，防止 TPS 继续降低
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 7bcfd7f7..1633dccb 100644
+index 7bcfd7f7..4d518bf7 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -572,6 +572,8 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IAs
@@ -21,7 +21,7 @@ index 7bcfd7f7..1633dccb 100644
                      }
                      lastTick = curTime;
  
-@@ -628,6 +630,184 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IAs
+@@ -628,6 +630,191 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IAs
  
      }
  
@@ -107,9 +107,6 @@ index 7bcfd7f7..1633dccb 100644
 +        }
 +
 +        private void apply() {
-+            WorldServer world = ((org.bukkit.craftbukkit.CraftWorld) craftServer.getWorlds().get(0)).getHandle();
-+            org.spigotmc.SpigotWorldConfig spigotWorldConfig = world.spigotConfig;
-+
 +            craftServer.monsterSpawn = this.spawnLimitsMonsters;
 +            craftServer.animalSpawn = this.spawnLimitsAnimals;
 +            craftServer.waterAnimalSpawn = this.spawnLimitsWaterAnimals;
@@ -118,15 +115,17 @@ index 7bcfd7f7..1633dccb 100644
 +            craftServer.getWorlds().stream()
 +                    .map(w -> ((org.bukkit.craftbukkit.CraftWorld) w).getHandle())
 +                    .forEach(w -> {
++                        org.spigotmc.SpigotWorldConfig spigotWorldConfig = w.spigotConfig;
++
++                        spigotWorldConfig.animalActivationRange = this.entityActivationRangeAnimals;
++                        spigotWorldConfig.monsterActivationRange = this.entityActivationRangeMonsters;
++                        spigotWorldConfig.miscActivationRange = this.entityActivationRangeMisc;
++                        spigotWorldConfig.tileMaxTickTime = this.maxTickTimeTile;
++                        spigotWorldConfig.entityMaxTickTime = this.maxTickTimeEntity;
++
 +                        w.ticksPerAnimalSpawns = this.ticksPerAnimalSpawns;
 +                        w.ticksPerMonsterSpawns = this.ticksPerMonsterSpawns;
 +                    });
-+
-+            spigotWorldConfig.animalActivationRange = this.entityActivationRangeAnimals;
-+            spigotWorldConfig.monsterActivationRange = this.entityActivationRangeMonsters;
-+            spigotWorldConfig.miscActivationRange = this.entityActivationRangeMisc;
-+            spigotWorldConfig.tileMaxTickTime = this.maxTickTimeTile;
-+            spigotWorldConfig.entityMaxTickTime = this.maxTickTimeEntity;
 +        }
 +
 +        @Override
@@ -195,10 +194,18 @@ index 7bcfd7f7..1633dccb 100644
 +                .findFirst()
 +                .filter(c -> c != this.lastLimit)
 +                .ifPresent(c -> {
++                    TpsConfigure newConfigure = c;
++                    int lastIdx = this.tpsConfigures.indexOf(this.lastLimit);
++                    int newIdx = this.tpsConfigures.indexOf(newConfigure);
++                    if (newIdx - lastIdx < -1) {
++                        int useIdx = lastIdx - 1;
++                        newConfigure = this.tpsConfigures.get(useIdx);
++                    }
++
 +                    MinecraftServer.LOGGER.info("[TpsConfigure] TPS: {}, useMinTps: {}, useRate: {}", tps, c.minTps, c.rate);
 +
-+                    c.apply();
-+                    this.lastLimit = c;
++                    newConfigure.apply();
++                    this.lastLimit = newConfigure;
 +                });
 +    }
 +    // Cat73 End
