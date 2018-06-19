@@ -1,4 +1,4 @@
-From aff3f9f078ba936d88e937f5ad114c0953215f79 Mon Sep 17 00:00:00 2001
+From 5981f475e93bfaca694068282016c17f1c8cd301 Mon Sep 17 00:00:00 2001
 From: Cat73 <cat7373x@gmail.com>
 Date: Mon, 18 Jun 2018 13:02:26 +0800
 Subject: [PATCH] Cat73 -> TpsConfigure
@@ -9,7 +9,7 @@ Content-Transfer-Encoding: 8bit
 根据不同的 TPS 设定不同的服务器限制参数，虽然这种控制有些滞后，但应该能缓解 TPS 下降的情况，防止 TPS 继续降低
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 7bcfd7f7..4d518bf7 100644
+index 7bcfd7f7..46e3ed0c 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -572,6 +572,8 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IAs
@@ -21,7 +21,7 @@ index 7bcfd7f7..4d518bf7 100644
                      }
                      lastTick = curTime;
  
-@@ -628,6 +630,191 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IAs
+@@ -628,6 +630,199 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IAs
  
      }
  
@@ -59,12 +59,15 @@ index 7bcfd7f7..4d518bf7 100644
 +        private final int entityActivationRangeMonsters;
 +        private final int entityActivationRangeMisc;
 +        // world-settings.default.max-tick-time
-+        private final int maxTickTimeTile;
-+        private final int maxTickTimeEntity;
++        private final int tileMaxTickTime;
++        private final int entityMaxTickTime;
++        // world-settings.default.max-tnt-per-tick
++        private final int maxTntTicksPerTick;
 +
 +        private TpsConfigure(double minTps, double rate, int spawnLimitsMonsters, int spawnLimitsAnimals, int spawnLimitsWaterAnimals,
 +                int spawnLimitsAmbient, int ticksPerAnimalSpawns, int ticksPerMonsterSpawns, int entityActivationRangeAnimals,
-+                int entityActivationRangeMonsters, int entityActivationRangeMisc, int maxTickTimeTile, int maxTickTimeEntity) {
++                int entityActivationRangeMonsters, int entityActivationRangeMisc, int tileMaxTickTime, int entityMaxTickTime,
++                int maxTntTicksPerTick) {
 +            this.minTps = minTps;
 +            this.rate = rate;
 +            this.spawnLimitsMonsters = spawnLimitsMonsters;
@@ -76,8 +79,9 @@ index 7bcfd7f7..4d518bf7 100644
 +            this.entityActivationRangeAnimals = entityActivationRangeAnimals;
 +            this.entityActivationRangeMonsters = entityActivationRangeMonsters;
 +            this.entityActivationRangeMisc = entityActivationRangeMisc;
-+            this.maxTickTimeTile = maxTickTimeTile;
-+            this.maxTickTimeEntity = maxTickTimeEntity;
++            this.tileMaxTickTime = tileMaxTickTime;
++            this.entityMaxTickTime = entityMaxTickTime;
++            this.maxTntTicksPerTick = maxTntTicksPerTick;
 +        }
 +
 +        private TpsConfigure(double minTps, double rate, CraftServer craftServer, org.spigotmc.SpigotWorldConfig spigotWorldConfig) {
@@ -94,7 +98,8 @@ index 7bcfd7f7..4d518bf7 100644
 +                    subLimit(spigotWorldConfig.monsterActivationRange, rate, 1),
 +                    subLimit(spigotWorldConfig.miscActivationRange, rate, 1),
 +                    subLimit(spigotWorldConfig.tileMaxTickTime, rate, 15),
-+                    subLimit(spigotWorldConfig.entityMaxTickTime, rate, 15)
++                    subLimit(spigotWorldConfig.entityMaxTickTime, rate, 15),
++                    subLimit(spigotWorldConfig.maxTntTicksPerTick, rate, 1)
 +            );
 +        }
 +
@@ -120,8 +125,9 @@ index 7bcfd7f7..4d518bf7 100644
 +                        spigotWorldConfig.animalActivationRange = this.entityActivationRangeAnimals;
 +                        spigotWorldConfig.monsterActivationRange = this.entityActivationRangeMonsters;
 +                        spigotWorldConfig.miscActivationRange = this.entityActivationRangeMisc;
-+                        spigotWorldConfig.tileMaxTickTime = this.maxTickTimeTile;
-+                        spigotWorldConfig.entityMaxTickTime = this.maxTickTimeEntity;
++                        w.tileLimiter = new org.spigotmc.TickLimiter(this.tileMaxTickTime);
++                        w.entityLimiter = new org.spigotmc.TickLimiter(this.entityMaxTickTime);
++                        spigotWorldConfig.maxTntTicksPerTick = this.maxTntTicksPerTick;
 +
 +                        w.ticksPerAnimalSpawns = this.ticksPerAnimalSpawns;
 +                        w.ticksPerMonsterSpawns = this.ticksPerMonsterSpawns;
@@ -141,8 +147,9 @@ index 7bcfd7f7..4d518bf7 100644
 +                    ", entityActivationRangeAnimals: " + entityActivationRangeAnimals +
 +                    ", entityActivationRangeMonsters: " + entityActivationRangeMonsters +
 +                    ", entityActivationRangeMisc: " + entityActivationRangeMisc +
-+                    ", maxTickTimeTile: " + maxTickTimeTile +
-+                    ", maxTickTimeEntity: " + maxTickTimeEntity;
++                    ", tileMaxTickTime: " + tileMaxTickTime +
++                    ", entityMaxTickTime: " + entityMaxTickTime +
++                    ", maxTntTicksPerTick: " + maxTntTicksPerTick;
 +        }
 +    }
 +
@@ -171,12 +178,12 @@ index 7bcfd7f7..4d518bf7 100644
 +            new TpsConfigure(10.0D, 0.56D, craftServer, spigotWorldConfig),
 +            // 8 ~ 10 0.44x
 +            new TpsConfigure(8.0D, 0.44D, craftServer, spigotWorldConfig),
-+            // 5 ~ 8 0.35x
-+            new TpsConfigure(5.0D, 0.35D, craftServer, spigotWorldConfig),
-+            // 3 ~ 5 0.25x
-+            new TpsConfigure(3.0D, 0.25D, craftServer, spigotWorldConfig),
-+            // 0 ~ 3 0.10x
-+            new TpsConfigure(Double.MIN_VALUE, 0.10D, craftServer, spigotWorldConfig)
++            // 5 ~ 8 0.32x
++            new TpsConfigure(5.0D, 0.32D, craftServer, spigotWorldConfig),
++            // 3 ~ 5 0.20x
++            new TpsConfigure(3.0D, 0.20D, craftServer, spigotWorldConfig),
++            // 0 ~ 3 0.08x
++            new TpsConfigure(Double.MIN_VALUE, 0.08D, craftServer, spigotWorldConfig)
 +        );
 +
 +        this.tpsConfigures
@@ -194,6 +201,7 @@ index 7bcfd7f7..4d518bf7 100644
 +                .findFirst()
 +                .filter(c -> c != this.lastLimit)
 +                .ifPresent(c -> {
++                    // 如果是上升，则每次最多允许上升一级
 +                    TpsConfigure newConfigure = c;
 +                    int lastIdx = this.tpsConfigures.indexOf(this.lastLimit);
 +                    int newIdx = this.tpsConfigures.indexOf(newConfigure);
@@ -202,7 +210,7 @@ index 7bcfd7f7..4d518bf7 100644
 +                        newConfigure = this.tpsConfigures.get(useIdx);
 +                    }
 +
-+                    MinecraftServer.LOGGER.info("[TpsConfigure] TPS: {}, useMinTps: {}, useRate: {}", tps, c.minTps, c.rate);
++                    MinecraftServer.LOGGER.info("[TpsConfigure] TPS: {}, useMinTps: {}, useRate: {}", tps, newConfigure.minTps, newConfigure.rate);
 +
 +                    newConfigure.apply();
 +                    this.lastLimit = newConfigure;
@@ -213,6 +221,23 @@ index 7bcfd7f7..4d518bf7 100644
      public void a(ServerPing serverping) {
          File file = this.d("server-icon.png");
  
+diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
+index 5b0be8ea..d90f4d98 100644
+--- a/src/main/java/net/minecraft/server/World.java
++++ b/src/main/java/net/minecraft/server/World.java
+@@ -133,8 +133,10 @@ public abstract class World implements IBlockAccess {
+     private boolean guardEntityList; // Spigot
+     public static boolean haveWeSilencedAPhysicsCrash;
+     public static String blockLocation;
+-    private org.spigotmc.TickLimiter entityLimiter;
+-    private org.spigotmc.TickLimiter tileLimiter;
++    // Cat73 Start
++    public org.spigotmc.TickLimiter entityLimiter;
++    public org.spigotmc.TickLimiter tileLimiter;
++    // Cat73 End
+     private int tileTickPosition;
+ 
+     public CraftWorld getWorld() {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 index 5ab7cee1..5d6ae5ef 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
