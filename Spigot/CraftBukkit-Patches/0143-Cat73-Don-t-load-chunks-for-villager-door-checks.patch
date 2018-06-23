@@ -1,4 +1,4 @@
-From 54d4fa0ce3313cb13bbb27c128a890d1703babfb Mon Sep 17 00:00:00 2001
+From 82eaec73c7873b25eb2f9ed756d3404de660c918 Mon Sep 17 00:00:00 2001
 From: Cat73 <cat7373x@gmail.com>
 Date: Sat, 16 Jun 2018 09:01:37 +0800
 Subject: [PATCH] Cat73 -> Don't load chunks for villager door checks
@@ -7,7 +7,7 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 不要在村庄检测门时加载区块
-Link: https://github.com/PaperMC/Paper/blob/4f29a0ce0a470ae3ac6be1d69ee7843a78bb9ae1/Spigot-Server-Patches/0300-Don-t-load-chunks-for-villager-door-checks.patch
+Link: https://github.com/PaperMC/Paper/blob/f0cb089a24d6c62f986e6635975f80b96c517e92/Spigot-Server-Patches/0300-Don-t-load-chunks-for-villager-door-checks.patch
 
 diff --git a/src/main/java/net/minecraft/server/PersistentVillage.java b/src/main/java/net/minecraft/server/PersistentVillage.java
 index a5b79eca..3efa440a 100644
@@ -20,6 +20,24 @@ index a5b79eca..3efa440a 100644
 -        IBlockData iblockdata = this.world.getType(blockposition);
 +        // Paper start
 +        IBlockData iblockdata = this.world.getTypeIfLoaded(blockposition);
++        if (iblockdata == null) {
++            return false;
++        }
++        // Paper end
+         Block block = iblockdata.getBlock();
+ 
+         return block instanceof BlockDoor ? iblockdata.getMaterial() == Material.WOOD : false;
+diff --git a/src/main/java/net/minecraft/server/Village.java b/src/main/java/net/minecraft/server/Village.java
+index fb52785b..cd3eecef 100644
+--- a/src/main/java/net/minecraft/server/Village.java
++++ b/src/main/java/net/minecraft/server/Village.java
+@@ -327,7 +327,12 @@ public class Village {
+     }
+ 
+     private boolean f(BlockPosition blockposition) {
+-        IBlockData iblockdata = this.a.getType(blockposition);
++        // Paper start
++        IBlockData iblockdata = this.a.getTypeIfLoaded(blockposition);
 +        if (iblockdata == null) {
 +            return false;
 +        }
