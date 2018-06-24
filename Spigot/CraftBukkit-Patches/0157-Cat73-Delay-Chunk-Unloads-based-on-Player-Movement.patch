@@ -1,0 +1,147 @@
+From d4a1695b27dbaa670830d0f8c80a71db3a461b4f Mon Sep 17 00:00:00 2001
+From: Cat73 <cat7373x@gmail.com>
+Date: Mon, 25 Jun 2018 06:24:56 +0800
+Subject: [PATCH] Cat73 -> Delay Chunk Unloads based on Player Movement
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+有时玩家会在一小块区域内来回走动，这会导致视野边缘的区块频繁的加载和卸载，这非常浪费资源
+这个补丁给这种区块卸载引入了一个延迟，在区块延迟到达之前暂时先不实际的卸载区块
+
+Link: https://github.com/PaperMC/Paper/blob/f0cb089a24d6c62f986e6635975f80b96c517e92/Spigot-Server-Patches/0140-Delay-Chunk-Unloads-based-on-Player-Movement.patch
+
+diff --git a/src/main/java/net/minecraft/server/Chunk.java b/src/main/java/net/minecraft/server/Chunk.java
+index 6687f6ff..271a5d6a 100644
+--- a/src/main/java/net/minecraft/server/Chunk.java
++++ b/src/main/java/net/minecraft/server/Chunk.java
+@@ -28,6 +28,7 @@ public class Chunk {
+     private boolean j;
+     public final World world;
+     public final int[] heightMap;
++    public Long scheduledForUnload; // Paper - delay chunk unloads
+     public final int locX;
+     public final int locZ;
+     private boolean m;
+diff --git a/src/main/java/net/minecraft/server/ChunkProviderServer.java b/src/main/java/net/minecraft/server/ChunkProviderServer.java
+index ca0db3bf..7e9f60ec 100644
+--- a/src/main/java/net/minecraft/server/ChunkProviderServer.java
++++ b/src/main/java/net/minecraft/server/ChunkProviderServer.java
+@@ -300,6 +300,17 @@ public class ChunkProviderServer implements IChunkProvider {
+ 
+                 activityAccountant.endActivity(); // Spigot
+             }
++            // Paper start - delayed chunk unloads
++            long now = System.currentTimeMillis();
++            long unloadAfter = 10000; // 10s
++            // noinspection Convert2streamapi
++            for (Chunk chunk : chunks.values()) {
++                if (chunk.scheduledForUnload != null && now - chunk.scheduledForUnload > unloadAfter) {
++                    chunk.scheduledForUnload = null;
++                    unload(chunk);
++                }
++            }
++            // Paper end
+ 
+             this.chunkLoader.b();
+         }
+diff --git a/src/main/java/net/minecraft/server/PlayerChunk.java b/src/main/java/net/minecraft/server/PlayerChunk.java
+index 3d30e183..48a008e0 100644
+--- a/src/main/java/net/minecraft/server/PlayerChunk.java
++++ b/src/main/java/net/minecraft/server/PlayerChunk.java
+@@ -32,8 +32,16 @@ public class PlayerChunk {
+         public void run() {
+             loadInProgress = false;
+             PlayerChunk.this.chunk = PlayerChunk.this.playerChunkMap.getWorld().getChunkProviderServer().getOrLoadChunkAt(location.x, location.z);
++            markChunkUsed(); // Paper - delay chunk unloads
+         }
+     };
++    // Paper start - delay chunk unloads
++    public final void markChunkUsed() {
++        if (chunk != null && chunk.scheduledForUnload != null) {
++            chunk.scheduledForUnload = null;
++        }
++    }
++    // Paper end
+     // CraftBukkit end
+ 
+     public PlayerChunk(PlayerChunkMap playerchunkmap, int i, int j) {
+@@ -42,6 +50,7 @@ public class PlayerChunk {
+         // CraftBukkit start
+         loadInProgress = true;
+         this.chunk = playerchunkmap.getWorld().getChunkProviderServer().getChunkAt(i, j, loadedRunnable, false);
++        markChunkUsed(); // Paper - delay chunk unloads
+         // CraftBukkit end
+     }
+ 
+@@ -110,6 +119,7 @@ public class PlayerChunk {
+             if (!loadInProgress) {
+                 loadInProgress = true;
+                 this.chunk = playerChunkMap.getWorld().getChunkProviderServer().getChunkAt(this.location.x, this.location.z, loadedRunnable, flag);
++                markChunkUsed(); // Paper - delay chunk unloads
+             }
+             // CraftBukkit end
+ 
+diff --git a/src/main/java/net/minecraft/server/PlayerChunkMap.java b/src/main/java/net/minecraft/server/PlayerChunkMap.java
+index eeac3499..9955e870 100644
+--- a/src/main/java/net/minecraft/server/PlayerChunkMap.java
++++ b/src/main/java/net/minecraft/server/PlayerChunkMap.java
+@@ -441,7 +441,9 @@ public class PlayerChunkMap {
+         Chunk chunk = playerchunk.f();
+ 
+         if (chunk != null) {
+-            this.getWorld().getChunkProviderServer().unload(chunk);
++            // Paper start - delay chunk unloads
++            chunk.scheduledForUnload = System.currentTimeMillis();
++            // Paper end
+         }
+ 
+     }
+diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
+index d90f4d98..009ff09e 100644
+--- a/src/main/java/net/minecraft/server/World.java
++++ b/src/main/java/net/minecraft/server/World.java
+@@ -1531,7 +1531,11 @@ public abstract class World implements IBlockAccess {
+             if (!tileentity.y() && tileentity.u()) {
+                 BlockPosition blockposition = tileentity.getPosition();
+ 
+-                if (this.isLoaded(blockposition) && this.P.a(blockposition)) {
++                // Paper start - Skip ticking in chunks scheduled for unload
++                net.minecraft.server.Chunk chunk = this.getChunkIfLoaded(blockposition);
++                boolean shouldTick = chunk != null && !chunk.d && chunk.scheduledForUnload == null;
++                if (shouldTick && this.P.a(blockposition)) {
++                    // Paper end
+                     try {
+                         this.methodProfiler.a(() -> {
+                             return String.valueOf(TileEntity.a(tileentity.getClass()));
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
+index ef8165da..dc1c8dc0 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
+@@ -1555,7 +1555,7 @@ public class CraftWorld implements World {
+         ChunkProviderServer cps = world.getChunkProviderServer();
+         for (net.minecraft.server.Chunk chunk : cps.chunks.values()) {
+             // If in use, skip it
+-            if (isChunkInUse(chunk.locX, chunk.locZ)) {
++            if (isChunkInUse(chunk.locX, chunk.locZ) || chunk.scheduledForUnload != null) { // Paper - delayed chunk unloads
+                 continue;
+             }
+ 
+diff --git a/src/main/java/org/spigotmc/ActivationRange.java b/src/main/java/org/spigotmc/ActivationRange.java
+index 2bd690fd..738aaa6f 100644
+--- a/src/main/java/org/spigotmc/ActivationRange.java
++++ b/src/main/java/org/spigotmc/ActivationRange.java
+@@ -281,6 +281,10 @@ public class ActivationRange
+         {
+             isActive = false;
+         }
++        // Paper start - Skip ticking in chunks scheduled for unload
++        if (chunk == null || chunk.d || chunk.scheduledForUnload != null)
++            isActive = false;
++        // Paper end
+         SpigotTimings.checkIfActiveTimer.stopTiming();
+         return isActive;
+     }
+-- 
+2.15.2 (Apple Git-101.1)
+
