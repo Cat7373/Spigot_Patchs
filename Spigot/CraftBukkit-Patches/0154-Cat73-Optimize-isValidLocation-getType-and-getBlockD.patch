@@ -1,4 +1,4 @@
-From f27487b171849254b91e9556fe70ea270d683fae Mon Sep 17 00:00:00 2001
+From c20626082c8f895920a455b9516a175b8e406c1b Mon Sep 17 00:00:00 2001
 From: Cat73 <cat7373x@gmail.com>
 Date: Sun, 17 Jun 2018 14:27:58 +0800
 Subject: [PATCH] Cat73 -> Optimize isValidLocation, getType and getBlockData
