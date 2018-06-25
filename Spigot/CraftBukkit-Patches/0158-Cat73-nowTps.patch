@@ -1,0 +1,50 @@
+From 36a71d3f90385dc0207b824ee831efaec38b7608 Mon Sep 17 00:00:00 2001
+From: Cat73 <cat7373x@gmail.com>
+Date: Mon, 25 Jun 2018 11:32:52 +0800
+Subject: [PATCH] Cat73 -> nowTps
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+给 Spigot 的 tps 命令增加一个实时 tps 的显示(最近 100 tick 的均值)
+
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index 962f12f2..a8cd7db9 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -124,6 +124,7 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IAs
+     public static final int TICK_TIME = 1000000000 / TPS;
+     private static final int SAMPLE_INTERVAL = 100;
+     public final double[] recentTps = new double[ 3 ];
++    public double nowTps = 20.0D; // Cat73 nowTps
+     public final SlackActivityAccountant slackActivityAccountant = new SlackActivityAccountant();
+     // Spigot end
+ 
+@@ -574,6 +575,7 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IAs
+                         tickSection = curTime;
+ 
+                         this.tpsConfigure(currentTps);
++                        this.nowTps = currentTps; // Cat73 nowTps
+                     }
+                     lastTick = curTime;
+ 
+diff --git a/src/main/java/org/spigotmc/TicksPerSecondCommand.java b/src/main/java/org/spigotmc/TicksPerSecondCommand.java
+index be2e31de..0d43fc92 100644
+--- a/src/main/java/org/spigotmc/TicksPerSecondCommand.java
++++ b/src/main/java/org/spigotmc/TicksPerSecondCommand.java
+@@ -26,7 +26,11 @@ public class TicksPerSecondCommand extends Command
+             return true;
+         }
+ 
+-        StringBuilder sb = new StringBuilder( ChatColor.GOLD + "TPS from last 1m, 5m, 15m: " );
++        // Cat73 Start
++        StringBuilder sb = new StringBuilder( ChatColor.GOLD + "TPS from last now, 1m, 5m, 15m: " );
++        sb.append( format( MinecraftServer.getServer().nowTps ) );
++        sb.append( ", " );
++        // Cat73 End
+         for ( double tps : MinecraftServer.getServer().recentTps )
+         {
+             sb.append( format( tps ) );
+-- 
+2.15.2 (Apple Git-101.1)
+
