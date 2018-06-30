@@ -1,0 +1,76 @@
+From 55a817cd4f082fac1ba4caafe2d1f3633e02be46 Mon Sep 17 00:00:00 2001
+From: Cat73 <cat7373x@gmail.com>
+Date: Sat, 30 Jun 2018 12:20:25 +0800
+Subject: [PATCH] Cat73 -> Nether Portal Cache
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+拉长地狱门缓存时间，从 15s~20s 拉长到 5 分钟
+同时增加判断缓存无效的逻辑，缓存的坐标已经不是传送门时，放弃缓存的结果并重新搜索
+同时移除 CraftBukkit 增加的禁止部分实体创建地狱门的逻辑，避免出现缓存无效的情况
+
+diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
+index 97a0183e..594a6da2 100644
+--- a/src/main/java/net/minecraft/server/Entity.java
++++ b/src/main/java/net/minecraft/server/Entity.java
+@@ -2299,18 +2299,18 @@ public abstract class Entity implements ICommandListener {
+             boolean useTravelAgent = exitWorld != null && !(this.dimension == 1 && exitWorld.dimension == 1); // don't use agent for custom worlds or return from THE_END
+ 
+             TravelAgent agent = exit != null ? (TravelAgent) ((CraftWorld) exit.getWorld()).getHandle().getTravelAgent() : org.bukkit.craftbukkit.CraftTravelAgent.DEFAULT; // return arbitrary TA to compensate for implementation dependent plugins
+-            boolean oldCanCreate = agent.getCanCreatePortal();
+-            agent.setCanCreatePortal(false); // General entities cannot create portals
++            // boolean oldCanCreate = agent.getCanCreatePortal();
++            // agent.setCanCreatePortal(false); // General entities cannot create portals
+ 
+             EntityPortalEvent event = new EntityPortalEvent(this.getBukkitEntity(), enter, exit, agent);
+             event.useTravelAgent(useTravelAgent);
+             event.getEntity().getServer().getPluginManager().callEvent(event);
+             if (event.isCancelled() || event.getTo() == null || event.getTo().getWorld() == null || !this.isAlive()) {
+-                agent.setCanCreatePortal(oldCanCreate);
++                // agent.setCanCreatePortal(oldCanCreate);
+                 return null;
+             }
+             exit = event.useTravelAgent() ? event.getPortalTravelAgent().findOrCreate(event.getTo()) : event.getTo();
+-            agent.setCanCreatePortal(oldCanCreate);
++            // agent.setCanCreatePortal(oldCanCreate);
+ 
+             // Need to make sure the profiler state is reset afterwards (but we still want to time the call)
+             Entity entity = this.teleportTo(exit, true);
+diff --git a/src/main/java/net/minecraft/server/PortalTravelAgent.java b/src/main/java/net/minecraft/server/PortalTravelAgent.java
+index d1c67e39..963eacfd 100644
+--- a/src/main/java/net/minecraft/server/PortalTravelAgent.java
++++ b/src/main/java/net/minecraft/server/PortalTravelAgent.java
+@@ -121,12 +121,15 @@ public class PortalTravelAgent {
+         Object object = BlockPosition.ZERO;
+         long k = ChunkCoordIntPair.a(i, j);
+ 
+-        if (this.c.containsKey(k)) {
+-            PortalTravelAgent.ChunkCoordinatesPortal portaltravelagent_chunkcoordinatesportal = (PortalTravelAgent.ChunkCoordinatesPortal) this.c.get(k);
+-
++        // Cat73 start
++        PortalTravelAgent.ChunkCoordinatesPortal cachedResult = (PortalTravelAgent.ChunkCoordinatesPortal) this.c.get(k);
++        if (cachedResult != null &&
++                this.world.getType(cachedResult).getBlock() == Blocks.PORTAL &&
++                this.world.getType(cachedResult.down()).getBlock() != Blocks.PORTAL) {
+             d0 = 0.0D;
+-            object = portaltravelagent_chunkcoordinatesportal;
+-            portaltravelagent_chunkcoordinatesportal.b = this.world.getTime();
++            object = cachedResult;
++            cachedResult.b = this.world.getTime();
++            // Cat73 end
+             flag1 = false;
+         } else {
+             BlockPosition blockposition = new BlockPosition(x, y, z); // CraftBukkit
+@@ -452,7 +455,7 @@ public class PortalTravelAgent {
+ 
+     public void a(long i) {
+         if (i % 100L == 0L) {
+-            long j = i - 300L;
++            long j = i - (20L * 60L * 5L); // Cat73
+             ObjectIterator objectiterator = this.c.values().iterator();
+ 
+             while (objectiterator.hasNext()) {
+-- 
+2.15.2 (Apple Git-101.1)
+
