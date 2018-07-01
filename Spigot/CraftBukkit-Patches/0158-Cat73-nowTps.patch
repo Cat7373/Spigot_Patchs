@@ -1,4 +1,4 @@
-From b390ebbaac96fb69d5ce57110166756db6a01c86 Mon Sep 17 00:00:00 2001
+From 6a3a48e83c70db32d04b2588110dc15a60a6d843 Mon Sep 17 00:00:00 2001
 From: Cat73 <cat7373x@gmail.com>
 Date: Mon, 25 Jun 2018 11:32:52 +0800
 Subject: [PATCH] Cat73 -> nowTps
@@ -9,7 +9,7 @@ Content-Transfer-Encoding: 8bit
 给 Spigot 的 tps 命令增加一个实时 tps 的显示(最近 100 tick 的均值)
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 962f12f2..6af80643 100644
+index 38f8e826..07170023 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -124,6 +124,7 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IAs

@@ -1,4 +1,4 @@
-From b1e01dc7f0a7a75a8ab9406ae7ce654ac4c8ec80 Mon Sep 17 00:00:00 2001
+From e874610bec1e3d0dc9afe8ae8a0eddd77fd99242 Mon Sep 17 00:00:00 2001
 From: Cat73 <cat7373x@gmail.com>
 Date: Sat, 30 Jun 2018 11:06:44 +0800
 Subject: [PATCH] Cat73 -> Do not mark chunks as active for neighbor updates
@@ -10,7 +10,7 @@ Content-Transfer-Encoding: 8bit
 Link: https://github.com/PaperMC/Paper/blob/f0cb089a24d6c62f986e6635975f80b96c517e92/Spigot-Server-Patches/0127-Do-not-mark-chunks-as-active-for-neighbor-updates.patch
 
 diff --git a/src/main/java/net/minecraft/server/Chunk.java b/src/main/java/net/minecraft/server/Chunk.java
-index 271a5d6a..1d19ccb5 100644
+index 271a5d6a..826bb952 100644
 --- a/src/main/java/net/minecraft/server/Chunk.java
 +++ b/src/main/java/net/minecraft/server/Chunk.java
 @@ -987,25 +987,25 @@ public class Chunk {
