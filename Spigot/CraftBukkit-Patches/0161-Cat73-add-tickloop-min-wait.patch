@@ -1,0 +1,29 @@
+From 8f4723363611a5f54e2d0af789c67d7c0a12f364 Mon Sep 17 00:00:00 2001
+From: Cat73 <cat7373x@gmail.com>
+Date: Mon, 2 Jul 2018 08:58:26 +0800
+Subject: [PATCH] Cat73 -> add tickloop min wait
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+给 TickLoop 的 wait 加一个最小值，wait 时间较短时不要让宝贵的 CPU 时间用于等待
+
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index 07170023..193e7efc 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -559,7 +559,10 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IAs
+                     curTime = System.nanoTime();
+                     wait = TICK_TIME - (curTime - lastTick) - catchupTime;
+                     if (wait > 0) {
+-                        Thread.sleep(wait / 1000000);
++                        long waitTime = wait / 1000000;
++                        if (waitTime > 5) {
++                            Thread.sleep(waitTime);
++                        }
+                         catchupTime = 0;
+                         continue;
+                     } else {
+-- 
+2.15.2 (Apple Git-101.1)
+
