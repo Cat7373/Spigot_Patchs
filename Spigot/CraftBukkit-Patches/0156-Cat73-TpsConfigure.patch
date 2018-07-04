@@ -1,4 +1,4 @@
-From 3ea724a6b8a4930c0bc2fb933b42664cfe7ead73 Mon Sep 17 00:00:00 2001
+From 9754be985ceb061f9387c22d2e60d8e805ce67d3 Mon Sep 17 00:00:00 2001
 From: Cat73 <cat7373x@gmail.com>
 Date: Mon, 18 Jun 2018 13:02:26 +0800
 Subject: [PATCH] Cat73 -> TpsConfigure
@@ -217,7 +217,7 @@ index 7bcfd7f7..38f8e826 100644
          File file = this.d("server-icon.png");
  
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index 5b0be8ea..e4fc2535 100644
+index 5b0be8ea..755c8668 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
 @@ -125,6 +125,8 @@ public abstract class World implements IBlockAccess {
@@ -242,8 +242,17 @@ index 5b0be8ea..e4fc2535 100644
      private int tileTickPosition;
  
      public CraftWorld getWorld() {
+@@ -161,6 +165,8 @@ public abstract class World implements IBlockAccess {
+         this.world = new CraftWorld((WorldServer) this, gen, env);
+         this.ticksPerAnimalSpawns = this.getServer().getTicksPerAnimalSpawns(); // CraftBukkit
+         this.ticksPerMonsterSpawns = this.getServer().getTicksPerMonsterSpawns(); // CraftBukkit
++        this.animalSpawnsCD = this.ticksPerAnimalSpawns; // Cat73
++        this.monsterSpawnsCD = this.ticksPerMonsterSpawns; // Cat73
+         // CraftBukkit end
+         this.u = Lists.newArrayList(new IWorldAccess[] { this.t});
+         this.N = Calendar.getInstance();
 diff --git a/src/main/java/net/minecraft/server/WorldServer.java b/src/main/java/net/minecraft/server/WorldServer.java
-index c891629b..6c5c94ee 100644
+index c891629b..d47c5ac2 100644
 --- a/src/main/java/net/minecraft/server/WorldServer.java
 +++ b/src/main/java/net/minecraft/server/WorldServer.java
 @@ -287,7 +287,25 @@ public class WorldServer extends World implements IAsyncTaskHandler {
@@ -254,7 +263,7 @@ index c891629b..6c5c94ee 100644
 +            // Cat73 start
 +            boolean spawnMonster = this.allowMonsters;
 +            if (spawnMonster && this.ticksPerMonsterSpawns != 0) {
-+                spawnMonster = (--this.monsterSpawnsCD == 0);
++                spawnMonster = (--this.monsterSpawnsCD <= 0);
 +                if (spawnMonster) {
 +                    this.monsterSpawnsCD = this.ticksPerMonsterSpawns;
 +                }
@@ -262,7 +271,7 @@ index c891629b..6c5c94ee 100644
 +
 +            boolean spawnAnimals = this.allowAnimals;
 +            if (spawnAnimals && this.ticksPerAnimalSpawns != 0) {
-+                spawnAnimals = (--this.animalSpawnsCD == 0);
++                spawnAnimals = (--this.animalSpawnsCD <= 0);
 +                if (spawnAnimals) {
 +                    this.animalSpawnsCD = this.ticksPerAnimalSpawns;
 +                }
