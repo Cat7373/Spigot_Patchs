@@ -1,4 +1,4 @@
-From 863c0c72880f28a6d6cf29e684179063dffa61e1 Mon Sep 17 00:00:00 2001
+From 3ea724a6b8a4930c0bc2fb933b42664cfe7ead73 Mon Sep 17 00:00:00 2001
 From: Cat73 <cat7373x@gmail.com>
 Date: Mon, 18 Jun 2018 13:02:26 +0800
 Subject: [PATCH] Cat73 -> TpsConfigure
@@ -217,10 +217,19 @@ index 7bcfd7f7..38f8e826 100644
          File file = this.d("server-icon.png");
  
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index 5b0be8ea..d90f4d98 100644
+index 5b0be8ea..e4fc2535 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
-@@ -133,8 +133,10 @@ public abstract class World implements IBlockAccess {
+@@ -125,6 +125,8 @@ public abstract class World implements IBlockAccess {
+     public List<EntityItem> captureDrops;
+     public long ticksPerAnimalSpawns;
+     public long ticksPerMonsterSpawns;
++    protected long animalSpawnsCD; // Cat73
++    protected long monsterSpawnsCD; // Cat73
+     public boolean populating;
+     private int tickPosition;
+     public final org.spigotmc.SpigotWorldConfig spigotConfig; // Spigot
+@@ -133,8 +135,10 @@ public abstract class World implements IBlockAccess {
      private boolean guardEntityList; // Spigot
      public static boolean haveWeSilencedAPhysicsCrash;
      public static String blockLocation;
@@ -233,6 +242,37 @@ index 5b0be8ea..d90f4d98 100644
      private int tileTickPosition;
  
      public CraftWorld getWorld() {
+diff --git a/src/main/java/net/minecraft/server/WorldServer.java b/src/main/java/net/minecraft/server/WorldServer.java
+index c891629b..6c5c94ee 100644
+--- a/src/main/java/net/minecraft/server/WorldServer.java
++++ b/src/main/java/net/minecraft/server/WorldServer.java
+@@ -287,7 +287,25 @@ public class WorldServer extends World implements IAsyncTaskHandler {
+         long time = this.worldData.getTime();
+         if (this.getGameRules().getBoolean("doMobSpawning") && this.worldData.getType() != WorldType.DEBUG_ALL_BLOCK_STATES && (this.allowMonsters || this.allowAnimals) && (this instanceof WorldServer && this.players.size() > 0)) {
+             timings.mobSpawn.startTiming(); // Spigot
+-            this.spawnerCreature.a(this, this.allowMonsters && (this.ticksPerMonsterSpawns != 0 && time % this.ticksPerMonsterSpawns == 0L), this.allowAnimals && (this.ticksPerAnimalSpawns != 0 && time % this.ticksPerAnimalSpawns == 0L), this.worldData.getTime() % 400L == 0L);
++            // Cat73 start
++            boolean spawnMonster = this.allowMonsters;
++            if (spawnMonster && this.ticksPerMonsterSpawns != 0) {
++                spawnMonster = (--this.monsterSpawnsCD == 0);
++                if (spawnMonster) {
++                    this.monsterSpawnsCD = this.ticksPerMonsterSpawns;
++                }
++            }
++
++            boolean spawnAnimals = this.allowAnimals;
++            if (spawnAnimals && this.ticksPerAnimalSpawns != 0) {
++                spawnAnimals = (--this.animalSpawnsCD == 0);
++                if (spawnAnimals) {
++                    this.animalSpawnsCD = this.ticksPerAnimalSpawns;
++                }
++            }
++
++            this.spawnerCreature.a(this, spawnMonster, spawnAnimals, this.worldData.getTime() % 400L == 0L);
++            // Cat73 end
+             timings.mobSpawn.stopTiming(); // Spigot
+             // CraftBukkit end
+         }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 index 5ab7cee1..5d6ae5ef 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
