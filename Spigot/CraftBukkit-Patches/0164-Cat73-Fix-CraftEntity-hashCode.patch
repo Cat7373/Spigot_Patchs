@@ -1,0 +1,34 @@
+From 7e48ccec2ee0270d02234c74b6f16514fa86f14f Mon Sep 17 00:00:00 2001
+From: Cat73 <cat7373x@gmail.com>
+Date: Sat, 7 Jul 2018 11:43:40 +0800
+Subject: [PATCH] Cat73 -> Fix CraftEntity hashCode
+
+Link: https://github.com/PaperMC/Paper/blob/17525cd54b1f28d62e0b79d75dfe7d60b335faa4/Spigot-Server-Patches/0308-Fix-CraftEntity-hashCode.patch
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
+index c5a194ff..837f0c17 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
+@@ -471,14 +471,15 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+             return false;
+         }
+         final CraftEntity other = (CraftEntity) obj;
+-        return (this.getEntityId() == other.getEntityId());
++        return (this.getHandle() == other.getHandle()); // Paper - while logically the same, this is clearer
+     }
+ 
++    // Paper - Fix hashCode. entity ID's are not static.
++    // A CraftEntity can change reference to a new entity with a new ID, and hash codes should never change
+     @Override
+     public int hashCode() {
+-        int hash = 7;
+-        hash = 29 * hash + this.getEntityId();
+-        return hash;
++        return getUniqueId().hashCode();
++        // Paper end
+     }
+ 
+     public void setMetadata(String metadataKey, MetadataValue newMetadataValue) {
+-- 
+2.15.2 (Apple Git-101.1)
+
