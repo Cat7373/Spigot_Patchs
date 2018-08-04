@@ -7,7 +7,7 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 给多次寻路失败的实体增加寻路 CD
-当一个实体连续寻路失败超过 10 次时，跳过后面的 40 次寻路
+当一个实体连续寻路失败超过 10 次时，后面的寻路截流到 40tick 一次
 Link: https://github.com/PaperMC/Paper/blob/4f29a0ce0a470ae3ac6be1d69ee7843a78bb9ae1/Spigot-Server-Patches/0050-Optimize-Pathfinding.patch
 
 diff --git a/src/main/java/net/minecraft/server/NavigationAbstract.java b/src/main/java/net/minecraft/server/NavigationAbstract.java

@@ -6,7 +6,7 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-根据不同的 TPS 设定不同的服务器限制参数，虽然这种控制有些滞后，但应该能缓解 TPS 下降的情况，防止 TPS 继续降低
+根据不同的 TPS 设定不同的服务器限制参数，虽然这种控制有些滞后，但能缓解 TPS 下降的情况，防止 TPS 继续降低
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
 index 7bcfd7f7..38f8e826 100644

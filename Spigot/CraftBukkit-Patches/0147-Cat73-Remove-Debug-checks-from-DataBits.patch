@@ -7,7 +7,7 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 去掉热点方法(getType)中的边界检查
-这个边界检查如果失败会导致服务器直接崩溃，然而从来没遇到过因为这个检查导致的崩溃，因此这个检查应该没啥乱用
+这个边界检查如果失败会导致服务器直接崩溃，然而从来没遇到过因为这个检查导致的崩溃，因此这个检查应该没啥卵用
 Link: https://github.com/PaperMC/Paper/blob/4f29a0ce0a470ae3ac6be1d69ee7843a78bb9ae1/Spigot-Server-Patches/0105-Remove-Debug-checks-from-DataBits.patch
 
 diff --git a/src/main/java/net/minecraft/server/DataBits.java b/src/main/java/net/minecraft/server/DataBits.java
