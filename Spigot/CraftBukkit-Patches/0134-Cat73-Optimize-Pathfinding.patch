@@ -1,6 +1,6 @@
-From 1c6bf65c43fc9f43996228bf61583a3409362c58 Mon Sep 17 00:00:00 2001
+From e526c89113d0a2028190dba2f8d46190e9a809c4 Mon Sep 17 00:00:00 2001
 From: Cat73 <cat7373x@gmail.com>
-Date: Sun, 17 Jun 2018 08:00:25 +0800
+Date: Sat, 6 Oct 2018 21:35:35 +0800
 Subject: [PATCH] Cat73 -> Optimize Pathfinding
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -8,13 +8,13 @@ Content-Transfer-Encoding: 8bit
 
 给多次寻路失败的实体增加寻路 CD
 当一个实体连续寻路失败超过 10 次时，后面的寻路截流到 40tick 一次
-Link: https://github.com/PaperMC/Paper/blob/4f29a0ce0a470ae3ac6be1d69ee7843a78bb9ae1/Spigot-Server-Patches/0050-Optimize-Pathfinding.patch
+Link: https://github.com/PaperMC/Paper/blob/468a1cbbd78384f2c728ef93d5f796d8b9891a7e/Spigot-Server-Patches/0046-Optimize-Pathfinding.patch
 
 diff --git a/src/main/java/net/minecraft/server/NavigationAbstract.java b/src/main/java/net/minecraft/server/NavigationAbstract.java
-index bfc5769f..bc858342 100644
+index 62cb8151..8111317e 100644
 --- a/src/main/java/net/minecraft/server/NavigationAbstract.java
 +++ b/src/main/java/net/minecraft/server/NavigationAbstract.java
-@@ -118,10 +118,25 @@ public abstract class NavigationAbstract {
+@@ -122,10 +122,26 @@ public abstract class NavigationAbstract {
      }
  
      public boolean a(Entity entity, double d0) {
@@ -22,6 +22,7 @@ index bfc5769f..bc858342 100644
 +        if (this.pathfindFailures > 10 && this.c == null && MinecraftServer.currentTick < this.lastFailure + 40) {
 +            return false;
 +        }
++
          PathEntity pathentity = this.a(entity);
  
 -        return pathentity != null && this.a(pathentity, d0);
@@ -41,14 +42,14 @@ index bfc5769f..bc858342 100644
  
      public boolean a(@Nullable PathEntity pathentity, double d0) {
          if (pathentity == null) {
-@@ -256,6 +271,7 @@ public abstract class NavigationAbstract {
+@@ -258,6 +274,7 @@ public abstract class NavigationAbstract {
      }
  
-     public void p() {
+     public void q() {
 +        this.pathfindFailures = 0; this.lastFailure = 0; // Paper - Pathfinding optimizations
          this.c = null;
      }
  
 -- 
-2.15.2 (Apple Git-101.1)
+2.17.1 (Apple Git-112)
 

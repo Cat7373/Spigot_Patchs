@@ -1,0 +1,57 @@
+From 83b67020458475706b484d887a98fb109c6afec5 Mon Sep 17 00:00:00 2001
+From: Cat73 <cat7373x@gmail.com>
+Date: Sat, 6 Oct 2018 20:07:11 +0800
+Subject: [PATCH] Cat73 -> MC Dev fixes
+
+Link: https://github.com/PaperMC/Paper/blob/468a1cbbd78384f2c728ef93d5f796d8b9891a7e/Spigot-Server-Patches/0003-MC-Dev-fixes.patch
+
+diff --git a/src/main/java/net/minecraft/server/BaseBlockPosition.java b/src/main/java/net/minecraft/server/BaseBlockPosition.java
+index c3e990bd..e2a7b4be 100644
+--- a/src/main/java/net/minecraft/server/BaseBlockPosition.java
++++ b/src/main/java/net/minecraft/server/BaseBlockPosition.java
+@@ -93,7 +93,7 @@ public class BaseBlockPosition implements Comparable<BaseBlockPosition> {
+         return MoreObjects.toStringHelper(this).add("x", this.getX()).add("y", this.getY()).add("z", this.getZ()).toString();
+     }
+ 
+-    public int compareTo(Object object) {
++    public int compareTo(BaseBlockPosition object) { // Paper - decompile fix
+         return this.l((BaseBlockPosition) object);
+     }
+ }
+diff --git a/src/main/java/net/minecraft/server/BlockPosition.java b/src/main/java/net/minecraft/server/BlockPosition.java
+index 002da2a1..51ac05a2 100644
+--- a/src/main/java/net/minecraft/server/BlockPosition.java
++++ b/src/main/java/net/minecraft/server/BlockPosition.java
+@@ -183,7 +183,7 @@ public class BlockPosition extends BaseBlockPosition {
+                     }
+                 }
+ 
+-                protected Object computeNext() {
++                protected BlockPosition computeNext() { // Paper - decompile fix
+                     return this.a();
+                 }
+             };
+@@ -213,8 +213,11 @@ public class BlockPosition extends BaseBlockPosition {
+                         if (this.g.b < l) {
+                             ++this.g.b;
+                         } else if (this.g.c < i1) {
++                            this.g.b = ix; // Paper - decompile fix Readd line removed by the decompiler
+                             ++this.g.c;
+                         } else if (this.g.d < j1) {
++                            this.g.b = ix; // Paper - decompile fix Readd line removed by the decompiler
++                            this.g.c = jx; // Paper - decompile fix Readd line removed by the decompiler
+                             ++this.g.d;
+                         }
+ 
+@@ -222,7 +225,7 @@ public class BlockPosition extends BaseBlockPosition {
+                     }
+                 }
+ 
+-                protected Object computeNext() {
++                protected BlockPosition computeNext() { // Paper - decompile fix
+                     return this.a();
+                 }
+             };
+-- 
+2.17.1 (Apple Git-112)
+

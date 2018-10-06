@@ -1,6 +1,6 @@
-From 6f916b8399a22a9c52223ea7422a521c681b7537 Mon Sep 17 00:00:00 2001
+From 1c1cf712797fcbd4a6ce92081fc3386defd222fe Mon Sep 17 00:00:00 2001
 From: Cat73 <cat7373x@gmail.com>
-Date: Sat, 16 Jun 2018 16:24:27 +0800
+Date: Sat, 6 Oct 2018 21:27:53 +0800
 Subject: [PATCH] Cat73 -> Remove Debug checks from DataBits
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -8,22 +8,22 @@ Content-Transfer-Encoding: 8bit
 
 去掉热点方法(getType)中的边界检查
 这个边界检查如果失败会导致服务器直接崩溃，然而从来没遇到过因为这个检查导致的崩溃，因此这个检查应该没啥卵用
-Link: https://github.com/PaperMC/Paper/blob/4f29a0ce0a470ae3ac6be1d69ee7843a78bb9ae1/Spigot-Server-Patches/0105-Remove-Debug-checks-from-DataBits.patch
+Link: https://github.com/PaperMC/Paper/blob/468a1cbbd78384f2c728ef93d5f796d8b9891a7e/Spigot-Server-Patches/0097-Remove-Debug-checks-from-DataBits.patch
 
 diff --git a/src/main/java/net/minecraft/server/DataBits.java b/src/main/java/net/minecraft/server/DataBits.java
-index f3a6799a..15ce2a62 100644
+index 9e83610f..1d9e6e9e 100644
 --- a/src/main/java/net/minecraft/server/DataBits.java
 +++ b/src/main/java/net/minecraft/server/DataBits.java
-@@ -10,7 +10,7 @@ public class DataBits {
-     private final int d;
+@@ -14,7 +14,7 @@ public class DataBits {
+     }
  
-     public DataBits(int i, int j) {
+     public DataBits(int i, int j, long[] along) {
 -        Validate.inclusiveBetween(1L, 32L, (long) i);
 +        // Validate.inclusiveBetween(1L, 32L, (long) i); // Paper
          this.d = j;
          this.b = i;
-         this.c = (1L << i) - 1L;
-@@ -18,8 +18,8 @@ public class DataBits {
+         this.a = along;
+@@ -27,8 +27,8 @@ public class DataBits {
      }
  
      public void a(int i, int j) {
@@ -34,7 +34,7 @@ index f3a6799a..15ce2a62 100644
          int k = i * this.b;
          int l = k / 64;
          int i1 = ((i + 1) * this.b - 1) / 64;
-@@ -36,7 +36,7 @@ public class DataBits {
+@@ -45,7 +45,7 @@ public class DataBits {
      }
  
      public int a(int i) {
@@ -44,5 +44,5 @@ index f3a6799a..15ce2a62 100644
          int k = j / 64;
          int l = ((i + 1) * this.b - 1) / 64;
 -- 
-2.15.2 (Apple Git-101.1)
+2.17.1 (Apple Git-112)
 

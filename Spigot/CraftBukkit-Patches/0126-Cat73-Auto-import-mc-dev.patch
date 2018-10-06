@@ -1,15 +1,15 @@
-From 7cd88d45fe088af45fa6189cb3decc88980e0dfc Mon Sep 17 00:00:00 2001
+From 764aaba4b18e2191ae2bb7df3b4003ab3d437276 Mon Sep 17 00:00:00 2001
 From: Cat73 <cat7373x@gmail.com>
-Date: Sun, 17 Jun 2018 14:09:27 +0800
+Date: Sat, 6 Oct 2018 19:47:49 +0800
 Subject: [PATCH] Cat73 -> Auto import mc-dev
 
 
 diff --git a/src/main/java/net/minecraft/server/BaseBlockPosition.java b/src/main/java/net/minecraft/server/BaseBlockPosition.java
 new file mode 100644
-index 00000000..d4f41274
+index 00000000..c3e990bd
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/BaseBlockPosition.java
-@@ -0,0 +1,95 @@
+@@ -0,0 +1,99 @@
 +package net.minecraft.server;
 +
 +import com.google.common.base.MoreObjects;
@@ -77,6 +77,10 @@ index 00000000..d4f41274
 +        return Math.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
 +    }
 +
++    public double m(BaseBlockPosition baseblockposition) {
++        return this.h(baseblockposition.getX(), baseblockposition.getY(), baseblockposition.getZ());
++    }
++
 +    public double distanceSquared(double d0, double d1, double d2) {
 +        double d3 = (double) this.getX() - d0;
 +        double d4 = (double) this.getY() - d1;
@@ -107,15 +111,14 @@ index 00000000..d4f41274
 +}
 diff --git a/src/main/java/net/minecraft/server/BlockPosition.java b/src/main/java/net/minecraft/server/BlockPosition.java
 new file mode 100644
-index 00000000..67b476b2
+index 00000000..002da2a1
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/BlockPosition.java
-@@ -0,0 +1,421 @@
+@@ -0,0 +1,424 @@
 +package net.minecraft.server;
 +
 +import com.google.common.collect.AbstractIterator;
 +import com.google.common.collect.Lists;
-+import java.util.Iterator;
 +import java.util.List;
 +import javax.annotation.concurrent.Immutable;
 +import org.apache.logging.log4j.LogManager;
@@ -264,45 +267,43 @@ index 00000000..67b476b2
 +        return a(Math.min(blockposition.getX(), blockposition1.getX()), Math.min(blockposition.getY(), blockposition1.getY()), Math.min(blockposition.getZ(), blockposition1.getZ()), Math.max(blockposition.getX(), blockposition1.getX()), Math.max(blockposition.getY(), blockposition1.getY()), Math.max(blockposition.getZ(), blockposition1.getZ()));
 +    }
 +
-+    public static Iterable<BlockPosition> a(final int i, final int j, final int k, final int l, final int i1, final int j1) {
-+        return new Iterable() {
-+            public Iterator<BlockPosition> iterator() {
-+                return new AbstractIterator() {
-+                    private boolean b = true;
-+                    private int c;
-+                    private int d;
-+                    private int e;
++    public static Iterable<BlockPosition> a(int i, int j, int k, int l, int i1, int j1) {
++        return () -> {
++            return new AbstractIterator() {
++                private boolean g = true;
++                private int h;
++                private int i;
++                private int j;
 +
-+                    protected BlockPosition a() {
-+                        if (this.b) {
-+                            this.b = false;
-+                            this.c = i;
-+                            this.d = j;
-+                            this.e = k;
-+                            return new BlockPosition(i, j, k);
-+                        } else if (this.c == l && this.d == i1 && this.e == j1) {
-+                            return (BlockPosition) this.endOfData();
-+                        } else {
-+                            if (this.c < l) {
-+                                ++this.c;
-+                            } else if (this.d < i1) {
-+                                this.c = i;
-+                                ++this.d;
-+                            } else if (this.e < j1) {
-+                                this.c = i;
-+                                this.d = j;
-+                                ++this.e;
-+                            }
-+
-+                            return new BlockPosition(this.c, this.d, this.e);
++                protected BlockPosition a() {
++                    if (this.g) {
++                        this.g = false;
++                        this.h = i;
++                        this.i = j;
++                        this.j = k;
++                        return new BlockPosition(i, j, k);
++                    } else if (this.h == l && this.i == i1 && this.j == j1) {
++                        return (BlockPosition) this.endOfData();
++                    } else {
++                        if (this.h < l) {
++                            ++this.h;
++                        } else if (this.i < i1) {
++                            this.h = i;
++                            ++this.i;
++                        } else if (this.j < j1) {
++                            this.h = i;
++                            this.i = j;
++                            ++this.j;
 +                        }
-+                    }
 +
-+                    protected Object computeNext() {
-+                        return this.a();
++                        return new BlockPosition(this.h, this.i, this.j);
 +                    }
-+                };
-+            }
++                }
++
++                protected Object computeNext() {
++                    return this.a();
++                }
++            };
 +        };
 +    }
 +
@@ -314,39 +315,34 @@ index 00000000..67b476b2
 +        return b(Math.min(blockposition.getX(), blockposition1.getX()), Math.min(blockposition.getY(), blockposition1.getY()), Math.min(blockposition.getZ(), blockposition1.getZ()), Math.max(blockposition.getX(), blockposition1.getX()), Math.max(blockposition.getY(), blockposition1.getY()), Math.max(blockposition.getZ(), blockposition1.getZ()));
 +    }
 +
-+    public static Iterable<BlockPosition.MutableBlockPosition> b(final int i, final int j, final int k, final int l, final int i1, final int j1) {
-+        return new Iterable() {
-+            public Iterator<BlockPosition.MutableBlockPosition> iterator() {
-+                return new AbstractIterator() {
-+                    private BlockPosition.MutableBlockPosition b;
++    public static Iterable<BlockPosition.MutableBlockPosition> b(int i, int j, int k, int l, int i1, int j1) {
++        return () -> {
++            return new AbstractIterator() {
++                private BlockPosition.MutableBlockPosition g;
 +
-+                    protected BlockPosition.MutableBlockPosition a() {
-+                        if (this.b == null) {
-+                            this.b = new BlockPosition.MutableBlockPosition(i, j, k);
-+                            return this.b;
-+                        } else if (this.b.b == l && this.b.c == i1 && this.b.d == j1) {
-+                            return (BlockPosition.MutableBlockPosition) this.endOfData();
-+                        } else {
-+                            if (this.b.b < l) {
-+                                ++this.b.b;
-+                            } else if (this.b.c < i1) {
-+                                this.b.b = i;
-+                                ++this.b.c;
-+                            } else if (this.b.d < j1) {
-+                                this.b.b = i;
-+                                this.b.c = j;
-+                                ++this.b.d;
-+                            }
-+
-+                            return this.b;
++                protected BlockPosition.MutableBlockPosition a() {
++                    if (this.g == null) {
++                        this.g = new BlockPosition.MutableBlockPosition(i, j, k);
++                        return this.g;
++                    } else if (this.g.b == l && this.g.c == i1 && this.g.d == j1) {
++                        return (BlockPosition.MutableBlockPosition) this.endOfData();
++                    } else {
++                        if (this.g.b < l) {
++                            ++this.g.b;
++                        } else if (this.g.c < i1) {
++                            ++this.g.c;
++                        } else if (this.g.d < j1) {
++                            ++this.g.d;
 +                        }
-+                    }
 +
-+                    protected Object computeNext() {
-+                        return this.a();
++                        return this.g;
 +                    }
-+                };
-+            }
++                }
++
++                protected Object computeNext() {
++                    return this.a();
++                }
++            };
 +        };
 +    }
 +
@@ -354,76 +350,83 @@ index 00000000..67b476b2
 +        return this.c(baseblockposition);
 +    }
 +
-+    public static final class PooledBlockPosition extends BlockPosition.MutableBlockPosition {
++    public static final class b extends BlockPosition.MutableBlockPosition implements AutoCloseable {
 +
 +        private boolean f;
-+        private static final List<BlockPosition.PooledBlockPosition> g = Lists.newArrayList();
++        private static final List<BlockPosition.b> g = Lists.newArrayList();
 +
-+        private PooledBlockPosition(int i, int j, int k) {
++        private b(int i, int j, int k) {
 +            super(i, j, k);
 +        }
 +
-+        public static BlockPosition.PooledBlockPosition s() {
++        public static BlockPosition.b r() {
 +            return e(0, 0, 0);
 +        }
 +
-+        public static BlockPosition.PooledBlockPosition d(double d0, double d1, double d2) {
++        public static BlockPosition.b b(Entity entity) {
++            return d(entity.locX, entity.locY, entity.locZ);
++        }
++
++        public static BlockPosition.b d(double d0, double d1, double d2) {
 +            return e(MathHelper.floor(d0), MathHelper.floor(d1), MathHelper.floor(d2));
 +        }
 +
-+        public static BlockPosition.PooledBlockPosition e(int i, int j, int k) {
-+            List list = BlockPosition.PooledBlockPosition.g;
++        public static BlockPosition.b e(int i, int j, int k) {
++            List list = BlockPosition.b.g;
 +
-+            synchronized (BlockPosition.PooledBlockPosition.g) {
-+                if (!BlockPosition.PooledBlockPosition.g.isEmpty()) {
-+                    BlockPosition.PooledBlockPosition blockposition_pooledblockposition = (BlockPosition.PooledBlockPosition) BlockPosition.PooledBlockPosition.g.remove(BlockPosition.PooledBlockPosition.g.size() - 1);
++            synchronized (BlockPosition.b.g) {
++                if (!BlockPosition.b.g.isEmpty()) {
++                    BlockPosition.b blockposition_b = (BlockPosition.b) BlockPosition.b.g.remove(BlockPosition.b.g.size() - 1);
 +
-+                    if (blockposition_pooledblockposition != null && blockposition_pooledblockposition.f) {
-+                        blockposition_pooledblockposition.f = false;
-+                        blockposition_pooledblockposition.f(i, j, k);
-+                        return blockposition_pooledblockposition;
++                    if (blockposition_b != null && blockposition_b.f) {
++                        blockposition_b.f = false;
++                        blockposition_b.f(i, j, k);
++                        return blockposition_b;
 +                    }
 +                }
 +            }
 +
-+            return new BlockPosition.PooledBlockPosition(i, j, k);
++            return new BlockPosition.b(i, j, k);
 +        }
 +
-+        public void t() {
-+            List list = BlockPosition.PooledBlockPosition.g;
++        public BlockPosition.b f(int i, int j, int k) {
++            return (BlockPosition.b) super.c(i, j, k);
++        }
 +
-+            synchronized (BlockPosition.PooledBlockPosition.g) {
-+                if (BlockPosition.PooledBlockPosition.g.size() < 100) {
-+                    BlockPosition.PooledBlockPosition.g.add(this);
++        public BlockPosition.b e(double d0, double d1, double d2) {
++            return (BlockPosition.b) super.c(d0, d1, d2);
++        }
++
++        public BlockPosition.b j(BaseBlockPosition baseblockposition) {
++            return (BlockPosition.b) super.g(baseblockposition);
++        }
++
++        public BlockPosition.b d(EnumDirection enumdirection) {
++            return (BlockPosition.b) super.c(enumdirection);
++        }
++
++        public BlockPosition.b d(EnumDirection enumdirection, int i) {
++            return (BlockPosition.b) super.c(enumdirection, i);
++        }
++
++        public BlockPosition.b g(int i, int j, int k) {
++            return (BlockPosition.b) super.d(i, j, k);
++        }
++
++        public void close() {
++            List list = BlockPosition.b.g;
++
++            synchronized (BlockPosition.b.g) {
++                if (BlockPosition.b.g.size() < 100) {
++                    BlockPosition.b.g.add(this);
 +                }
 +
 +                this.f = true;
 +            }
 +        }
 +
-+        public BlockPosition.PooledBlockPosition f(int i, int j, int k) {
-+            if (this.f) {
-+                BlockPosition.b.error("PooledMutableBlockPosition modified after it was released.", new Throwable());
-+                this.f = false;
-+            }
-+
-+            return (BlockPosition.PooledBlockPosition) super.c(i, j, k);
-+        }
-+
-+        public BlockPosition.PooledBlockPosition e(double d0, double d1, double d2) {
-+            return (BlockPosition.PooledBlockPosition) super.c(d0, d1, d2);
-+        }
-+
-+        public BlockPosition.PooledBlockPosition j(BaseBlockPosition baseblockposition) {
-+            return (BlockPosition.PooledBlockPosition) super.g(baseblockposition);
-+        }
-+
-+        public BlockPosition.PooledBlockPosition d(EnumDirection enumdirection) {
-+            return (BlockPosition.PooledBlockPosition) super.c(enumdirection);
-+        }
-+
-+        public BlockPosition.PooledBlockPosition d(EnumDirection enumdirection, int i) {
-+            return (BlockPosition.PooledBlockPosition) super.c(enumdirection, i);
++        public BlockPosition.MutableBlockPosition d(int i, int j, int k) {
++            return this.g(i, j, k);
 +        }
 +
 +        public BlockPosition.MutableBlockPosition c(EnumDirection enumdirection, int i) {
@@ -519,6 +522,10 @@ index 00000000..67b476b2
 +            return this.c(this.b + enumdirection.getAdjacentX() * i, this.c + enumdirection.getAdjacentY() * i, this.d + enumdirection.getAdjacentZ() * i);
 +        }
 +
++        public BlockPosition.MutableBlockPosition d(int i, int j, int k) {
++            return this.c(this.b + i, this.c + j, this.d + k);
++        }
++
 +        public void p(int i) {
 +            this.c = i;
 +        }
@@ -534,15 +541,16 @@ index 00000000..67b476b2
 +}
 diff --git a/src/main/java/net/minecraft/server/ChunkCache.java b/src/main/java/net/minecraft/server/ChunkCache.java
 new file mode 100644
-index 00000000..08b986fd
+index 00000000..96c0c762
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/ChunkCache.java
-@@ -0,0 +1,81 @@
+@@ -0,0 +1,220 @@
 +package net.minecraft.server;
 +
++import java.util.function.Predicate;
 +import javax.annotation.Nullable;
 +
-+public class ChunkCache implements IBlockAccess {
++public class ChunkCache implements IIBlockAccess {
 +
 +    protected int a;
 +    protected int b;
@@ -573,7 +581,7 @@ index 00000000..08b986fd
 +            for (i1 = blockposition.getZ() >> 4; i1 <= blockposition1.getZ() >> 4; ++i1) {
 +                Chunk chunk = this.c[l - this.a][i1 - this.b];
 +
-+                if (chunk != null && !chunk.c(blockposition.getY(), blockposition1.getY())) {
++                if (chunk != null && !chunk.b(blockposition.getY(), blockposition1.getY())) {
 +                    this.d = false;
 +                }
 +            }
@@ -594,6 +602,97 @@ index 00000000..08b986fd
 +        return this.c[i][j].a(blockposition, chunk_enumtileentitystate);
 +    }
 +
++    public float A(BlockPosition blockposition) {
++        return this.e.worldProvider.i()[this.getLightLevel(blockposition)];
++    }
++
++    public int d(BlockPosition blockposition, int i) {
++        if (this.getType(blockposition).c(this, blockposition)) {
++            int j = 0;
++            EnumDirection[] aenumdirection = EnumDirection.values();
++            int k = aenumdirection.length;
++
++            for (int l = 0; l < k; ++l) {
++                EnumDirection enumdirection = aenumdirection[l];
++                int i1 = this.getLightLevel(blockposition.shift(enumdirection), i);
++
++                if (i1 > j) {
++                    j = i1;
++                }
++
++                if (j >= 15) {
++                    return j;
++                }
++            }
++
++            return j;
++        } else {
++            return this.getLightLevel(blockposition, i);
++        }
++    }
++
++    public WorldProvider o() {
++        return this.e.o();
++    }
++
++    public int getLightLevel(BlockPosition blockposition, int i) {
++        if (blockposition.getX() >= -30000000 && blockposition.getZ() >= -30000000 && blockposition.getX() < 30000000 && blockposition.getZ() <= 30000000) {
++            if (blockposition.getY() < 0) {
++                return 0;
++            } else {
++                int j;
++
++                if (blockposition.getY() >= 256) {
++                    j = 15 - i;
++                    if (j < 0) {
++                        j = 0;
++                    }
++
++                    return j;
++                } else {
++                    j = (blockposition.getX() >> 4) - this.a;
++                    int k = (blockposition.getZ() >> 4) - this.b;
++
++                    return this.c[j][k].a(blockposition, i);
++                }
++            }
++        } else {
++            return 15;
++        }
++    }
++
++    public boolean isChunkLoaded(int i, int j, boolean flag) {
++        return this.a(i, j);
++    }
++
++    public boolean e(BlockPosition blockposition) {
++        return false;
++    }
++
++    public boolean a(int i, int j) {
++        int k = i - this.a;
++        int l = j - this.b;
++
++        return k >= 0 && k < this.c.length && l >= 0 && l < this.c[k].length;
++    }
++
++    public int a(HeightMap.Type heightmap_type, int i, int j) {
++        throw new RuntimeException("NOT IMPLEMENTED!");
++    }
++
++    public WorldBorder getWorldBorder() {
++        return this.e.getWorldBorder();
++    }
++
++    public boolean a(@Nullable Entity entity, VoxelShape voxelshape) {
++        throw new RuntimeException("This method should never be called here. No entity logic inside Region");
++    }
++
++    @Nullable
++    public EntityHuman a(double d0, double d1, double d2, double d3, Predicate<Entity> predicate) {
++        throw new RuntimeException("This method should never be called here. No entity logic inside Region");
++    }
++
 +    public IBlockData getType(BlockPosition blockposition) {
 +        if (blockposition.getY() >= 0 && blockposition.getY() < 256) {
 +            int i = (blockposition.getX() >> 4) - this.a;
@@ -603,7 +702,7 @@ index 00000000..08b986fd
 +                Chunk chunk = this.c[i][j];
 +
 +                if (chunk != null) {
-+                    return chunk.getBlockData(blockposition);
++                    return chunk.getType(blockposition);
 +                }
 +            }
 +        }
@@ -611,20 +710,67 @@ index 00000000..08b986fd
 +        return Blocks.AIR.getBlockData();
 +    }
 +
-+    public boolean isEmpty(BlockPosition blockposition) {
-+        return this.getType(blockposition).getMaterial() == Material.AIR;
++    public Fluid b(BlockPosition blockposition) {
++        if (blockposition.getY() >= 0 && blockposition.getY() < 256) {
++            int i = (blockposition.getX() >> 4) - this.a;
++            int j = (blockposition.getZ() >> 4) - this.b;
++
++            if (i >= 0 && i < this.c.length && j >= 0 && j < this.c[i].length) {
++                Chunk chunk = this.c[i][j];
++
++                if (chunk != null) {
++                    return chunk.b(blockposition);
++                }
++            }
++        }
++
++        return FluidTypes.a.i();
 +    }
 +
-+    public int getBlockPower(BlockPosition blockposition, EnumDirection enumdirection) {
-+        return this.getType(blockposition).b(this, blockposition, enumdirection);
++    public int c() {
++        return 0;
++    }
++
++    public BiomeBase getBiome(BlockPosition blockposition) {
++        int i = (blockposition.getX() >> 4) - this.a;
++        int j = (blockposition.getZ() >> 4) - this.b;
++
++        return this.c[i][j].getBiome(blockposition);
++    }
++
++    public boolean isEmpty(BlockPosition blockposition) {
++        return this.getType(blockposition).isAir();
++    }
++
++    public int getBrightness(EnumSkyBlock enumskyblock, BlockPosition blockposition) {
++        if (blockposition.getY() >= 0 && blockposition.getY() < 256) {
++            int i = (blockposition.getX() >> 4) - this.a;
++            int j = (blockposition.getZ() >> 4) - this.b;
++
++            return this.c[i][j].getBrightness(enumskyblock, blockposition);
++        } else {
++            return enumskyblock.c;
++        }
++    }
++
++    public int a(BlockPosition blockposition, EnumDirection enumdirection) {
++        return this.getType(blockposition).b((IBlockAccess) this, blockposition, enumdirection);
++    }
++
++    public boolean e() {
++        throw new RuntimeException("Not yet implemented");
++    }
++
++    public int getSeaLevel() {
++        throw new RuntimeException("Not yet implemented");
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/DataBits.java b/src/main/java/net/minecraft/server/DataBits.java
 new file mode 100644
-index 00000000..f3a6799a
+index 00000000..d24ec3d5
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/DataBits.java
-@@ -0,0 +1,61 @@
+@@ -0,0 +1,74 @@
 +package net.minecraft.server;
 +
 +import org.apache.commons.lang3.Validate;
@@ -637,11 +783,20 @@ index 00000000..f3a6799a
 +    private final int d;
 +
 +    public DataBits(int i, int j) {
++        this(i, j, new long[MathHelper.c(j * i, 64) / 64]);
++    }
++
++    public DataBits(int i, int j, long[] along) {
 +        Validate.inclusiveBetween(1L, 32L, (long) i);
 +        this.d = j;
 +        this.b = i;
++        this.a = along;
 +        this.c = (1L << i) - 1L;
-+        this.a = new long[MathHelper.c(j * i, 64) / 64];
++        int k = MathHelper.c(j * i, 64) / 64;
++
++        if (along.length != k) {
++            throw new RuntimeException("Invalid length given for storage, got: " + along.length + " but expected: " + k);
++        }
 +    }
 +
 +    public void a(int i, int j) {
@@ -685,13 +840,17 @@ index 00000000..f3a6799a
 +    public int b() {
 +        return this.d;
 +    }
++
++    public int c() {
++        return this.b;
++    }
 +}
 diff --git a/src/main/java/net/minecraft/server/NavigationAbstract.java b/src/main/java/net/minecraft/server/NavigationAbstract.java
 new file mode 100644
-index 00000000..bfc5769f
+index 00000000..62cb8151
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/NavigationAbstract.java
-@@ -0,0 +1,298 @@
+@@ -0,0 +1,310 @@
 +package net.minecraft.server;
 +
 +import javax.annotation.Nullable;
@@ -703,29 +862,33 @@ index 00000000..bfc5769f
 +    @Nullable
 +    protected PathEntity c;
 +    protected double d;
-+    private final AttributeInstance i;
++    private final AttributeInstance p;
 +    protected int e;
-+    private int j;
-+    private Vec3D k;
-+    private Vec3D l;
-+    private long m;
-+    private long n;
-+    private double o;
-+    protected float f;
-+    protected boolean g;
-+    private long p;
-+    protected PathfinderAbstract h;
++    protected int f;
++    protected Vec3D g;
++    protected Vec3D h;
++    protected long i;
++    protected long j;
++    protected double k;
++    protected float l;
++    protected boolean m;
++    protected long n;
++    protected PathfinderAbstract o;
 +    private BlockPosition q;
-+    private final Pathfinder r;
++    private Pathfinder r;
 +
 +    public NavigationAbstract(EntityInsentient entityinsentient, World world) {
-+        this.k = Vec3D.a;
-+        this.l = Vec3D.a;
-+        this.f = 0.5F;
++        this.g = Vec3D.a;
++        this.h = Vec3D.a;
++        this.l = 0.5F;
 +        this.a = entityinsentient;
 +        this.b = world;
-+        this.i = entityinsentient.getAttributeInstance(GenericAttributes.FOLLOW_RANGE);
++        this.p = entityinsentient.getAttributeInstance(GenericAttributes.FOLLOW_RANGE);
 +        this.r = this.a();
++    }
++
++    public BlockPosition i() {
++        return this.q;
 +    }
 +
 +    protected abstract Pathfinder a();
@@ -734,24 +897,24 @@ index 00000000..bfc5769f
 +        this.d = d0;
 +    }
 +
-+    public float i() {
-+        return (float) this.i.getValue();
++    public float j() {
++        return (float) this.p.getValue();
 +    }
 +
-+    public boolean j() {
-+        return this.g;
++    public boolean k() {
++        return this.m;
 +    }
 +
-+    public void k() {
-+        if (this.b.getTime() - this.p > 20L) {
++    public void l() {
++        if (this.b.getTime() - this.n > 20L) {
 +            if (this.q != null) {
 +                this.c = null;
 +                this.c = this.b(this.q);
-+                this.p = this.b.getTime();
-+                this.g = false;
++                this.n = this.b.getTime();
++                this.m = false;
 +            }
 +        } else {
-+            this.g = true;
++            this.m = true;
 +        }
 +
 +    }
@@ -769,7 +932,7 @@ index 00000000..bfc5769f
 +            return this.c;
 +        } else {
 +            this.q = blockposition;
-+            float f = this.i();
++            float f = this.j();
 +
 +            this.b.methodProfiler.a("pathfind");
 +            BlockPosition blockposition1 = new BlockPosition(this.a);
@@ -777,7 +940,7 @@ index 00000000..bfc5769f
 +            ChunkCache chunkcache = new ChunkCache(this.b, blockposition1.a(-i, -i, -i), blockposition1.a(i, i, i), 0);
 +            PathEntity pathentity = this.r.a(chunkcache, this.a, this.q, f);
 +
-+            this.b.methodProfiler.b();
++            this.b.methodProfiler.e();
 +            return pathentity;
 +        }
 +    }
@@ -793,7 +956,7 @@ index 00000000..bfc5769f
 +                return this.c;
 +            } else {
 +                this.q = blockposition;
-+                float f = this.i();
++                float f = this.j();
 +
 +                this.b.methodProfiler.a("pathfind");
 +                BlockPosition blockposition1 = (new BlockPosition(this.a)).up();
@@ -801,7 +964,7 @@ index 00000000..bfc5769f
 +                ChunkCache chunkcache = new ChunkCache(this.b, blockposition1.a(-i, -i, -i), blockposition1.a(i, i, i), 0);
 +                PathEntity pathentity = this.r.a(chunkcache, this.a, entity, f);
 +
-+                this.b.methodProfiler.b();
++                this.b.methodProfiler.e();
 +                return pathentity;
 +            }
 +        }
@@ -826,36 +989,36 @@ index 00000000..bfc5769f
 +                this.c = pathentity;
 +            }
 +
-+            this.q_();
++            this.E_();
 +            if (this.c.d() <= 0) {
 +                return false;
 +            } else {
 +                this.d = d0;
 +                Vec3D vec3d = this.c();
 +
-+                this.j = this.e;
-+                this.k = vec3d;
++                this.f = this.e;
++                this.g = vec3d;
 +                return true;
 +            }
 +        }
 +    }
 +
 +    @Nullable
-+    public PathEntity l() {
++    public PathEntity m() {
 +        return this.c;
 +    }
 +
 +    public void d() {
 +        ++this.e;
-+        if (this.g) {
-+            this.k();
++        if (this.m) {
++            this.l();
 +        }
 +
-+        if (!this.o()) {
++        if (!this.p()) {
 +            Vec3D vec3d;
 +
 +            if (this.b()) {
-+                this.n();
++                this.o();
 +            } else if (this.c != null && this.c.e() < this.c.d()) {
 +                vec3d = this.c();
 +                Vec3D vec3d1 = this.c.a(this.a, this.c.e());
@@ -865,21 +1028,19 @@ index 00000000..bfc5769f
 +                }
 +            }
 +
-+            this.m();
-+            if (!this.o()) {
++            this.n();
++            if (!this.p()) {
 +                vec3d = this.c.a((Entity) this.a);
-+                BlockPosition blockposition = (new BlockPosition(vec3d)).down();
-+                AxisAlignedBB axisalignedbb = this.b.getType(blockposition).e(this.b, blockposition);
++                BlockPosition blockposition = new BlockPosition(vec3d);
 +
-+                vec3d = vec3d.a(0.0D, 1.0D - axisalignedbb.e, 0.0D);
-+                this.a.getControllerMove().a(vec3d.x, vec3d.y, vec3d.z, this.d);
++                this.a.getControllerMove().a(vec3d.x, this.b.getType(blockposition.down()).isAir() ? vec3d.y : PathfinderNormal.a((IBlockAccess) this.b, blockposition), vec3d.z, this.d);
 +            }
 +        }
 +    }
 +
-+    protected void m() {}
++    protected void n() {}
 +
-+    protected void n() {
++    protected void o() {
 +        Vec3D vec3d = this.c();
 +        int i = this.c.d();
 +
@@ -890,10 +1051,10 @@ index 00000000..bfc5769f
 +            }
 +        }
 +
-+        this.f = this.a.width > 0.75F ? this.a.width / 2.0F : 0.75F - this.a.width / 2.0F;
++        this.l = this.a.width > 0.75F ? this.a.width / 2.0F : 0.75F - this.a.width / 2.0F;
 +        Vec3D vec3d1 = this.c.f();
 +
-+        if (MathHelper.e((float) (this.a.locX - (vec3d1.x + 0.5D))) < this.f && MathHelper.e((float) (this.a.locZ - (vec3d1.z + 0.5D))) < this.f && Math.abs(this.a.locY - vec3d1.y) < 1.0D) {
++        if (MathHelper.e((float) (this.a.locX - (vec3d1.x + 0.5D))) < this.l && MathHelper.e((float) (this.a.locZ - (vec3d1.z + 0.5D))) < this.l && Math.abs(this.a.locY - vec3d1.y) < 1.0D) {
 +            this.c.c(this.c.e() + 1);
 +        }
 +
@@ -912,44 +1073,44 @@ index 00000000..bfc5769f
 +    }
 +
 +    protected void a(Vec3D vec3d) {
-+        if (this.e - this.j > 100) {
-+            if (vec3d.distanceSquared(this.k) < 2.25D) {
-+                this.p();
++        if (this.e - this.f > 100) {
++            if (vec3d.distanceSquared(this.g) < 2.25D) {
++                this.q();
 +            }
 +
-+            this.j = this.e;
-+            this.k = vec3d;
++            this.f = this.e;
++            this.g = vec3d;
 +        }
 +
 +        if (this.c != null && !this.c.b()) {
 +            Vec3D vec3d1 = this.c.f();
 +
-+            if (vec3d1.equals(this.l)) {
-+                this.m += System.currentTimeMillis() - this.n;
++            if (vec3d1.equals(this.h)) {
++                this.i += SystemUtils.b() - this.j;
 +            } else {
-+                this.l = vec3d1;
-+                double d0 = vec3d.f(this.l);
++                this.h = vec3d1;
++                double d0 = vec3d.f(this.h);
 +
-+                this.o = this.a.cy() > 0.0F ? d0 / (double) this.a.cy() * 1000.0D : 0.0D;
++                this.k = this.a.cK() > 0.0F ? d0 / (double) this.a.cK() * 1000.0D : 0.0D;
 +            }
 +
-+            if (this.o > 0.0D && (double) this.m > this.o * 3.0D) {
-+                this.l = Vec3D.a;
-+                this.m = 0L;
-+                this.o = 0.0D;
-+                this.p();
++            if (this.k > 0.0D && (double) this.i > this.k * 3.0D) {
++                this.h = Vec3D.a;
++                this.i = 0L;
++                this.k = 0.0D;
++                this.q();
 +            }
 +
-+            this.n = System.currentTimeMillis();
++            this.j = SystemUtils.b();
 +        }
 +
 +    }
 +
-+    public boolean o() {
++    public boolean p() {
 +        return this.c == null || this.c.b();
 +    }
 +
-+    public void p() {
++    public void q() {
 +        this.c = null;
 +    }
 +
@@ -957,11 +1118,11 @@ index 00000000..bfc5769f
 +
 +    protected abstract boolean b();
 +
-+    protected boolean q() {
-+        return this.a.isInWater() || this.a.au();
++    protected boolean r() {
++        return this.a.aq() || this.a.ax();
 +    }
 +
-+    protected void q_() {
++    protected void E_() {
 +        if (this.c != null) {
 +            for (int i = 0; i < this.c.d(); ++i) {
 +                PathPoint pathpoint = this.c.a(i);
@@ -969,7 +1130,7 @@ index 00000000..bfc5769f
 +                IBlockData iblockdata = this.b.getType(new BlockPosition(pathpoint.a, pathpoint.b, pathpoint.c));
 +                Block block = iblockdata.getBlock();
 +
-+                if (block == Blocks.cauldron) {
++                if (block == Blocks.CAULDRON) {
 +                    this.c.a(i, pathpoint.a(pathpoint.a, pathpoint.b + 1, pathpoint.c));
 +                    if (pathpoint1 != null && pathpoint.b >= pathpoint1.b) {
 +                        this.c.a(i + 1, pathpoint1.a(pathpoint1.a, pathpoint.b + 1, pathpoint1.c));
@@ -983,19 +1144,29 @@ index 00000000..bfc5769f
 +    protected abstract boolean a(Vec3D vec3d, Vec3D vec3d1, int i, int j, int k);
 +
 +    public boolean a(BlockPosition blockposition) {
-+        return this.b.getType(blockposition.down()).b();
++        BlockPosition blockposition1 = blockposition.down();
++
++        return this.b.getType(blockposition1).f(this.b, blockposition1);
 +    }
 +
-+    public PathfinderAbstract r() {
-+        return this.h;
++    public PathfinderAbstract s() {
++        return this.o;
++    }
++
++    public void d(boolean flag) {
++        this.o.c(flag);
++    }
++
++    public boolean t() {
++        return this.o.e();
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/PersistentVillage.java b/src/main/java/net/minecraft/server/PersistentVillage.java
 new file mode 100644
-index 00000000..a5b79eca
+index 00000000..98c6bbc1
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/PersistentVillage.java
-@@ -0,0 +1,269 @@
+@@ -0,0 +1,268 @@
 +package net.minecraft.server;
 +
 +import com.google.common.collect.Lists;
@@ -1006,8 +1177,8 @@ index 00000000..a5b79eca
 +public class PersistentVillage extends PersistentBase {
 +
 +    private World world;
-+    private final List<BlockPosition> c = Lists.newArrayList();
-+    private final List<VillageDoor> d = Lists.newArrayList();
++    private final List<BlockPosition> b = Lists.newArrayList();
++    private final List<VillageDoor> c = Lists.newArrayList();
 +    private final List<Village> villages = Lists.newArrayList();
 +    private int time;
 +
@@ -1034,9 +1205,9 @@ index 00000000..a5b79eca
 +    }
 +
 +    public void a(BlockPosition blockposition) {
-+        if (this.c.size() <= 64) {
-+            if (!this.e(blockposition)) {
-+                this.c.add(blockposition);
++        if (this.b.size() <= 64) {
++            if (!this.d(blockposition)) {
++                this.b.add(blockposition);
 +            }
 +
 +        }
@@ -1052,16 +1223,16 @@ index 00000000..a5b79eca
 +            village.a(this.time);
 +        }
 +
-+        this.e();
 +        this.f();
 +        this.g();
++        this.h();
 +        if (this.time % 400 == 0) {
 +            this.c();
 +        }
 +
 +    }
 +
-+    private void e() {
++    private void f() {
 +        Iterator iterator = this.villages.iterator();
 +
 +        while (iterator.hasNext()) {
@@ -1101,15 +1272,15 @@ index 00000000..a5b79eca
 +        return village;
 +    }
 +
-+    private void f() {
-+        if (!this.c.isEmpty()) {
-+            this.b((BlockPosition) this.c.remove(0));
++    private void g() {
++        if (!this.b.isEmpty()) {
++            this.b((BlockPosition) this.b.remove(0));
 +        }
 +    }
 +
-+    private void g() {
-+        for (int i = 0; i < this.d.size(); ++i) {
-+            VillageDoor villagedoor = (VillageDoor) this.d.get(i);
++    private void h() {
++        for (int i = 0; i < this.c.size(); ++i) {
++            VillageDoor villagedoor = (VillageDoor) this.c.get(i);
 +            Village village = this.getClosestVillage(villagedoor.d(), 32);
 +
 +            if (village == null) {
@@ -1121,24 +1292,26 @@ index 00000000..a5b79eca
 +            village.a(villagedoor);
 +        }
 +
-+        this.d.clear();
++        this.c.clear();
 +    }
 +
 +    private void b(BlockPosition blockposition) {
 +        boolean flag = true;
 +        boolean flag1 = true;
 +        boolean flag2 = true;
++        BlockPosition.MutableBlockPosition blockposition_mutableblockposition = new BlockPosition.MutableBlockPosition();
 +
 +        for (int i = -16; i < 16; ++i) {
 +            for (int j = -4; j < 4; ++j) {
 +                for (int k = -16; k < 16; ++k) {
-+                    BlockPosition blockposition1 = blockposition.a(i, j, k);
++                    blockposition_mutableblockposition.g(blockposition).d(i, j, k);
++                    IBlockData iblockdata = this.world.getType(blockposition_mutableblockposition);
 +
-+                    if (this.f(blockposition1)) {
-+                        VillageDoor villagedoor = this.c(blockposition1);
++                    if (this.a(iblockdata)) {
++                        VillageDoor villagedoor = this.c(blockposition_mutableblockposition);
 +
 +                        if (villagedoor == null) {
-+                            this.d(blockposition1);
++                            this.a(iblockdata, blockposition_mutableblockposition);
 +                        } else {
 +                            villagedoor.a(this.time);
 +                        }
@@ -1151,7 +1324,7 @@ index 00000000..a5b79eca
 +
 +    @Nullable
 +    private VillageDoor c(BlockPosition blockposition) {
-+        Iterator iterator = this.d.iterator();
++        Iterator iterator = this.c.iterator();
 +
 +        VillageDoor villagedoor;
 +
@@ -1180,14 +1353,14 @@ index 00000000..a5b79eca
 +        return villagedoor;
 +    }
 +
-+    private void d(BlockPosition blockposition) {
-+        EnumDirection enumdirection = BlockDoor.f(this.world, blockposition);
++    private void a(IBlockData iblockdata, BlockPosition blockposition) {
++        EnumDirection enumdirection = (EnumDirection) iblockdata.get(BlockDoor.FACING);
 +        EnumDirection enumdirection1 = enumdirection.opposite();
 +        int i = this.a(blockposition, enumdirection, 5);
 +        int j = this.a(blockposition, enumdirection1, i + 1);
 +
 +        if (i != j) {
-+            this.d.add(new VillageDoor(blockposition, i < j ? enumdirection : enumdirection1, this.time));
++            this.c.add(new VillageDoor(blockposition, i < j ? enumdirection : enumdirection1, this.time));
 +        }
 +
 +    }
@@ -1196,7 +1369,7 @@ index 00000000..a5b79eca
 +        int j = 0;
 +
 +        for (int k = 1; k <= 5; ++k) {
-+            if (this.world.h(blockposition.shift(enumdirection, k))) {
++            if (this.world.e(blockposition.shift(enumdirection, k))) {
 +                ++j;
 +                if (j >= i) {
 +                    return j;
@@ -1207,8 +1380,8 @@ index 00000000..a5b79eca
 +        return j;
 +    }
 +
-+    private boolean e(BlockPosition blockposition) {
-+        Iterator iterator = this.c.iterator();
++    private boolean d(BlockPosition blockposition) {
++        Iterator iterator = this.b.iterator();
 +
 +        BlockPosition blockposition1;
 +
@@ -1223,11 +1396,8 @@ index 00000000..a5b79eca
 +        return true;
 +    }
 +
-+    private boolean f(BlockPosition blockposition) {
-+        IBlockData iblockdata = this.world.getType(blockposition);
-+        Block block = iblockdata.getBlock();
-+
-+        return block instanceof BlockDoor ? iblockdata.getMaterial() == Material.WOOD : false;
++    private boolean a(IBlockData iblockdata) {
++        return iblockdata.getBlock() instanceof BlockDoor && iblockdata.getMaterial() == Material.WOOD;
 +    }
 +
 +    public void a(NBTTagCompound nbttagcompound) {
@@ -1235,7 +1405,7 @@ index 00000000..a5b79eca
 +        NBTTagList nbttaglist = nbttagcompound.getList("Villages", 10);
 +
 +        for (int i = 0; i < nbttaglist.size(); ++i) {
-+            NBTTagCompound nbttagcompound1 = nbttaglist.get(i);
++            NBTTagCompound nbttagcompound1 = nbttaglist.getCompound(i);
 +            Village village = new Village();
 +
 +            village.a(nbttagcompound1);
@@ -1254,7 +1424,7 @@ index 00000000..a5b79eca
 +            NBTTagCompound nbttagcompound1 = new NBTTagCompound();
 +
 +            village.b(nbttagcompound1);
-+            nbttaglist.add(nbttagcompound1);
++            nbttaglist.add((NBTBase) nbttagcompound1);
 +        }
 +
 +        nbttagcompound.set("Villages", nbttaglist);
@@ -1262,49 +1432,51 @@ index 00000000..a5b79eca
 +    }
 +
 +    public static String a(WorldProvider worldprovider) {
-+        return "villages" + worldprovider.getDimensionManager().c();
++        return "villages" + worldprovider.getDimensionManager().d();
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/TileEntityEnderChest.java b/src/main/java/net/minecraft/server/TileEntityEnderChest.java
 new file mode 100644
-index 00000000..31585757
+index 00000000..b4d3972c
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/TileEntityEnderChest.java
-@@ -0,0 +1,87 @@
+@@ -0,0 +1,89 @@
 +package net.minecraft.server;
 +
 +public class TileEntityEnderChest extends TileEntity implements ITickable {
 +
 +    public float a;
-+    public float f;
-+    public int g;
-+    private int h;
++    public float e;
++    public int f;
++    private int g;
 +
-+    public TileEntityEnderChest() {}
++    public TileEntityEnderChest() {
++        super(TileEntityTypes.ENDER_CHEST);
++    }
 +
-+    public void e() {
-+        if (++this.h % 20 * 4 == 0) {
-+            this.world.playBlockAction(this.position, Blocks.ENDER_CHEST, 1, this.g);
++    public void Y_() {
++        if (++this.g % 20 * 4 == 0) {
++            this.world.playBlockAction(this.position, Blocks.ENDER_CHEST, 1, this.f);
 +        }
 +
-+        this.f = this.a;
++        this.e = this.a;
 +        int i = this.position.getX();
 +        int j = this.position.getY();
 +        int k = this.position.getZ();
 +        float f = 0.1F;
 +        double d0;
 +
-+        if (this.g > 0 && this.a == 0.0F) {
++        if (this.f > 0 && this.a == 0.0F) {
 +            double d1 = (double) i + 0.5D;
 +
 +            d0 = (double) k + 0.5D;
-+            this.world.a((EntityHuman) null, d1, (double) j + 0.5D, d0, SoundEffects.aT, SoundCategory.BLOCKS, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
++            this.world.a((EntityHuman) null, d1, (double) j + 0.5D, d0, SoundEffects.BLOCK_ENDER_CHEST_OPEN, SoundCategory.BLOCKS, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
 +        }
 +
-+        if (this.g == 0 && this.a > 0.0F || this.g > 0 && this.a < 1.0F) {
++        if (this.f == 0 && this.a > 0.0F || this.f > 0 && this.a < 1.0F) {
 +            float f1 = this.a;
 +
-+            if (this.g > 0) {
++            if (this.f > 0) {
 +                this.a += 0.1F;
 +            } else {
 +                this.a -= 0.1F;
@@ -1320,7 +1492,7 @@ index 00000000..31585757
 +                d0 = (double) i + 0.5D;
 +                double d2 = (double) k + 0.5D;
 +
-+                this.world.a((EntityHuman) null, d0, (double) j + 0.5D, d2, SoundEffects.aS, SoundCategory.BLOCKS, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
++                this.world.a((EntityHuman) null, d0, (double) j + 0.5D, d2, SoundEffects.BLOCK_ENDER_CHEST_CLOSE, SoundCategory.BLOCKS, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
 +            }
 +
 +            if (this.a < 0.0F) {
@@ -1332,26 +1504,26 @@ index 00000000..31585757
 +
 +    public boolean c(int i, int j) {
 +        if (i == 1) {
-+            this.g = j;
++            this.f = j;
 +            return true;
 +        } else {
 +            return super.c(i, j);
 +        }
 +    }
 +
-+    public void z() {
++    public void y() {
 +        this.invalidateBlockCache();
-+        super.z();
++        super.y();
 +    }
 +
-+    public void a() {
-+        ++this.g;
-+        this.world.playBlockAction(this.position, Blocks.ENDER_CHEST, 1, this.g);
++    public void c() {
++        ++this.f;
++        this.world.playBlockAction(this.position, Blocks.ENDER_CHEST, 1, this.f);
 +    }
 +
-+    public void f() {
-+        --this.g;
-+        this.world.playBlockAction(this.position, Blocks.ENDER_CHEST, 1, this.g);
++    public void d() {
++        --this.f;
++        this.world.playBlockAction(this.position, Blocks.ENDER_CHEST, 1, this.f);
 +    }
 +
 +    public boolean a(EntityHuman entityhuman) {
@@ -1359,5 +1531,5 @@ index 00000000..31585757
 +    }
 +}
 -- 
-2.15.2 (Apple Git-101.1)
+2.17.1 (Apple Git-112)
 

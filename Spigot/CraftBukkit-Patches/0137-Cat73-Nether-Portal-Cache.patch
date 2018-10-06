@@ -1,6 +1,6 @@
-From 55a817cd4f082fac1ba4caafe2d1f3633e02be46 Mon Sep 17 00:00:00 2001
+From f8bbd1b15f4aad852ab1a53f787ad08a3cefcb66 Mon Sep 17 00:00:00 2001
 From: Cat73 <cat7373x@gmail.com>
-Date: Sat, 30 Jun 2018 12:20:25 +0800
+Date: Sat, 6 Oct 2018 22:15:19 +0800
 Subject: [PATCH] Cat73 -> Nether Portal Cache
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -11,11 +11,11 @@ Content-Transfer-Encoding: 8bit
 同时移除 CraftBukkit 增加的禁止部分实体创建地狱门的逻辑，避免出现缓存无效的情况
 
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index 97a0183e..594a6da2 100644
+index d68bc4f8..294bc61c 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
-@@ -2299,18 +2299,18 @@ public abstract class Entity implements ICommandListener {
-             boolean useTravelAgent = exitWorld != null && !(this.dimension == 1 && exitWorld.dimension == 1); // don't use agent for custom worlds or return from THE_END
+@@ -2446,18 +2446,18 @@ public abstract class Entity implements INamableTileEntity, ICommandListener {
+             boolean useTravelAgent = exitWorld != null && !(this.dimension == DimensionManager.THE_END && exitWorld.dimension == DimensionManager.THE_END); // don't use agent for custom worlds or return from THE_END
  
              TravelAgent agent = exit != null ? (TravelAgent) ((CraftWorld) exit.getWorld()).getHandle().getTravelAgent() : org.bukkit.craftbukkit.CraftTravelAgent.DEFAULT; // return arbitrary TA to compensate for implementation dependent plugins
 -            boolean oldCanCreate = agent.getCanCreatePortal();
@@ -38,21 +38,21 @@ index 97a0183e..594a6da2 100644
              // Need to make sure the profiler state is reset afterwards (but we still want to time the call)
              Entity entity = this.teleportTo(exit, true);
 diff --git a/src/main/java/net/minecraft/server/PortalTravelAgent.java b/src/main/java/net/minecraft/server/PortalTravelAgent.java
-index d1c67e39..963eacfd 100644
+index 73d5b4d6..c6d77687 100644
 --- a/src/main/java/net/minecraft/server/PortalTravelAgent.java
 +++ b/src/main/java/net/minecraft/server/PortalTravelAgent.java
-@@ -121,12 +121,15 @@ public class PortalTravelAgent {
+@@ -122,12 +122,16 @@ public class PortalTravelAgent {
          Object object = BlockPosition.ZERO;
          long k = ChunkCoordIntPair.a(i, j);
  
--        if (this.c.containsKey(k)) {
--            PortalTravelAgent.ChunkCoordinatesPortal portaltravelagent_chunkcoordinatesportal = (PortalTravelAgent.ChunkCoordinatesPortal) this.c.get(k);
--
+-        if (this.d.containsKey(k)) {
+-            PortalTravelAgent.ChunkCoordinatesPortal portaltravelagent_chunkcoordinatesportal = (PortalTravelAgent.ChunkCoordinatesPortal) this.d.get(k);
 +        // Cat73 start
-+        PortalTravelAgent.ChunkCoordinatesPortal cachedResult = (PortalTravelAgent.ChunkCoordinatesPortal) this.c.get(k);
++        PortalTravelAgent.ChunkCoordinatesPortal cachedResult = (PortalTravelAgent.ChunkCoordinatesPortal) this.d.get(k);
 +        if (cachedResult != null &&
-+                this.world.getType(cachedResult).getBlock() == Blocks.PORTAL &&
-+                this.world.getType(cachedResult.down()).getBlock() != Blocks.PORTAL) {
++                this.world.getType(cachedResult).getBlock() == Blocks.NETHER_PORTAL &&
++                this.world.getType(cachedResult.down()).getBlock() != Blocks.NETHER_PORTAL) {
+ 
              d0 = 0.0D;
 -            object = portaltravelagent_chunkcoordinatesportal;
 -            portaltravelagent_chunkcoordinatesportal.b = this.world.getTime();
@@ -62,15 +62,15 @@ index d1c67e39..963eacfd 100644
              flag1 = false;
          } else {
              BlockPosition blockposition = new BlockPosition(x, y, z); // CraftBukkit
-@@ -452,7 +455,7 @@ public class PortalTravelAgent {
+@@ -446,7 +450,7 @@ public class PortalTravelAgent {
  
      public void a(long i) {
          if (i % 100L == 0L) {
 -            long j = i - 300L;
 +            long j = i - (20L * 60L * 5L); // Cat73
-             ObjectIterator objectiterator = this.c.values().iterator();
+             ObjectIterator objectiterator = this.d.values().iterator();
  
              while (objectiterator.hasNext()) {
 -- 
-2.15.2 (Apple Git-101.1)
+2.17.1 (Apple Git-112)
 

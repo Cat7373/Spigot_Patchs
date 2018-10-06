@@ -1,16 +1,16 @@
-From 23954ab9346fa984d2448c2bd88aee329f6a5662 Mon Sep 17 00:00:00 2001
+From 8c48aaafdf4de9feeea7f2cabccc6418190296da Mon Sep 17 00:00:00 2001
 From: Cat73 <cat7373x@gmail.com>
-Date: Sun, 17 Jun 2018 07:34:01 +0800
+Date: Sat, 6 Oct 2018 21:57:10 +0800
 Subject: [PATCH] Cat73 -> Don't tick Skulls - unused code
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 头颅的 tickloop 中只会对两个变量进行更新，然鹅这俩变量是私有的且没在任何地方使用，所以可以安全的移除掉
-Link: https://github.com/PaperMC/Paper/blob/4f29a0ce0a470ae3ac6be1d69ee7843a78bb9ae1/Spigot-Server-Patches/0109-Don-t-tick-Skulls-unused-code.patch
+Link: https://github.com/PaperMC/Paper/blob/468a1cbbd78384f2c728ef93d5f796d8b9891a7e/Spigot-Server-Patches/0101-Don-t-tick-Skulls-unused-code.patch
 
 diff --git a/src/main/java/net/minecraft/server/TileEntitySkull.java b/src/main/java/net/minecraft/server/TileEntitySkull.java
-index a796c08a..dd266588 100644
+index 3a54ebdb..e59f3c21 100644
 --- a/src/main/java/net/minecraft/server/TileEntitySkull.java
 +++ b/src/main/java/net/minecraft/server/TileEntitySkull.java
 @@ -24,7 +24,7 @@ import com.mojang.authlib.ProfileLookupCallback;
@@ -20,8 +20,8 @@ index a796c08a..dd266588 100644
 -public class TileEntitySkull extends TileEntity implements ITickable {
 +public class TileEntitySkull extends TileEntity /*implements ITickable*/ { // Paper - remove tickable
  
-     private int a;
-     public int rotation;
+     private GameProfile a;
+     private int e;
 -- 
-2.15.2 (Apple Git-101.1)
+2.17.1 (Apple Git-112)
 
