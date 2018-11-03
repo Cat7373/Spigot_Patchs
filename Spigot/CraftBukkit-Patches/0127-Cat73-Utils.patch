@@ -1,4 +1,4 @@
-From e2c73476de4baae9cb0c6138af2a4daa2e918478 Mon Sep 17 00:00:00 2001
+From a465c9c2904f676050f1d55d2cce15ad24ef4ff8 Mon Sep 17 00:00:00 2001
 From: Cat73 <cat7373x@gmail.com>
 Date: Sat, 6 Oct 2018 20:25:32 +0800
 Subject: [PATCH] Cat73 -> Utils
@@ -6,71 +6,11 @@ Subject: [PATCH] Cat73 -> Utils
 Link: https://github.com/PaperMC/Paper/blob/468a1cbbd78384f2c728ef93d5f796d8b9891a7e/Spigot-Server-Patches/0004-MC-Utils.patch
 Link: https://github.com/PaperMC/Paper/blob/468a1cbbd78384f2c728ef93d5f796d8b9891a7e/Spigot-Server-Patches/0069-Add-World-Util-Methods.patch
 
-diff --git a/src/main/java/net/minecraft/server/BlockPosition.java b/src/main/java/net/minecraft/server/BlockPosition.java
-index 51ac05a2..3d117623 100644
---- a/src/main/java/net/minecraft/server/BlockPosition.java
-+++ b/src/main/java/net/minecraft/server/BlockPosition.java
-@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
- @Immutable
- public class BlockPosition extends BaseBlockPosition {
- 
--    private static final Logger b = LogManager.getLogger();
-+    // private static final Logger b = LogManager.getLogger(); // Paper - variable name conflict, logger isn't used
-     public static final BlockPosition ZERO = new BlockPosition(0, 0, 0);
-     private static final int c = 1 + MathHelper.e(MathHelper.c(30000000));
-     private static final int d = BlockPosition.c;
-@@ -45,6 +45,7 @@ public class BlockPosition extends BaseBlockPosition {
-         return d0 == 0.0D && d1 == 0.0D && d2 == 0.0D ? this : new BlockPosition((double) this.getX() + d0, (double) this.getY() + d1, (double) this.getZ() + d2);
-     }
- 
-+    public BlockPosition add(int i, int j, int k) {return a(i, j, k);} // Paper - OBFHELPER
-     public BlockPosition a(int i, int j, int k) {
-         return i == 0 && j == 0 && k == 0 ? this : new BlockPosition(this.getX() + i, this.getY() + j, this.getZ() + k);
-     }
-@@ -190,6 +191,7 @@ public class BlockPosition extends BaseBlockPosition {
-         };
-     }
- 
-+    public BlockPosition asImmutable() { return h(); } // Paper - OBFHELPER
-     public BlockPosition h() {
-         return this;
-     }
-@@ -213,11 +215,11 @@ public class BlockPosition extends BaseBlockPosition {
-                         if (this.g.b < l) {
-                             ++this.g.b;
-                         } else if (this.g.c < i1) {
--                            this.g.b = ix; // Paper - decompile fix Readd line removed by the decompiler
-+                            this.g.b = i; // Paper - decompile fix Readd line removed by the decompiler
-                             ++this.g.c;
-                         } else if (this.g.d < j1) {
--                            this.g.b = ix; // Paper - decompile fix Readd line removed by the decompiler
--                            this.g.c = jx; // Paper - decompile fix Readd line removed by the decompiler
-+                            this.g.b = i; // Paper - decompile fix Readd line removed by the decompiler
-+                            this.g.c = j; // Paper - decompile fix Readd line removed by the decompiler
-                             ++this.g.d;
-                         }
- 
-@@ -385,6 +387,7 @@ public class BlockPosition extends BaseBlockPosition {
-             return this.d;
-         }
- 
-+        public BlockPosition.MutableBlockPosition setValues(int i, int j, int k) { return c(i, j, k);} // Paper - OBFHELPER
-         public BlockPosition.MutableBlockPosition c(int i, int j, int k) {
-             this.b = i;
-             this.c = j;
-@@ -392,6 +395,7 @@ public class BlockPosition extends BaseBlockPosition {
-             return this;
-         }
- 
-+        public BlockPosition.MutableBlockPosition setValues(double d0, double d1, double d2) { return c(d0, d1, d2);} // Paper - OBFHELPER
-         public BlockPosition.MutableBlockPosition c(double d0, double d1, double d2) {
-             return this.c(MathHelper.floor(d0), MathHelper.floor(d1), MathHelper.floor(d2));
-         }
 diff --git a/src/main/java/net/minecraft/server/Chunk.java b/src/main/java/net/minecraft/server/Chunk.java
-index bc5e4a65..8776b089 100644
+index 5d3c7ad87..b847a334c 100644
 --- a/src/main/java/net/minecraft/server/Chunk.java
 +++ b/src/main/java/net/minecraft/server/Chunk.java
-@@ -28,7 +28,7 @@ import com.google.common.collect.Lists; // CraftBukkit
+@@ -27,7 +27,7 @@ import com.google.common.collect.Lists; // CraftBukkit
  public class Chunk implements IChunkAccess {
  
      private static final Logger d = LogManager.getLogger();
@@ -79,7 +19,7 @@ index bc5e4a65..8776b089 100644
      private final ChunkSection[] sections;
      private final BiomeBase[] f;
      private final boolean[] g;
-@@ -390,6 +390,7 @@ public class Chunk implements IChunkAccess {
+@@ -391,6 +391,7 @@ public class Chunk implements IChunkAccess {
          return this.getBlockData(blockposition.getX(), blockposition.getY(), blockposition.getZ());
      }
  
@@ -87,7 +27,7 @@ index bc5e4a65..8776b089 100644
      public IBlockData getBlockData(int i, int j, int k) {
          if (this.world.S() == WorldType.DEBUG_ALL_BLOCK_STATES) {
              IBlockData iblockdata = null;
-@@ -595,6 +596,7 @@ public class Chunk implements IChunkAccess {
+@@ -596,6 +597,7 @@ public class Chunk implements IChunkAccess {
          }
      }
  
@@ -95,7 +35,7 @@ index bc5e4a65..8776b089 100644
      public int a(BlockPosition blockposition, int i) {
          return this.a(blockposition, i, this.world.o().g());
      }
-@@ -699,6 +701,7 @@ public class Chunk implements IChunkAccess {
+@@ -700,6 +702,7 @@ public class Chunk implements IChunkAccess {
          return this.a(blockposition, Chunk.EnumTileEntityState.CHECK);
      }
  
@@ -104,7 +44,7 @@ index bc5e4a65..8776b089 100644
      public TileEntity a(BlockPosition blockposition, Chunk.EnumTileEntityState chunk_enumtileentitystate) {
          // CraftBukkit start
 diff --git a/src/main/java/net/minecraft/server/ChunkTaskScheduler.java b/src/main/java/net/minecraft/server/ChunkTaskScheduler.java
-index 3b6b3b9a..22af9c18 100644
+index 3b6b3b9a9..22af9c188 100644
 --- a/src/main/java/net/minecraft/server/ChunkTaskScheduler.java
 +++ b/src/main/java/net/minecraft/server/ChunkTaskScheduler.java
 @@ -16,7 +16,7 @@ import org.apache.logging.log4j.Logger;
@@ -117,7 +57,7 @@ index 3b6b3b9a..22af9c18 100644
      private final IChunkLoader e;
      private final IAsyncTaskHandler f;
 diff --git a/src/main/java/net/minecraft/server/DataBits.java b/src/main/java/net/minecraft/server/DataBits.java
-index d24ec3d5..9e83610f 100644
+index d24ec3d53..9e83610f1 100644
 --- a/src/main/java/net/minecraft/server/DataBits.java
 +++ b/src/main/java/net/minecraft/server/DataBits.java
 @@ -60,6 +60,7 @@ public class DataBits {
@@ -129,7 +69,7 @@ index d24ec3d5..9e83610f 100644
          return this.a;
      }
 diff --git a/src/main/java/net/minecraft/server/EntityCreature.java b/src/main/java/net/minecraft/server/EntityCreature.java
-index 2c6fbd1d..a5c147b9 100644
+index 372afbe94..20b7c2c6d 100644
 --- a/src/main/java/net/minecraft/server/EntityCreature.java
 +++ b/src/main/java/net/minecraft/server/EntityCreature.java
 @@ -6,6 +6,7 @@ import org.bukkit.event.entity.EntityUnleashEvent;
@@ -141,7 +81,7 @@ index 2c6fbd1d..a5c147b9 100644
      private float b;
  
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index ed77641e..45f27974 100644
+index df21e33f3..e0b0b204c 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
 @@ -79,7 +79,7 @@ public abstract class World implements IEntityAccess, GeneratorAccess, IIBlockAc
@@ -235,5 +175,5 @@ index ed77641e..45f27974 100644
          return this.getChunkAt(blockposition.getX() >> 4, blockposition.getZ() >> 4);
      }
 -- 
-2.17.1 (Apple Git-112)
+2.19.1
 

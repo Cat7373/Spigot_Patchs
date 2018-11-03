@@ -1,4 +1,4 @@
-From 221c03032364c746ffefa532a3410cb03d2295c8 Mon Sep 17 00:00:00 2001
+From dec3162916741a430810917fd8e7fd70b1c82fdb Mon Sep 17 00:00:00 2001
 From: Cat73 <cat7373x@gmail.com>
 Date: Sat, 6 Oct 2018 22:28:47 +0800
 Subject: [PATCH] Cat73 -> add tickloop min wait
@@ -9,7 +9,7 @@ Content-Transfer-Encoding: 8bit
 给 TickLoop 的 wait 加一个最小值，wait 时间较短时不要让宝贵的 CPU 时间用于等待
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 04f237a5..b3cf74d4 100644
+index 4debb8e91..5be51b692 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -713,7 +713,10 @@ public abstract class MinecraftServer implements IAsyncTaskHandler, IMojangStati
@@ -25,5 +25,5 @@ index 04f237a5..b3cf74d4 100644
                          continue;
                      } else {
 -- 
-2.17.1 (Apple Git-112)
+2.19.1
 

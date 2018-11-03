@@ -1,4 +1,4 @@
-From c1f04f32d00e960b02d3ce44d1f9b5abebc15a8b Mon Sep 17 00:00:00 2001
+From 910671eacd409f4de93667de31b712ca4ced719d Mon Sep 17 00:00:00 2001
 From: Cat73 <cat7373x@gmail.com>
 Date: Sat, 6 Oct 2018 21:55:13 +0800
 Subject: [PATCH] Cat73 -> Remove CraftScheduler Async Task Debugger
@@ -10,7 +10,7 @@ Content-Transfer-Encoding: 8bit
 Link: https://github.com/PaperMC/Paper/blob/468a1cbbd78384f2c728ef93d5f796d8b9891a7e/Spigot-Server-Patches/0171-Remove-CraftScheduler-Async-Task-Debugger.patch
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java b/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java
-index f11bd754..6a5eb1b9 100644
+index f11bd7545..6a5eb1b92 100644
 --- a/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java
 +++ b/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java
 @@ -80,8 +80,8 @@ public class CraftScheduler implements BukkitScheduler {
@@ -59,5 +59,5 @@ index f11bd754..6a5eb1b9 100644
  
      @Deprecated
 -- 
-2.17.1 (Apple Git-112)
+2.19.1
 

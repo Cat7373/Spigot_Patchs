@@ -1,4 +1,4 @@
-From f1cf3ac803570ef17f7fb770bd23b9748119c647 Mon Sep 17 00:00:00 2001
+From 529f4cf73b38b209c398af92fece870d74602b97 Mon Sep 17 00:00:00 2001
 From: Cat73 <cat7373x@gmail.com>
 Date: Sat, 6 Oct 2018 21:22:55 +0800
 Subject: [PATCH] Cat73 -> Use a Shared Random for Entities
@@ -12,7 +12,7 @@ MC 目前只有一个主线程，因此不会出现线程安全问题，且 Rand
 Link: https://github.com/PaperMC/Paper/blob/468a1cbbd78384f2c728ef93d5f796d8b9891a7e/Spigot-Server-Patches/0076-Use-a-Shared-Random-for-Entities.patch
 
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index 3c7537d0..d68bc4f8 100644
+index c9b332f45..91e518cd1 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
 @@ -50,6 +50,7 @@ public abstract class Entity implements INamableTileEntity, ICommandListener {
@@ -33,5 +33,5 @@ index 3c7537d0..d68bc4f8 100644
          this.justCreated = true;
          this.uniqueID = MathHelper.a(this.random);
 -- 
-2.17.1 (Apple Git-112)
+2.19.1
 

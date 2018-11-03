@@ -1,4 +1,4 @@
-From 1f9a8a754ce1db5ceb8f890dd91cf82cebd31bde Mon Sep 17 00:00:00 2001
+From b53b71fbec989fed667f408264b45200fa45ac83 Mon Sep 17 00:00:00 2001
 From: Cat73 <cat7373x@gmail.com>
 Date: Sat, 6 Oct 2018 21:18:45 +0800
 Subject: [PATCH] Cat73 -> Set ServerThread priority to 10
@@ -9,7 +9,7 @@ Content-Transfer-Encoding: 8bit
 提升主线程优先级，由 5(默认, 中等) 提升到 10(最高)，可能能让主线程抢到更多的 CPU
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index ac534ea3..04f237a5 100644
+index bdbd24b6b..4debb8e91 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -700,6 +700,7 @@ public abstract class MinecraftServer implements IAsyncTaskHandler, IMojangStati
@@ -19,7 +19,7 @@ index ac534ea3..04f237a5 100644
 +                Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
                  this.aa = SystemUtils.b();
                  this.m.setMOTD(new ChatComponentText(this.motd));
-                 this.m.setServerInfo(new ServerPing.ServerData("1.13.1", 401));
+                 this.m.setServerInfo(new ServerPing.ServerData("1.13.2", 404));
 -- 
-2.17.1 (Apple Git-112)
+2.19.1
 

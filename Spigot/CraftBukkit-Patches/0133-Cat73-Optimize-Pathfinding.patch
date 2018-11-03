@@ -1,4 +1,4 @@
-From e526c89113d0a2028190dba2f8d46190e9a809c4 Mon Sep 17 00:00:00 2001
+From fc1fe1cb771dc0c570a19c608854bc148d47a9bb Mon Sep 17 00:00:00 2001
 From: Cat73 <cat7373x@gmail.com>
 Date: Sat, 6 Oct 2018 21:35:35 +0800
 Subject: [PATCH] Cat73 -> Optimize Pathfinding
@@ -11,7 +11,7 @@ Content-Transfer-Encoding: 8bit
 Link: https://github.com/PaperMC/Paper/blob/468a1cbbd78384f2c728ef93d5f796d8b9891a7e/Spigot-Server-Patches/0046-Optimize-Pathfinding.patch
 
 diff --git a/src/main/java/net/minecraft/server/NavigationAbstract.java b/src/main/java/net/minecraft/server/NavigationAbstract.java
-index 62cb8151..8111317e 100644
+index 62cb81516..8111317e3 100644
 --- a/src/main/java/net/minecraft/server/NavigationAbstract.java
 +++ b/src/main/java/net/minecraft/server/NavigationAbstract.java
 @@ -122,10 +122,26 @@ public abstract class NavigationAbstract {
@@ -51,5 +51,5 @@ index 62cb8151..8111317e 100644
      }
  
 -- 
-2.17.1 (Apple Git-112)
+2.19.1
 

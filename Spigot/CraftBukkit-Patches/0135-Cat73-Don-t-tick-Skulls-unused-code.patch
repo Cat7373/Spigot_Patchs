@@ -1,4 +1,4 @@
-From 8c48aaafdf4de9feeea7f2cabccc6418190296da Mon Sep 17 00:00:00 2001
+From f3ca5d2b84f944688863b5687f8989346704ed95 Mon Sep 17 00:00:00 2001
 From: Cat73 <cat7373x@gmail.com>
 Date: Sat, 6 Oct 2018 21:57:10 +0800
 Subject: [PATCH] Cat73 -> Don't tick Skulls - unused code
@@ -10,7 +10,7 @@ Content-Transfer-Encoding: 8bit
 Link: https://github.com/PaperMC/Paper/blob/468a1cbbd78384f2c728ef93d5f796d8b9891a7e/Spigot-Server-Patches/0101-Don-t-tick-Skulls-unused-code.patch
 
 diff --git a/src/main/java/net/minecraft/server/TileEntitySkull.java b/src/main/java/net/minecraft/server/TileEntitySkull.java
-index 3a54ebdb..e59f3c21 100644
+index 3a54ebdb1..e59f3c21d 100644
 --- a/src/main/java/net/minecraft/server/TileEntitySkull.java
 +++ b/src/main/java/net/minecraft/server/TileEntitySkull.java
 @@ -24,7 +24,7 @@ import com.mojang.authlib.ProfileLookupCallback;
@@ -23,5 +23,5 @@ index 3a54ebdb..e59f3c21 100644
      private GameProfile a;
      private int e;
 -- 
-2.17.1 (Apple Git-112)
+2.19.1
 

@@ -1,4 +1,4 @@
-From 54a861979912a7603ccde026132853ace36cfdc0 Mon Sep 17 00:00:00 2001
+From c6b05f9561f6b316780297dec7e19b0a76dc26be Mon Sep 17 00:00:00 2001
 From: Cat73 <cat7373x@gmail.com>
 Date: Sat, 6 Oct 2018 21:11:26 +0800
 Subject: [PATCH] Cat73 -> POM Changes
@@ -10,7 +10,7 @@ Content-Transfer-Encoding: 8bit
 Link: https://github.com/PaperMC/Paper/blob/468a1cbbd78384f2c728ef93d5f796d8b9891a7e/Spigot-Server-Patches/0001-POM-Changes.patch
 
 diff --git a/pom.xml b/pom.xml
-index 443f2e3a..74ba0544 100644
+index 57257ac9d..0001a34ab 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -220,18 +220,6 @@
@@ -33,5 +33,5 @@ index 443f2e3a..74ba0544 100644
              <plugin>
                  <groupId>org.apache.maven.plugins</groupId>
 -- 
-2.17.1 (Apple Git-112)
+2.19.1
 
