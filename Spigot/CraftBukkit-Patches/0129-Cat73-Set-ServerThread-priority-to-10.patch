@@ -1,5 +1,5 @@
 From b53b71fbec989fed667f408264b45200fa45ac83 Mon Sep 17 00:00:00 2001
-From: Cat73 <cat7373x@gmail.com>
+From: Cat73 <root@cat73.org>
 Date: Sat, 6 Oct 2018 21:18:45 +0800
 Subject: [PATCH] Cat73 -> Set ServerThread priority to 10
 MIME-Version: 1.0
