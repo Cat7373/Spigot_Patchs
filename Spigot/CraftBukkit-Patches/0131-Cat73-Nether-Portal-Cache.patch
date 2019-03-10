@@ -1,4 +1,4 @@
-From c9cffa0fa310ef4f8095cc6814666ec4c8ea1c5a Mon Sep 17 00:00:00 2001
+From ef88bd52d05e84720761d1bdc191d86fd9bc87fb Mon Sep 17 00:00:00 2001
 From: Cat73 <root@cat73.org>
 Date: Sat, 6 Oct 2018 22:15:19 +0800
 Subject: [PATCH] Cat73 -> Nether Portal Cache
@@ -11,10 +11,10 @@ Content-Transfer-Encoding: 8bit
 同时移除 CraftBukkit 增加的禁止部分实体创建地狱门的逻辑，避免出现缓存无效的情况
 
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index 91e518cd1..00f49b611 100644
+index 6e0fd79c..6222f6fd 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
-@@ -2446,18 +2446,18 @@ public abstract class Entity implements INamableTileEntity, ICommandListener {
+@@ -2460,18 +2460,18 @@ public abstract class Entity implements INamableTileEntity, ICommandListener {
              boolean useTravelAgent = exitWorld != null && !(this.dimension == DimensionManager.THE_END && exitWorld.dimension == DimensionManager.THE_END); // don't use agent for custom worlds or return from THE_END
  
              TravelAgent agent = exit != null ? (TravelAgent) ((CraftWorld) exit.getWorld()).getHandle().getTravelAgent() : org.bukkit.craftbukkit.CraftTravelAgent.DEFAULT; // return arbitrary TA to compensate for implementation dependent plugins
@@ -38,7 +38,7 @@ index 91e518cd1..00f49b611 100644
              // Need to make sure the profiler state is reset afterwards (but we still want to time the call)
              Entity entity = this.teleportTo(exit, true);
 diff --git a/src/main/java/net/minecraft/server/PortalTravelAgent.java b/src/main/java/net/minecraft/server/PortalTravelAgent.java
-index 73d5b4d62..c6d77687c 100644
+index b911d830..fe85f141 100644
 --- a/src/main/java/net/minecraft/server/PortalTravelAgent.java
 +++ b/src/main/java/net/minecraft/server/PortalTravelAgent.java
 @@ -122,12 +122,16 @@ public class PortalTravelAgent {
@@ -72,5 +72,5 @@ index 73d5b4d62..c6d77687c 100644
  
              while (objectiterator.hasNext()) {
 -- 
-2.19.1
+2.21.0
 

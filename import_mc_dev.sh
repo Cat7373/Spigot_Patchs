@@ -4,7 +4,7 @@
 basedir="$(cd "$1" && pwd -P)"
 
 # nms 文件目录 # TODO 自动找目标目录，省的每个版本都要手动改
-nmsdir="$basedir/work/decompile-cf6b1333/net/minecraft/server"
+nmsdir="$basedir/work/decompile-56ba149d/net/minecraft/server"
 # 工作目录
 workdir="$basedir/Spigot/Spigot-Server"
 
@@ -19,6 +19,7 @@ function import {
 
 # imports
 import PersistentVillage
+import VillageDoor
 import DataBits
 import ChunkCache
 import NavigationAbstract

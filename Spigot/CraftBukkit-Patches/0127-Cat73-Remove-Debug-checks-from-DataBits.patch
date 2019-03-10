@@ -1,4 +1,4 @@
-From 5ce9615c4b6ff0b7e2256679b85183e02653e50d Mon Sep 17 00:00:00 2001
+From a53662215e27447c552a1e75cef25bd9ec59d223 Mon Sep 17 00:00:00 2001
 From: Cat73 <root@cat73.org>
 Date: Sat, 6 Oct 2018 21:27:53 +0800
 Subject: [PATCH] Cat73 -> Remove Debug checks from DataBits
@@ -11,7 +11,7 @@ Content-Transfer-Encoding: 8bit
 Link: https://github.com/PaperMC/Paper/blob/468a1cbbd78384f2c728ef93d5f796d8b9891a7e/Spigot-Server-Patches/0097-Remove-Debug-checks-from-DataBits.patch
 
 diff --git a/src/main/java/net/minecraft/server/DataBits.java b/src/main/java/net/minecraft/server/DataBits.java
-index 9e83610f1..1d9e6e9e9 100644
+index 9e83610f..1d9e6e9e 100644
 --- a/src/main/java/net/minecraft/server/DataBits.java
 +++ b/src/main/java/net/minecraft/server/DataBits.java
 @@ -14,7 +14,7 @@ public class DataBits {
@@ -44,5 +44,5 @@ index 9e83610f1..1d9e6e9e9 100644
          int k = j / 64;
          int l = ((i + 1) * this.b - 1) / 64;
 -- 
-2.19.1
+2.21.0
 

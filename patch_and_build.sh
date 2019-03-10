@@ -5,6 +5,8 @@ find . -name "*Cat73*.patch" | xargs rm -fv
 
 java -jar BuildTools.jar --rev 1.13.2
 
+rm -fv Spigot/Spigot-Server/target/spigot-1.13.2-R0.1-SNAPSHOT.jar
+
 git clone https://github.com/Cat7373/Spigot_Patchs.git ./Cat73_Spigot_Patchs/
 cp -rv ./Cat73_Spigot_Patchs/Spigot ./
 

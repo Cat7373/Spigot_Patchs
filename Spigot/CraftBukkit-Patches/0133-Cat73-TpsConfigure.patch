@@ -1,6 +1,6 @@
-From 443c79ed9572937271836e012f45b58dab09f14f Mon Sep 17 00:00:00 2001
+From 87d6962efc4cf5537110f0d4e2aabb1874077e30 Mon Sep 17 00:00:00 2001
 From: Cat73 <root@cat73.org>
-Date: Sat, 3 Nov 2018 13:47:10 +0800
+Date: Sun, 10 Mar 2019 22:27:08 +0800
 Subject: [PATCH] Cat73 -> TpsConfigure
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -9,10 +9,10 @@ Content-Transfer-Encoding: 8bit
 根据不同的 TPS 设定不同的服务器限制参数，虽然这种控制有些滞后，但能缓解 TPS 下降的情况，防止 TPS 继续降低
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 5be51b692..fc3ebb12b 100644
+index 4f2f9785..7fa4160c 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -157,6 +157,7 @@ public abstract class MinecraftServer implements IAsyncTaskHandler, IMojangStati
+@@ -152,6 +152,7 @@ public abstract class MinecraftServer implements IAsyncTaskHandler, IMojangStati
      public static final int TICK_TIME = 1000000000 / TPS;
      private static final int SAMPLE_INTERVAL = 100;
      public final double[] recentTps = new double[ 3 ];
@@ -20,7 +20,7 @@ index 5be51b692..fc3ebb12b 100644
      public final SlackActivityAccountant slackActivityAccountant = new SlackActivityAccountant();
      // Spigot end
  
-@@ -730,6 +731,9 @@ public abstract class MinecraftServer implements IAsyncTaskHandler, IMojangStati
+@@ -726,6 +727,9 @@ public abstract class MinecraftServer implements IAsyncTaskHandler, IMojangStati
                          recentTps[1] = calcTps( recentTps[1], 0.9835, currentTps ); // 1/exp(5sec/5min)
                          recentTps[2] = calcTps( recentTps[2], 0.9945, currentTps ); // 1/exp(5sec/15min)
                          tickSection = curTime;
@@ -30,7 +30,7 @@ index 5be51b692..fc3ebb12b 100644
                      }
                      lastTick = curTime;
  
-@@ -788,6 +792,200 @@ public abstract class MinecraftServer implements IAsyncTaskHandler, IMojangStati
+@@ -784,6 +788,200 @@ public abstract class MinecraftServer implements IAsyncTaskHandler, IMojangStati
  
      }
  
@@ -232,13 +232,13 @@ index 5be51b692..fc3ebb12b 100644
          File file = this.c("server-icon.png");
  
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index e1da92cf8..33d7328c9 100644
+index e334d97b..9f54c127 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
-@@ -138,8 +138,12 @@ public abstract class World implements IEntityAccess, GeneratorAccess, IIBlockAc
+@@ -133,8 +133,12 @@ public abstract class World implements IEntityAccess, GeneratorAccess, IIBlockAc
+     public final SpigotTimings.WorldTimingsHandler timings; // Spigot
      private boolean guardEntityList; // Spigot
-     public static boolean haveWeSilencedAPhysicsCrash;
-     public static String blockLocation;
+     public static BlockPosition lastPhysicsProblem; // Spigot
 -    private org.spigotmc.TickLimiter entityLimiter;
 -    private org.spigotmc.TickLimiter tileLimiter;
 +    // Cat73 Start
@@ -250,7 +250,7 @@ index e1da92cf8..33d7328c9 100644
      private int tileTickPosition;
  
      public CraftWorld getWorld() {
-@@ -160,6 +164,8 @@ public abstract class World implements IEntityAccess, GeneratorAccess, IIBlockAc
+@@ -155,6 +159,8 @@ public abstract class World implements IEntityAccess, GeneratorAccess, IIBlockAc
          this.world = new CraftWorld((WorldServer) this, gen, env);
          this.ticksPerAnimalSpawns = this.getServer().getTicksPerAnimalSpawns(); // CraftBukkit
          this.ticksPerMonsterSpawns = this.getServer().getTicksPerMonsterSpawns(); // CraftBukkit
@@ -260,15 +260,15 @@ index e1da92cf8..33d7328c9 100644
          this.v = Lists.newArrayList(new IWorldAccess[] { this.u});
          this.allowMonsters = true;
 diff --git a/src/main/java/net/minecraft/server/WorldServer.java b/src/main/java/net/minecraft/server/WorldServer.java
-index 74a61f300..65cfc1b92 100644
+index a7ae1668..afbbd191 100644
 --- a/src/main/java/net/minecraft/server/WorldServer.java
 +++ b/src/main/java/net/minecraft/server/WorldServer.java
-@@ -275,8 +275,26 @@ public class WorldServer extends World implements IAsyncTaskHandler {
+@@ -257,8 +257,26 @@ public class WorldServer extends World implements IAsyncTaskHandler {
          long time = this.worldData.getTime();
          if (this.getGameRules().getBoolean("doMobSpawning") && this.worldData.getType() != WorldType.DEBUG_ALL_BLOCK_STATES && (this.allowMonsters || this.allowAnimals) && (this instanceof WorldServer && this.players.size() > 0)) {
              timings.mobSpawn.startTiming(); // Spigot
 -            this.spawnerCreature.a(this, this.allowMonsters && (this.ticksPerMonsterSpawns != 0 && time % this.ticksPerMonsterSpawns == 0L), this.allowAnimals && (this.ticksPerAnimalSpawns != 0 && time % this.ticksPerAnimalSpawns == 0L), this.worldData.getTime() % 400L == 0L);
--            this.getChunkProviderServer().a(this, this.allowMonsters && (this.ticksPerMonsterSpawns != 0 && time % this.ticksPerMonsterSpawns == 0L), this.allowAnimals && (this.ticksPerAnimalSpawns != 0 && time % this.ticksPerAnimalSpawns == 0L));
+-            this.getChunkProvider().a(this, this.allowMonsters && (this.ticksPerMonsterSpawns != 0 && time % this.ticksPerMonsterSpawns == 0L), this.allowAnimals && (this.ticksPerAnimalSpawns != 0 && time % this.ticksPerAnimalSpawns == 0L));
 +            // Cat73 start
 +            boolean spawnMonster = this.allowMonsters;
 +            if (spawnMonster && this.ticksPerMonsterSpawns != 0) {
@@ -287,16 +287,16 @@ index 74a61f300..65cfc1b92 100644
 +            }
 +
 +            this.spawnerCreature.a(this, spawnMonster, spawnAnimals, this.worldData.getTime() % 400L == 0L);
-+            this.getChunkProviderServer().a(this, spawnMonster, spawnAnimals);
++            this.getChunkProvider().a(this, spawnMonster, spawnAnimals);
 +            // Cat73 end
              timings.mobSpawn.stopTiming(); // Spigot
              // CraftBukkit end
          }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 472b233bb..7bdbc114e 100644
+index a0afe056..fd922cba 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -179,10 +179,12 @@ public final class CraftServer implements Server {
+@@ -184,10 +184,12 @@ public final class CraftServer implements Server {
      private final EntityMetadataStore entityMetadata = new EntityMetadataStore();
      private final PlayerMetadataStore playerMetadata = new PlayerMetadataStore();
      private final WorldMetadataStore worldMetadata = new WorldMetadataStore();
@@ -314,7 +314,7 @@ index 472b233bb..7bdbc114e 100644
      public int chunkGCLoadThresh = 0;
      private File container;
 diff --git a/src/main/java/org/spigotmc/TicksPerSecondCommand.java b/src/main/java/org/spigotmc/TicksPerSecondCommand.java
-index be2e31dea..46f0457ca 100644
+index be2e31de..46f0457c 100644
 --- a/src/main/java/org/spigotmc/TicksPerSecondCommand.java
 +++ b/src/main/java/org/spigotmc/TicksPerSecondCommand.java
 @@ -26,7 +26,15 @@ public class TicksPerSecondCommand extends Command
@@ -335,5 +335,5 @@ index be2e31dea..46f0457ca 100644
          {
              sb.append( format( tps ) );
 -- 
-2.19.1
+2.21.0
 

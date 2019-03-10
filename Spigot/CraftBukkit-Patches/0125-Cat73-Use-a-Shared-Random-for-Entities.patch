@@ -1,4 +1,4 @@
-From 529f4cf73b38b209c398af92fece870d74602b97 Mon Sep 17 00:00:00 2001
+From d957f8cd4cf5db0b24b8488c7dbf432d80c3f126 Mon Sep 17 00:00:00 2001
 From: Cat73 <root@cat73.org>
 Date: Sat, 6 Oct 2018 21:22:55 +0800
 Subject: [PATCH] Cat73 -> Use a Shared Random for Entities
@@ -12,10 +12,10 @@ MC 目前只有一个主线程，因此不会出现线程安全问题，且 Rand
 Link: https://github.com/PaperMC/Paper/blob/468a1cbbd78384f2c728ef93d5f796d8b9891a7e/Spigot-Server-Patches/0076-Use-a-Shared-Random-for-Entities.patch
 
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index c9b332f45..91e518cd1 100644
+index 22be0e42..6e0fd79c 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
-@@ -50,6 +50,7 @@ public abstract class Entity implements INamableTileEntity, ICommandListener {
+@@ -48,6 +48,7 @@ public abstract class Entity implements INamableTileEntity, ICommandListener {
  
      // CraftBukkit start
      private static final int CURRENT_LEVEL = 2;
@@ -23,7 +23,7 @@ index c9b332f45..91e518cd1 100644
      static boolean isLevelAtLeast(NBTTagCompound tag, int level) {
          return tag.hasKey("Bukkit.updateLevel") && tag.getInt("Bukkit.updateLevel") >= level;
      }
-@@ -182,7 +183,7 @@ public abstract class Entity implements INamableTileEntity, ICommandListener {
+@@ -180,7 +181,7 @@ public abstract class Entity implements INamableTileEntity, ICommandListener {
          this.length = 1.8F;
          this.aA = 1.0F;
          this.aB = 1.0F;
@@ -33,5 +33,5 @@ index c9b332f45..91e518cd1 100644
          this.justCreated = true;
          this.uniqueID = MathHelper.a(this.random);
 -- 
-2.19.1
+2.21.0
 
