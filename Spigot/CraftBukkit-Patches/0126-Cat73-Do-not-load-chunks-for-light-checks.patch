@@ -1,4 +1,4 @@
-From 46e1181088cb3dfbbddb71dbc654ebe34d73a237 Mon Sep 17 00:00:00 2001
+From 8c5a5fdb2493d62e67a6983f27edc31560fc2b58 Mon Sep 17 00:00:00 2001
 From: Cat73 <root@cat73.org>
 Date: Sat, 6 Oct 2018 21:24:39 +0800
 Subject: [PATCH] Cat73 -> Do not load chunks for light checks
@@ -12,7 +12,7 @@ Content-Transfer-Encoding: 8bit
 Link: https://github.com/PaperMC/Paper/blob/468a1cbbd78384f2c728ef93d5f796d8b9891a7e/Spigot-Server-Patches/0090-Do-not-load-chunks-for-light-checks.patch
 
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index f6d4e917..e334d97b 100644
+index a4354360..87aff11f 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
 @@ -654,6 +654,7 @@ public abstract class World implements IEntityAccess, GeneratorAccess, IIBlockAc

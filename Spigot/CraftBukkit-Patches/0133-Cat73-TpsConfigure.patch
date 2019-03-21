@@ -1,4 +1,4 @@
-From 87d6962efc4cf5537110f0d4e2aabb1874077e30 Mon Sep 17 00:00:00 2001
+From 8467cddd6d9ea54ecdd9f181b53e6ed334ffd8ae Mon Sep 17 00:00:00 2001
 From: Cat73 <root@cat73.org>
 Date: Sun, 10 Mar 2019 22:27:08 +0800
 Subject: [PATCH] Cat73 -> TpsConfigure
@@ -232,7 +232,7 @@ index 4f2f9785..7fa4160c 100644
          File file = this.c("server-icon.png");
  
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index e334d97b..9f54c127 100644
+index 87aff11f..88b57793 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
 @@ -133,8 +133,12 @@ public abstract class World implements IEntityAccess, GeneratorAccess, IIBlockAc

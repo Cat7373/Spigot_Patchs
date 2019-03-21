@@ -1,4 +1,4 @@
-From 4833cb3b60fd5301967a2df582d153888fc9e5ae Mon Sep 17 00:00:00 2001
+From 29986661c81d19f9f6c6524814e4bc7c4f3200a7 Mon Sep 17 00:00:00 2001
 From: Cat73 <root@cat73.org>
 Date: Sat, 6 Oct 2018 22:28:47 +0800
 Subject: [PATCH] Cat73 -> add tickloop min wait

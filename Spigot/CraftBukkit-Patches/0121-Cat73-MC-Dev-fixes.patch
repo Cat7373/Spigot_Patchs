@@ -1,11 +1,11 @@
-From f91d0e7cf01b87c1565f508308fb7bc51908b10e Mon Sep 17 00:00:00 2001
+From 109da63f82d36eb9533f380d76f1b1a4d96f0425 Mon Sep 17 00:00:00 2001
 From: Cat73 <root@cat73.org>
 Date: Sun, 10 Mar 2019 21:30:20 +0800
 Subject: [PATCH] Cat73 -> MC Dev fixes
 
 
 diff --git a/src/main/java/net/minecraft/server/BlockPosition.java b/src/main/java/net/minecraft/server/BlockPosition.java
-index bd2a67cf..dfbfb89b 100644
+index 16bca794..f3ff3a6c 100644
 --- a/src/main/java/net/minecraft/server/BlockPosition.java
 +++ b/src/main/java/net/minecraft/server/BlockPosition.java
 @@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;

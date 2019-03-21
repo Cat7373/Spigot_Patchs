@@ -1,4 +1,4 @@
-From 3aeb3a34e4280e473be9d046446754dc709a3cb5 Mon Sep 17 00:00:00 2001
+From 2c70cf7f74baf9c395f456163fa2f955d7e830fa Mon Sep 17 00:00:00 2001
 From: Cat73 <root@cat73.org>
 Date: Mon, 11 Mar 2019 18:33:27 +0800
 Subject: [PATCH] Cat73 -> Optimize-redstone-algorithm
@@ -11,7 +11,7 @@ Link: https://github.com/PaperMC/Paper/blob/988887d2b053d4ef34935b7671cc20d2c7eb
 
 diff --git a/src/main/java/com/xjcraft/util/RedstoneWireTurbo.java b/src/main/java/com/xjcraft/util/RedstoneWireTurbo.java
 new file mode 100644
-index 00000000..2af6661f
+index 00000000..f1994cf9
 --- /dev/null
 +++ b/src/main/java/com/xjcraft/util/RedstoneWireTurbo.java
 @@ -0,0 +1,910 @@
@@ -926,7 +926,7 @@ index 00000000..2af6661f
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/BlockRedstoneWire.java b/src/main/java/net/minecraft/server/BlockRedstoneWire.java
-index 48c79568..e7e7592a 100644
+index 2e30270b..b29c79aa 100644
 --- a/src/main/java/net/minecraft/server/BlockRedstoneWire.java
 +++ b/src/main/java/net/minecraft/server/BlockRedstoneWire.java
 @@ -1,5 +1,6 @@
@@ -1059,7 +1059,7 @@ index 48c79568..e7e7592a 100644
                  iblockdata.a(world, blockposition, 0);
                  world.setAir(blockposition);
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index 9f54c127..630dc635 100644
+index 88b57793..8c4d32b4 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
 @@ -610,6 +610,7 @@ public abstract class World implements IEntityAccess, GeneratorAccess, IIBlockAc
