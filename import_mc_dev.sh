@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 # 当前目录
 basedir="$(cd "$1" && pwd -P)"
 
