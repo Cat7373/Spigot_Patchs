@@ -1,4 +1,4 @@
-From d35e361d56274359ff5832afed27e9f335984749 Mon Sep 17 00:00:00 2001
+From 8e443fea3242df0fa3f2ffde8035d68e4ca616b6 Mon Sep 17 00:00:00 2001
 From: Cat73 <root@cat73.org>
 Date: Wed, 7 Aug 2019 11:40:44 +0800
 Subject: [PATCH] Cat73 -> COD Control
@@ -9,24 +9,23 @@ Content-Transfer-Encoding: 8bit
 控制鳕鱼的量，这玩意在这个版本吃 CPU 比较多
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index 67076bdd1..a79ecf684 100644
+index 67076bdd1..a7486e5ef 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-@@ -541,7 +541,14 @@ public class CraftEventFactory {
-             }
-         // Spigot end
-         } else if (!(entity instanceof EntityPlayer)) {
-+            // Cat73 start - 让鳕鱼生成有概率失败
-             event = CraftEventFactory.callEntitySpawnEvent(entity);
-+            if (entity.getType() == EntityType.COD) {
-+                if (Entity.SHARED_RANDOM.nextInt(5) != 1) {
-+                    event.setCancelled(true);
-+                }
-+            }
-+            // Cat73 end
-         }
+@@ -566,6 +566,13 @@ public class CraftEventFactory {
+         org.bukkit.entity.Entity bukkitEntity = entity.getBukkitEntity();
  
-         if (event != null && (event.isCancelled() || entity.dead)) {
+         EntitySpawnEvent event = new EntitySpawnEvent(bukkitEntity);
++        // Cat73 start - 让鳕鱼生成有概率失败
++        if (bukkitEntity.getType() == EntityType.COD) {
++            if (Entity.SHARED_RANDOM.nextInt(5) != 1) {
++                event.setCancelled(true);
++            }
++        }
++        // Cat73 end
+         bukkitEntity.getServer().getPluginManager().callEvent(event);
+         return event;
+     }
 -- 
 2.22.0
 
