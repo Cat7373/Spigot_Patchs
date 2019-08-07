@@ -1,4 +1,4 @@
-From 2c8eb1606fe48a2e52046c6c43f39716da825101 Mon Sep 17 00:00:00 2001
+From 987352f312b25434610778d195d176d05ce092c8 Mon Sep 17 00:00:00 2001
 From: Cat73 <root@cat73.org>
 Date: Wed, 7 Aug 2019 10:41:01 +0800
 Subject: [PATCH] Cat73 -> Optimize Hoppers
@@ -299,6 +299,98 @@ index 1ba98bf73..6d1b8ef2b 100644
                  itemstack = ItemStack.a;
                  flag = true;
              } else if (a(itemstack1, itemstack)) {
+diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java b/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
+index 2bc0b2e09..166c918d7 100644
+--- a/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
++++ b/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
+@@ -312,6 +312,20 @@ public class CraftBlock implements Block {
+ 
+     @Override
+     public BlockState getState() {
++        // Paper start - allow disabling the use of snapshots
++        return getState(true);
++    }
++    public BlockState getState(boolean useSnapshot) {
++        boolean prev = CraftBlockEntityState.DISABLE_SNAPSHOT;
++        CraftBlockEntityState.DISABLE_SNAPSHOT = !useSnapshot;
++        try {
++            return getState0();
++        } finally {
++            CraftBlockEntityState.DISABLE_SNAPSHOT = prev;
++        }
++    }
++    public BlockState getState0() {
++        // Paper end
+         Material material = getType();
+ 
+         switch (material) {
+diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftBlockEntityState.java b/src/main/java/org/bukkit/craftbukkit/block/CraftBlockEntityState.java
+index 283141944..9c5b7b223 100644
+--- a/src/main/java/org/bukkit/craftbukkit/block/CraftBlockEntityState.java
++++ b/src/main/java/org/bukkit/craftbukkit/block/CraftBlockEntityState.java
+@@ -26,20 +26,41 @@ public class CraftBlockEntityState<T extends TileEntity> extends CraftBlockState
+         this.tileEntity = tileEntityClass.cast(world.getHandle().getTileEntity(this.getPosition()));
+         Preconditions.checkState(this.tileEntity != null, "Tile is null, asynchronous access? " + block);
+ 
++        // Paper start
++        this.snapshotDisabled = DISABLE_SNAPSHOT;
++        if (DISABLE_SNAPSHOT) {
++            this.snapshot = this.tileEntity;
++        } else {
++            this.snapshot = this.createSnapshot(this.tileEntity);
++        }
+         // copy tile entity data:
+-        this.snapshot = this.createSnapshot(tileEntity);
+-        this.load(snapshot);
++        if (this.snapshot != null) {
++            this.load(this.snapshot);
++        }
++        // Paper end
+     }
+ 
++    public final boolean snapshotDisabled; // Paper
++    public static boolean DISABLE_SNAPSHOT = false; // Paper
++
+     public CraftBlockEntityState(Material material, T tileEntity) {
+         super(material);
+ 
+         this.tileEntityClass = (Class<T>) tileEntity.getClass();
+         this.tileEntity = tileEntity;
+ 
++        // Paper start
++        this.snapshotDisabled = DISABLE_SNAPSHOT;
++        if (DISABLE_SNAPSHOT) {
++            this.snapshot = this.tileEntity;
++        } else {
++            this.snapshot = this.createSnapshot(this.tileEntity);
++        }
+         // copy tile entity data:
+-        this.snapshot = this.createSnapshot(tileEntity);
+-        this.load(snapshot);
++        if(this.snapshot != null) {
++            this.load(this.snapshot);
++        }
++        // Paper end
+     }
+ 
+     private T createSnapshot(T tileEntity) {
+diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftSign.java b/src/main/java/org/bukkit/craftbukkit/block/CraftSign.java
+index 15022ada0..af15656cc 100644
+--- a/src/main/java/org/bukkit/craftbukkit/block/CraftSign.java
++++ b/src/main/java/org/bukkit/craftbukkit/block/CraftSign.java
+@@ -17,10 +17,12 @@ public class CraftSign extends CraftBlockEntityState<TileEntitySign> implements
+ 
+     public CraftSign(final Block block) {
+         super(block, TileEntitySign.class);
++        if (lines == null) { lines = new String[]{"", "", "", ""}; } // Paper
+     }
+ 
+     public CraftSign(final Material material, final TileEntitySign te) {
+         super(material, te);
++        if (lines == null) { lines = new String[]{"", "", "", ""}; } // Paper
+     }
+ 
+     @Override
 diff --git a/src/main/java/org/spigotmc/SpigotWorldConfig.java b/src/main/java/org/spigotmc/SpigotWorldConfig.java
 index dd8cb8e5b..424d061af 100644
 --- a/src/main/java/org/spigotmc/SpigotWorldConfig.java
