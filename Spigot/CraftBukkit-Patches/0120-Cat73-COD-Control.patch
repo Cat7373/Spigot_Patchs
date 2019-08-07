@@ -18,7 +18,7 @@ index 67076bdd1..a7486e5ef 100644
          EntitySpawnEvent event = new EntitySpawnEvent(bukkitEntity);
 +        // Cat73 start - 让鳕鱼生成有概率失败
 +        if (bukkitEntity.getType() == EntityType.COD) {
-+            if (Entity.SHARED_RANDOM.nextInt(5) != 1) {
++            if (Entity.SHARED_RANDOM.nextInt(100) != 0) {
 +                event.setCancelled(true);
 +            }
 +        }
