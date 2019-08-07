@@ -20,14 +20,7 @@ function import {
 }
 
 # imports
-import PersistentVillage
-import VillageDoor
 import DataBits
-import ChunkCache
-import NavigationAbstract
-import TileEntityEnderChest
-import BaseBlockPosition
-import BlockPosition
 
 # 生成 diff
 cd $workdir

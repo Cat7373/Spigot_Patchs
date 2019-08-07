@@ -1,0 +1,25 @@
+From c61751a3f95a15ac08b69f98dd52d41521095fa3 Mon Sep 17 00:00:00 2001
+From: Cat73 <root@cat73.org>
+Date: Wed, 7 Aug 2019 08:25:09 +0800
+Subject: [PATCH] Cat73 -> Set ServerThread priority to 10
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+提升主线程优先级，由 5(默认, 中等) 提升到 10(最高)，可能能让主线程抢到更多的 CPU
+
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index cec3794cd..df87c97a2 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -772,6 +772,7 @@ public abstract class MinecraftServer extends IAsyncTaskHandlerReentrant<TickTas
+ 
+     public void run() {
+         try {
++            Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+             if (this.init()) {
+                 this.nextTick = SystemUtils.getMonotonicMillis();
+                 this.serverPing.setMOTD(new ChatComponentText(this.motd));
+-- 
+2.22.0
+
