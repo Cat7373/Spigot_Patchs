@@ -1,4 +1,4 @@
-From 8e443fea3242df0fa3f2ffde8035d68e4ca616b6 Mon Sep 17 00:00:00 2001
+From 933f9f63eb59bae4307ab1de03fd0ccaa0a06af7 Mon Sep 17 00:00:00 2001
 From: Cat73 <root@cat73.org>
 Date: Wed, 7 Aug 2019 11:40:44 +0800
 Subject: [PATCH] Cat73 -> COD Control
@@ -9,7 +9,7 @@ Content-Transfer-Encoding: 8bit
 控制鳕鱼的量，这玩意在这个版本吃 CPU 比较多
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index 67076bdd1..a7486e5ef 100644
+index 67076bdd1..432aee014 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 @@ -566,6 +566,13 @@ public class CraftEventFactory {
