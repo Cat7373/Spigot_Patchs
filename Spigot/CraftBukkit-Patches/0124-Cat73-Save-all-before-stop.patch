@@ -1,0 +1,39 @@
+From dc3085ed2d5ca575a8b873fb0e073846ba37de2b Mon Sep 17 00:00:00 2001
+From: Cat73 <root@cat73.org>
+Date: Sat, 10 Aug 2019 14:59:42 +0800
+Subject: [PATCH] Cat73 -> Save all before stop
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+在停止服务器之前强制保存一次
+
+diff --git a/src/main/java/net/minecraft/server/CommandSaveAll.java b/src/main/java/net/minecraft/server/CommandSaveAll.java
+index c76d55060..d89519d5e 100644
+--- a/src/main/java/net/minecraft/server/CommandSaveAll.java
++++ b/src/main/java/net/minecraft/server/CommandSaveAll.java
+@@ -19,7 +19,7 @@ public class CommandSaveAll {
+         })));
+     }
+ 
+-    private static int a(CommandListenerWrapper commandlistenerwrapper, boolean flag) throws CommandSyntaxException {
++    public static int a(CommandListenerWrapper commandlistenerwrapper, boolean flag) throws CommandSyntaxException {
+         commandlistenerwrapper.sendMessage(new ChatMessage("commands.save.saving", new Object[0]), false);
+         MinecraftServer minecraftserver = commandlistenerwrapper.getServer();
+ 
+diff --git a/src/main/java/net/minecraft/server/CommandStop.java b/src/main/java/net/minecraft/server/CommandStop.java
+index 78a41bb51..719ac80c6 100644
+--- a/src/main/java/net/minecraft/server/CommandStop.java
++++ b/src/main/java/net/minecraft/server/CommandStop.java
+@@ -9,6 +9,8 @@ public class CommandStop {
+         com_mojang_brigadier_commanddispatcher.register((LiteralArgumentBuilder) ((LiteralArgumentBuilder) CommandDispatcher.a("stop").requires((commandlistenerwrapper) -> {
+             return commandlistenerwrapper.hasPermission(4);
+         })).executes((commandcontext) -> {
++            CommandSaveAll.a((CommandListenerWrapper) commandcontext.getSource(), true);
++
+             ((CommandListenerWrapper) commandcontext.getSource()).sendMessage(new ChatMessage("commands.stop.stopping", new Object[0]), true);
+             ((CommandListenerWrapper) commandcontext.getSource()).getServer().safeShutdown(false);
+             return 1;
+-- 
+2.22.0
+
