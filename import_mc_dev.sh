@@ -21,6 +21,7 @@ function import {
 
 # imports
 import DataBits
+import RemoteControlSession
 
 # 生成 diff
 cd $workdir

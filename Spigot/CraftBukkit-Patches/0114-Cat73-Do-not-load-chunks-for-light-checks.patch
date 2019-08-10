@@ -1,4 +1,4 @@
-From 24d16317cafe1f33050a3b5f22f02cd550640837 Mon Sep 17 00:00:00 2001
+From c3382657ae42e38a76ebeda3ee4f6c0e74db8971 Mon Sep 17 00:00:00 2001
 From: Cat73 <root@cat73.org>
 Date: Wed, 7 Aug 2019 08:33:25 +0800
 Subject: [PATCH] Cat73 -> Do not load chunks for light checks

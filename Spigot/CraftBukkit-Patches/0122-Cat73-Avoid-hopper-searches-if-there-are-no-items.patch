@@ -1,4 +1,4 @@
-From 453f1329b9b6e751b4bd21533b665e08432390ae Mon Sep 17 00:00:00 2001
+From a5224a1e70613c53ea54b6b8e27ff894a451f620 Mon Sep 17 00:00:00 2001
 From: Cat73 <root@cat73.org>
 Date: Fri, 9 Aug 2019 05:02:42 +0800
 Subject: [PATCH] Cat73 -> Avoid hopper searches if there are no items
