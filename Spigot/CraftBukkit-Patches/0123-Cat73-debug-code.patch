@@ -1,0 +1,79 @@
+From 331f5b449a8ac7a8179e3264c6eef5ee69621ecb Mon Sep 17 00:00:00 2001
+From: Cat73 <root@cat73.org>
+Date: Mon, 12 Aug 2019 18:13:14 +0800
+Subject: [PATCH] Cat73 -> debug code
+
+
+diff --git a/src/main/java/net/minecraft/server/WorldServer.java b/src/main/java/net/minecraft/server/WorldServer.java
+index 825e72e53..26813da21 100644
+--- a/src/main/java/net/minecraft/server/WorldServer.java
++++ b/src/main/java/net/minecraft/server/WorldServer.java
+@@ -67,6 +67,8 @@ public class WorldServer extends World {
+     private boolean ticking;
+     @Nullable
+     private final MobSpawnerTrader mobSpawnerTrader;
++    private volatile Throwable thisHUseStack;
++    private final Object thisHDebugLock = new Object();
+ 
+     // CraftBukkit start
+     private int tickPosition;
+@@ -1066,12 +1068,30 @@ public class WorldServer extends World {
+ 
+         this.getScoreboard().a(entity);
+         if (entity instanceof EntityInsentient) {
++            this.useH();
+             this.H.remove(((EntityInsentient) entity).getNavigation());
++            this.unUseH();
+         }
+ 
+         entity.valid = false; // CraftBukkit
+     }
+ 
++    private void useH() {
++        synchronized (this.thisHDebugLock) {
++            if (this.thisHUseStack == null) {
++                this.thisHUseStack = new Throwable();
++            } else {
++                MinecraftServer.LOGGER.error("useH error start ex1", this.thisHUseStack);
++                MinecraftServer.LOGGER.error("useH error start ex2", new Throwable());
++                MinecraftServer.LOGGER.error("Current Thread Name: " + Thread.currentThread().getName());
++            }
++        }
++    }
++
++    private void unUseH() {
++        this.thisHUseStack = null;
++    }
++
+     private void registerEntity(Entity entity) {
+         org.spigotmc.AsyncCatcher.catchOp("entity register"); // Spigot
+         if (this.tickingEntities) {
+@@ -1092,7 +1112,9 @@ public class WorldServer extends World {
+             this.entitiesByUUID.put(entity.getUniqueID(), entity);
+             this.getChunkProvider().addEntity(entity);
+             if (entity instanceof EntityInsentient) {
++                this.useH();
+                 this.H.add(((EntityInsentient) entity).getNavigation());
++                this.unUseH();
+             }
+             entity.valid = true; // CraftBukkit
+         }
+@@ -1200,6 +1222,7 @@ public class WorldServer extends World {
+         VoxelShape voxelshape1 = iblockdata1.getCollisionShape(this, blockposition);
+ 
+         if (VoxelShapes.c(voxelshape, voxelshape1, OperatorBoolean.NOT_SAME)) {
++            this.useH();
+             Iterator iterator = this.H.iterator();
+ 
+             while (iterator.hasNext()) {
+@@ -1209,6 +1232,7 @@ public class WorldServer extends World {
+                     navigationabstract.b(blockposition);
+                 }
+             }
++            this.unUseH();
+ 
+         }
+     }
+-- 
+2.22.0
+
