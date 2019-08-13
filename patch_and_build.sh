@@ -2,7 +2,11 @@
 
 set -e
 
-rm -rf ./Cat73_Spigot_Patchs/
+rm -fv BuildTools.jar
+rm -fv BuildTools.jar.*
+wget https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar
+
+rm -rfv ./Cat73_Spigot_Patchs/
 find . -name "*Cat73*.patch" | xargs rm -fv
 
 java -jar BuildTools.jar --rev 1.14.4
