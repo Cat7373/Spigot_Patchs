@@ -1,4 +1,4 @@
-From f55740d7d70edff046953ab43d31ad8e71db9a85 Mon Sep 17 00:00:00 2001
+From efccd95fe93a3126099862947fdc37b997110a2e Mon Sep 17 00:00:00 2001
 From: Cat73 <root@cat73.org>
 Date: Tue, 13 Aug 2019 12:05:03 +0800
 Subject: [PATCH] Cat73 -> TPSConfigure
@@ -21,7 +21,7 @@ index 508bec4b9..21928ea33 100644
                                      }
                                  }
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 54f05454d..f4435fa8a 100644
+index 54f05454d..d0bfc470b 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -169,6 +169,7 @@ public abstract class MinecraftServer extends IAsyncTaskHandlerReentrant<TickTas
@@ -55,10 +55,10 @@ index 54f05454d..f4435fa8a 100644
 +    /**
 +     * 现在的限制值
 +     */
-+    public TpsConfigure currentLimit;
++    public TpsConfigure currentLimit = new TpsConfigure(20.0, 1.0, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100);
 +
 +    public static class TpsConfigure {
-+        private static final CraftServer craftServer = (CraftServer) Bukkit.getServer();
++        private final CraftServer craftServer = (CraftServer) Bukkit.getServer();
 +
 +        public final double minTps;
 +        public final double rate;
@@ -217,7 +217,7 @@ index 54f05454d..f4435fa8a 100644
 +                    TpsConfigure newConfigure = c;
 +                    int lastIdx = this.tpsConfigures.indexOf(this.currentLimit);
 +                    int newIdx = this.tpsConfigures.indexOf(newConfigure);
-+                    if (newIdx - lastIdx < -1) {
++                    if (lastIdx - newIdx > 1) {
 +                        int useIdx = lastIdx - 1;
 +                        newConfigure = this.tpsConfigures.get(useIdx);
 +                    }
