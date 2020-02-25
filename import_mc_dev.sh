@@ -21,9 +21,8 @@ function import {
 
 # imports
 import DataBits
-import RemoteControlSession
-import CommandStop
-import CommandSaveAll
+import ChunkSection
+import BaseBlockPosition
 
 # 生成 diff
 cd $workdir

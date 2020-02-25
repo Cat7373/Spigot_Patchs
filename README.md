@@ -14,11 +14,8 @@
 
 TODO List
 
-https://github.com/Cat7373/Spigot_Patchs/blob/1.14.4/Spigot/CraftBukkit-Patches/0124-Cat73-TPSConfigure.patch
 https://github.com/Cat7373/Spigot_Patchs/blob/1.13.2/Spigot/CraftBukkit-Patches/0131-Cat73-Nether-Portal-Cache.patch
-https://github.com/Cat7373/Spigot_Patchs/blob/1.13.2/Spigot/CraftBukkit-Patches/0132-Cat73-add-tickloop-min-wait.patch
 
-https://github.com/PaperMC/Paper/blob/892f479fb4ef849ba834cbedd0069395cc1bef14/Spigot-Server-Patches/0072-Optimize-isValidLocation-getType-and-getBlockData-fo.patch
 https://github.com/PaperMC/Paper/blob/892f479fb4ef849ba834cbedd0069395cc1bef14/Spigot-Server-Patches/0079-Do-not-load-chunks-for-Pathfinding.patch
 
 -->
