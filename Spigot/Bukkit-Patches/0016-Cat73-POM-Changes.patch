@@ -1,6 +1,6 @@
-From a7d879c60e19522c42218a3dca4922853a18d425 Mon Sep 17 00:00:00 2001
+From 04fcf399817532c5bcfc01882317937874875a33 Mon Sep 17 00:00:00 2001
 From: Cat73 <root@cat73.org>
-Date: Tue, 6 Aug 2019 11:56:05 +0800
+Date: Tue, 25 Feb 2020 22:31:13 +0800
 Subject: [PATCH] Cat73 -> POM Changes
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -9,13 +9,13 @@ Content-Transfer-Encoding: 8bit
 不使用 ejc 构建
 
 diff --git a/pom.xml b/pom.xml
-index 23d0a44a..87620747 100644
+index 8964b9e3..859a434b 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -118,18 +118,6 @@
                  <groupId>org.apache.maven.plugins</groupId>
                  <artifactId>maven-compiler-plugin</artifactId>
-                 <version>3.8.0</version>
+                 <version>3.8.1</version>
 -                <configuration>
 -                    <!-- we use the Eclipse compiler as it doesn't need a JDK -->
 -                    <compilerId>eclipse</compilerId>
@@ -32,5 +32,5 @@ index 23d0a44a..87620747 100644
              <plugin>
                  <groupId>org.apache.maven.plugins</groupId>
 -- 
-2.22.0
+2.25.0
 
