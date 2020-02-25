@@ -1,4 +1,4 @@
-From eed49fac838aeb0ffd3894ee10c21aba9934f392 Mon Sep 17 00:00:00 2001
+From bfb7207837530871dd6c20a84a0a01a79e55a393 Mon Sep 17 00:00:00 2001
 From: Cat73 <root@cat73.org>
 Date: Wed, 26 Feb 2020 00:53:37 +0800
 Subject: [PATCH] Cat73 -> TPSConfigure
@@ -21,7 +21,7 @@ index 43d0776f..d1cb6ffc 100644
                                      }
                                  }
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index c64fde62..a96522c9 100644
+index c64fde62..f7039263 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -172,6 +172,7 @@ public abstract class MinecraftServer extends IAsyncTaskHandlerReentrant<TickTas
@@ -55,7 +55,7 @@ index c64fde62..a96522c9 100644
 +    /**
 +     * 现在的限制值
 +     */
-+    public TpsConfigure currentLimit = new TpsConfigure(20.0, 1.0, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100);
++    public TpsConfigure currentLimit = new TpsConfigure(19.0, 20.0, 1.0, 100, 100, 100, 100, 100, 100, 100, 100, 100);
 +
 +    public static class TpsConfigure {
 +        private final CraftServer craftServer = (CraftServer) Bukkit.getServer();
