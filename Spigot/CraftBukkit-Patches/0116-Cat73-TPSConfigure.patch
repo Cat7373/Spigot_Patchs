@@ -1,4 +1,4 @@
-From 4fe0c2dcf50d2143d4e89317d5d5bb59eabd2f40 Mon Sep 17 00:00:00 2001
+From 647668f63375123ccae41499af393e3d3c5a5944 Mon Sep 17 00:00:00 2001
 From: Cat73 <root@cat73.org>
 Date: Wed, 26 Feb 2020 00:53:37 +0800
 Subject: [PATCH] Cat73 -> TPSConfigure
@@ -297,7 +297,7 @@ index 23a39382..e9fbc1e4 100644
      }
  }
 diff --git a/src/main/java/org/spigotmc/TicksPerSecondCommand.java b/src/main/java/org/spigotmc/TicksPerSecondCommand.java
-index be2e31de..276b075b 100644
+index be2e31de..fe43b1d0 100644
 --- a/src/main/java/org/spigotmc/TicksPerSecondCommand.java
 +++ b/src/main/java/org/spigotmc/TicksPerSecondCommand.java
 @@ -26,7 +26,15 @@ public class TicksPerSecondCommand extends Command
@@ -308,7 +308,7 @@ index be2e31de..276b075b 100644
 +        // Cat73 Start
 +        StringBuilder sb = new StringBuilder(ChatColor.GOLD + "TPS from last 5s, 1m, 5m, 15m: ")
 +                .append(format(MinecraftServer.getServer().nowTps))
-+                .append("(> ")
++                .append("(>")
 +                .append(MinecraftServer.getServer().currentLimit.minTps)
 +                .append(": ")
 +                .append(Math.floor(MinecraftServer.getServer().currentLimit.rate * 100.0))

@@ -1,4 +1,4 @@
-From e4c3f1ff514d480fc056be84726f1f58b67c9cab Mon Sep 17 00:00:00 2001
+From bcba8701fab174ff543ff6cb775abbf41751e77f Mon Sep 17 00:00:00 2001
 From: Cat73 <root@cat73.org>
 Date: Wed, 26 Feb 2020 00:39:22 +0800
 Subject: [PATCH] Cat73 -> Optimize isValidLocation, getType and getBlockData

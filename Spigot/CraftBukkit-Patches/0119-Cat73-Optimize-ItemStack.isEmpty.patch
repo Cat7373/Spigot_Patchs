@@ -1,4 +1,4 @@
-From 32c290fd70633f009020680352a38a035a31e000 Mon Sep 17 00:00:00 2001
+From cec23d5bcd22ec3ccd406ae06ef4a4d97fe32c7f Mon Sep 17 00:00:00 2001
 From: Cat73 <root@cat73.org>
 Date: Wed, 26 Feb 2020 14:03:44 +0800
 Subject: [PATCH] Cat73 -> Optimize ItemStack.isEmpty()

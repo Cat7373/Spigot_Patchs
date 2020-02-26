@@ -1,4 +1,4 @@
-From 65f61c5ca45fc895fd557f24733878bdc4e80b80 Mon Sep 17 00:00:00 2001
+From 5ea58dc9a86352f3ff3ceda406274829961222e4 Mon Sep 17 00:00:00 2001
 From: Cat73 <root@cat73.org>
 Date: Tue, 25 Feb 2020 23:59:18 +0800
 Subject: [PATCH] Cat73 -> API to get a BlockState without a snapshot
