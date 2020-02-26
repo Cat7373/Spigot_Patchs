@@ -23,6 +23,7 @@ function import {
 import DataBits
 import ChunkSection
 import BaseBlockPosition
+import RegistryMaterials
 
 # 生成 diff
 cd $workdir

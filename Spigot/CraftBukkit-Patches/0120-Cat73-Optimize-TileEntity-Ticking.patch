@@ -1,0 +1,133 @@
+From 1aee6b79039df2d635f5e124187a1a3dfad17007 Mon Sep 17 00:00:00 2001
+From: Cat73 <root@cat73.org>
+Date: Wed, 26 Feb 2020 14:14:16 +0800
+Subject: [PATCH] Cat73 -> Optimize TileEntity Ticking
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+将箱子和陷阱箱移出 TickLoop
+
+Link: https://github.com/PaperMC/Paper/blob/892f479fb4ef849ba834cbedd0069395cc1bef14/Spigot-Server-Patches/0022-Optimize-TileEntity-Ticking.patch
+
+diff --git a/src/main/java/net/minecraft/server/DelayedRunnable.java b/src/main/java/net/minecraft/server/DelayedRunnable.java
+new file mode 100644
+index 00000000..feb94e36
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/DelayedRunnable.java
+@@ -0,0 +1,27 @@
++package net.minecraft.server;
++
++private static class DelayedRunnable implements Runnable {
++
++    private final int ticks;
++    private final Runnable run;
++
++    private DelayedRunnable(int ticks, Runnable run) {
++        this.ticks = ticks;
++        this.run = run;
++    }
++
++    @Override
++    public void run() {
++        if (ticks <= 0) {
++            run.run();
++        } else {
++            scheduleTask(ticks - 1, run);
++        }
++    }
++
++    public static void scheduleTask(int ticks, Runnable runnable) {
++        // We use post to main instead of process queue as we don't want to process these mid tick if
++        // Someone uses processQueueWhileWaiting
++        MinecraftServer.getServer().scheduleOnMain(new DelayedRunnable(ticks, runnable));
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/TileEntityChest.java b/src/main/java/net/minecraft/server/TileEntityChest.java
+index 35f4dc75..68deb707 100644
+--- a/src/main/java/net/minecraft/server/TileEntityChest.java
++++ b/src/main/java/net/minecraft/server/TileEntityChest.java
+@@ -7,7 +7,7 @@ import org.bukkit.craftbukkit.entity.CraftHumanEntity;
+ import org.bukkit.entity.HumanEntity;
+ // CraftBukkit end
+ 
+-public class TileEntityChest extends TileEntityLootable implements ITickable {
++public class TileEntityChest extends TileEntityLootable /* implements ITickable */ { // Paper - Remove ITickable
+ 
+     private NonNullList<ItemStack> items;
+     protected float a;
+@@ -84,22 +84,35 @@ public class TileEntityChest extends TileEntityLootable implements ITickable {
+         return nbttagcompound;
+     }
+ 
+-    @Override
++    // @Override // Paper
+     public void tick() {
+         int i = this.position.getX();
+         int j = this.position.getY();
+         int k = this.position.getZ();
+ 
+         ++this.j;
+-        this.viewingCount = a(this.world, this, this.j, i, j, k, this.viewingCount);
++        // Paper start
++    }
++
++    public void doOpenLogic() {
++        int i = this.position.getX();
++        int j = this.position.getY();
++        int k = this.position.getZ();
++
++        //this.viewingCount = a(this.world, this, this.j, i, j, k, this.viewingCount); // Paper - check is faulty given our logic is called before active container set
++        // Paper end
+         this.b = this.a;
+         float f = 0.1F;
+ 
+         if (this.viewingCount > 0 && this.a == 0.0F) {
+             this.a(SoundEffects.BLOCK_CHEST_OPEN);
+         }
++    }
+ 
+-        if (this.viewingCount == 0 && this.a > 0.0F || this.viewingCount > 0 && this.a < 1.0F) {
++        // Paper start
++    public void doCloseLogic() {
++        if (this.viewingCount == 0 /* && this.a > 0.0F || this.viewingCount > 0 && this.a < 1.0F */) { // Paper - disable all but player count check
++            /* // Paper - disable animation stuff
+             float f1 = this.a;
+ 
+             if (this.viewingCount > 0) {
+@@ -115,8 +128,12 @@ public class TileEntityChest extends TileEntityLootable implements ITickable {
+             float f2 = 0.5F;
+ 
+             if (this.a < 0.5F && f1 >= 0.5F) {
++             */
++
++            DelayedRunnable.scheduleTask(new DelayedRunnable(10, () -> {
+                 this.a(SoundEffects.BLOCK_CHEST_CLOSE);
+-            }
++            }));
++            // Paper end
+ 
+             if (this.a < 0.0F) {
+                 this.a = 0.0F;
+@@ -155,6 +172,7 @@ public class TileEntityChest extends TileEntityLootable implements ITickable {
+     }
+ 
+     private void a(SoundEffect soundeffect) {
++        if (!this.getBlock().b(BlockChest.c)) { return; } // Paper - this can be delayed, double check exists - Fixes GH-2074
+         BlockPropertyChestType blockpropertychesttype = (BlockPropertyChestType) this.getBlock().get(BlockChest.c);
+ 
+         if (blockpropertychesttype != BlockPropertyChestType.LEFT) {
+@@ -193,8 +211,10 @@ public class TileEntityChest extends TileEntityLootable implements ITickable {
+ 
+             ++this.viewingCount;
+             if (this.world == null) return; // CraftBukkit
++            doOpenLogic(); // Paper
+ 
+             // CraftBukkit start - Call redstone event
++            doCloseLogic(); // Paper
+             if (this.getBlock().getBlock() == Blocks.TRAPPED_CHEST) {
+                 int newPower = Math.max(0, Math.min(15, this.viewingCount));
+ 
+-- 
+2.25.0
+
