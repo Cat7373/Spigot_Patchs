@@ -10,15 +10,5 @@
 5. 运行`Spigot/rebuildPatches.sh`。
 6. 在`Spigot/CraftBukkit-Patchs`中找到目标`patch`文件。
 
-<!--
-
-TODO List
-
-https://github.com/Cat7373/Spigot_Patchs/blob/1.13.2/Spigot/CraftBukkit-Patches/0131-Cat73-Nether-Portal-Cache.patch
-
-https://github.com/PaperMC/Paper/blob/86daffa21c13f46361313120dd49f4bb9118b8d9/removed/1.14/0078-Optimize-Chunk-Access.patch  ~2.5% CPU，但我突然懒了，先 TODO 吧
-https://github.com/PaperMC/Paper/blob/892f479fb4ef849ba834cbedd0069395cc1bef14/Spigot-Server-Patches/0079-Do-not-load-chunks-for-Pathfinding.patch
-
--->
 * 参考 [Spigot 中的教程](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/spigot/browse/README.md)
 * 参考 [Paper 中的教程](https://github.com/PaperMC/Paper/blob/master/CONTRIBUTING.md#modifying-patches)
