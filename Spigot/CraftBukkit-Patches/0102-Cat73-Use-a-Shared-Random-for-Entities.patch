@@ -1,0 +1,48 @@
+From 4e23d5537557b4c5bbe984d4f235bbb2d02f9749 Mon Sep 17 00:00:00 2001
+From: Cat73 <root@cat73.org>
+Date: Tue, 13 Oct 2020 22:06:56 +0800
+Subject: [PATCH] Cat73 -> Use a Shared Random for Entities
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+所有实体使用一个统一的随机数生成器，略微降低内存开销
+MC 目前只有一个主线程，因此不会出现线程安全问题，且 Random 本身就是线程安全的，因此完全没有必要没个实体都重新 new 一个
+而且 new Random() 的时候需要执行高开销的 System.nanoTime()，很不值得
+
+diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
+index cf9b2c66..3f5c1425 100644
+--- a/src/main/java/net/minecraft/server/Entity.java
++++ b/src/main/java/net/minecraft/server/Entity.java
+@@ -59,6 +59,19 @@ public abstract class Entity implements INamableTileEntity, ICommandListener {
+         return tag.hasKey("Bukkit.updateLevel") && tag.getInt("Bukkit.updateLevel") >= level;
+     }
+ 
++    // Paper start
++    public static Random SHARED_RANDOM = new Random() {
++        private boolean locked = false;
++        @Override
++        public synchronized void setSeed(long seed) {
++            if (!locked) {
++                super.setSeed(seed);
++                locked = true;
++            }
++        }
++    };
++    // Paper end
++
+     private CraftEntity bukkitEntity;
+ 
+     public CraftEntity getBukkitEntity() {
+@@ -188,7 +201,7 @@ public abstract class Entity implements INamableTileEntity, ICommandListener {
+         this.x = Vec3D.ORIGIN;
+         this.am = 1.0F;
+         this.an = 1.0F;
+-        this.random = new Random();
++        this.random = SHARED_RANDOM; // Paper
+         this.fireTicks = -this.getMaxFireTicks();
+         this.M = new Object2DoubleArrayMap(2);
+         this.justCreated = true;
+-- 
+2.28.0.windows.1
+

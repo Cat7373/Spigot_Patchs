@@ -1,0 +1,49 @@
+From bbaec4eaaf08a2d7231ef9881343ee1ae442e4a7 Mon Sep 17 00:00:00 2001
+From: Cat73 <root@cat73.org>
+Date: Tue, 13 Oct 2020 22:17:29 +0800
+Subject: [PATCH] Cat73 -> Remove Debug checks from DataBits
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+去掉热点方法(getType)中的边界检查
+这个边界检查如果失败会导致服务器直接崩溃，然而从来没遇到过因为这个检查导致的崩溃，因此这个检查应该没啥卵用
+
+diff --git a/src/main/java/net/minecraft/server/DataBits.java b/src/main/java/net/minecraft/server/DataBits.java
+index c4d5ad5d..4828144f 100644
+--- a/src/main/java/net/minecraft/server/DataBits.java
++++ b/src/main/java/net/minecraft/server/DataBits.java
+@@ -53,8 +53,8 @@ public class DataBits {
+     }
+ 
+     public int a(int i, int j) {
+-        Validate.inclusiveBetween(0L, (long) (this.e - 1), (long) i);
+-        Validate.inclusiveBetween(0L, this.d, (long) j);
++        //Validate.inclusiveBetween(0L, (long) (this.e - 1), (long) i);
++        //Validate.inclusiveBetween(0L, this.d, (long) j);
+         int k = this.b(i);
+         long l = this.b[k];
+         int i1 = (i - k * this.f) * this.c;
+@@ -65,8 +65,8 @@ public class DataBits {
+     }
+ 
+     public void b(int i, int j) {
+-        Validate.inclusiveBetween(0L, (long) (this.e - 1), (long) i);
+-        Validate.inclusiveBetween(0L, this.d, (long) j);
++        //Validate.inclusiveBetween(0L, (long) (this.e - 1), (long) i);
++        //Validate.inclusiveBetween(0L, this.d, (long) j);
+         int k = this.b(i);
+         long l = this.b[k];
+         int i1 = (i - k * this.f) * this.c;
+@@ -75,7 +75,7 @@ public class DataBits {
+     }
+ 
+     public int a(int i) {
+-        Validate.inclusiveBetween(0L, (long) (this.e - 1), (long) i);
++        //Validate.inclusiveBetween(0L, (long) (this.e - 1), (long) i);
+         int j = this.b(i);
+         long k = this.b[j];
+         int l = (i - j * this.f) * this.c;
+-- 
+2.28.0.windows.1
+

@@ -1,0 +1,328 @@
+From 019699e0aaa7a6dc40333a9e7e98df46c9d5baaf Mon Sep 17 00:00:00 2001
+From: Cat73 <root@cat73.org>
+Date: Tue, 13 Oct 2020 23:02:54 +0800
+Subject: [PATCH] Cat73 -> TPSConfigure
+
+
+diff --git a/src/main/java/net/minecraft/server/ChunkProviderServer.java b/src/main/java/net/minecraft/server/ChunkProviderServer.java
+index f6335ed3..d75896ff 100644
+--- a/src/main/java/net/minecraft/server/ChunkProviderServer.java
++++ b/src/main/java/net/minecraft/server/ChunkProviderServer.java
+@@ -402,7 +402,7 @@ public class ChunkProviderServer extends IChunkProvider {
+                 }
+             });
+             this.world.getMethodProfiler().enter("customSpawners");
+-            if (flag1) {
++            if (flag1 && MinecraftServer.getServer().currentLimit.spawnsSuccessRate >= Entity.SHARED_RANDOM.nextInt(100)) {
+                 this.world.doMobSpawning(this.allowMonsters, this.allowAnimals);
+             }
+ 
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index db11a3ee..ce99fc41 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -155,6 +155,7 @@ public abstract class MinecraftServer extends IAsyncTaskHandlerReentrant<TickTas
+     public static final int TICK_TIME = 1000000000 / TPS;
+     private static final int SAMPLE_INTERVAL = 100;
+     public final double[] recentTps = new double[ 3 ];
++    public double nowTps = 20.0D; // Cat73 nowTps
+     public final SlackActivityAccountant slackActivityAccountant = new SlackActivityAccountant();
+     // Spigot end
+ 
+@@ -833,6 +834,9 @@ public abstract class MinecraftServer extends IAsyncTaskHandlerReentrant<TickTas
+                         recentTps[1] = calcTps( recentTps[1], 0.9835, currentTps ); // 1/exp(5sec/5min)
+                         recentTps[2] = calcTps( recentTps[2], 0.9945, currentTps ); // 1/exp(5sec/15min)
+                         tickSection = curTime;
++
++                        this.tpsConfigure(currentTps, recentTps[0]); // Cat73 TpsConfigure
++                        this.nowTps = currentTps; // Cat73 nowTps
+                     }
+                     // Spigot end
+ 
+@@ -902,6 +906,210 @@ public abstract class MinecraftServer extends IAsyncTaskHandlerReentrant<TickTas
+ 
+     }
+ 
++    // Cat73 Start
++    /**
++     * 不同 TPS 下的限制值
++     */
++    // TODO reload 时设置为 null
++    public List<TpsConfigure> tpsConfigures;
++    /**
++     * 现在的限制值
++     */
++    public TpsConfigure currentLimit = new TpsConfigure(19.0, 1.0, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100);
++
++    public static class TpsConfigure {
++        private final CraftServer craftServer = (CraftServer) Bukkit.getServer();
++
++        public final double minTps;
++        public final double rate;
++
++        // bukkit.yml
++        // spawn-limits
++        public final int spawnLimitsMonsters;
++        public final int spawnLimitsAnimals;
++        public final int spawnLimitsWaterAnimals;
++        public final int spawnLimitsWaterAmbient;
++        public final int spawnLimitsAmbient;
++        // 生物生成成功率
++        public final int spawnsSuccessRate;
++
++        // spigot.yml
++        // TODO no default?
++        // world-settings.default.entity-activation-range
++        public final int entityActivationRangeAnimals;
++        public final int entityActivationRangeMonsters;
++        public final int entityActivationRangeMisc;
++        // world-settings.default.max-tnt-per-tick
++        public final int maxTntTicksPerTick;
++
++        private TpsConfigure(double minTps, double rate, int spawnLimitsMonsters, int spawnLimitsAnimals, int spawnLimitsWaterAnimals, int spawnLimitsWaterAmbient,
++                int spawnLimitsAmbient, int spawnsSuccessRate, int entityActivationRangeAnimals, int entityActivationRangeMonsters,
++                int entityActivationRangeMisc, int maxTntTicksPerTick) {
++            this.minTps = minTps;
++            this.rate = rate;
++            this.spawnLimitsMonsters = spawnLimitsMonsters;
++            this.spawnLimitsAnimals = spawnLimitsAnimals;
++            this.spawnLimitsWaterAnimals = spawnLimitsWaterAnimals;
++            this.spawnLimitsWaterAmbient = spawnLimitsWaterAmbient;
++            this.spawnLimitsAmbient = spawnLimitsAmbient;
++            this.spawnsSuccessRate = spawnsSuccessRate;
++            this.entityActivationRangeAnimals = entityActivationRangeAnimals;
++            this.entityActivationRangeMonsters = entityActivationRangeMonsters;
++            this.entityActivationRangeMisc = entityActivationRangeMisc;
++            this.maxTntTicksPerTick = maxTntTicksPerTick;
++        }
++
++        private TpsConfigure(double minTps, double rate, CraftServer craftServer, org.spigotmc.SpigotWorldConfig spigotWorldConfig) {
++            this(
++                    minTps,
++                    rate,
++                    subLimit(craftServer.monsterSpawn, rate, 1),
++                    subLimit(craftServer.animalSpawn, rate, 1),
++                    subLimit(craftServer.waterAnimalSpawn, rate, 1),
++                    subLimit(craftServer.waterAmbientSpawn, rate, 1),
++                    subLimit(craftServer.ambientSpawn, rate, 1),
++                    subLimit(100, rate, 1),
++                    subLimit(spigotWorldConfig.animalActivationRange, rate, 1),
++                    subLimit(spigotWorldConfig.monsterActivationRange, rate, 1),
++                    subLimit(spigotWorldConfig.miscActivationRange, rate, 1),
++                    subLimit(spigotWorldConfig.maxTntTicksPerTick, rate, 1)
++            );
++        }
++
++        private static int subLimit(int limit, double rate, int min) {
++            return Math.max((int) Math.round(limit * rate), limit < min ? limit : min);
++        }
++
++        private static int addLimit(int limit, double rate) {
++            return (int) Math.round(limit / rate);
++        }
++
++        private void apply() {
++            craftServer.monsterSpawn = this.spawnLimitsMonsters;
++            craftServer.animalSpawn = this.spawnLimitsAnimals;
++            craftServer.waterAnimalSpawn = this.spawnLimitsWaterAnimals;
++            craftServer.waterAmbientSpawn = this.spawnLimitsWaterAmbient;
++            craftServer.ambientSpawn = this.spawnLimitsAmbient;
++
++            craftServer.getWorlds().stream()
++                    .map(w -> ((org.bukkit.craftbukkit.CraftWorld) w).getHandle())
++                    .forEach(w -> {
++                        org.spigotmc.SpigotWorldConfig spigotWorldConfig = w.spigotConfig;
++
++                        spigotWorldConfig.animalActivationRange = this.entityActivationRangeAnimals;
++                        spigotWorldConfig.monsterActivationRange = this.entityActivationRangeMonsters;
++                        spigotWorldConfig.miscActivationRange = this.entityActivationRangeMisc;
++                        spigotWorldConfig.maxTntTicksPerTick = this.maxTntTicksPerTick;
++                    });
++        }
++
++        @Override
++        public String toString() {
++            return "minTps: " + minTps +
++                    ", rate: " + rate +
++                    ", spawnLimitsMonsters: " + spawnLimitsMonsters +
++                    ", spawnLimitsAnimals: " + spawnLimitsAnimals +
++                    ", spawnLimitsWaterAnimals: " + spawnLimitsWaterAnimals +
++                    ", spawnLimitsWaterAmbient: " + spawnLimitsWaterAmbient +
++                    ", spawnLimitsAmbient: " + spawnLimitsAmbient +
++                    ", spawnsSuccessRate: " + spawnsSuccessRate +
++                    ", entityActivationRangeAnimals: " + entityActivationRangeAnimals +
++                    ", entityActivationRangeMonsters: " + entityActivationRangeMonsters +
++                    ", entityActivationRangeMisc: " + entityActivationRangeMisc +
++                    ", maxTntTicksPerTick: " + maxTntTicksPerTick;
++        }
++    }
++
++    /**
++     * 初始化不同 TPS 下的限制值
++     */
++    private void initTpsConfigure() {
++        if (this.tpsConfigures != null) {
++            return;
++        }
++
++        CraftServer craftServer = (CraftServer) Bukkit.getServer();
++        WorldServer world = ((org.bukkit.craftbukkit.CraftWorld) craftServer.getWorlds().get(0)).getHandle();
++        org.spigotmc.SpigotWorldConfig spigotWorldConfig = world.spigotConfig;
++
++        this.tpsConfigures = Arrays.asList(
++            // > 19.5 100%
++            new TpsConfigure(19.5D, 1.00D, craftServer, spigotWorldConfig),
++            // > 19 90%  -10%
++            new TpsConfigure(19.0D, 0.90D, craftServer, spigotWorldConfig),
++            // > 18 80%  -10%
++            new TpsConfigure(18.0D, 0.80D, craftServer, spigotWorldConfig),
++            // > 17 70%  -10%
++            new TpsConfigure(17.0D, 0.70D, craftServer, spigotWorldConfig),
++            // > 16 60%  -10%
++            new TpsConfigure(16.0D, 0.60D, craftServer, spigotWorldConfig),
++            // > 15 50%  -10%
++            new TpsConfigure(15.0D, 0.50D, craftServer, spigotWorldConfig),
++            // > 14 40%  -10%
++            new TpsConfigure(14.0D, 0.40D, craftServer, spigotWorldConfig),
++            // > 13 32%  -8%
++            new TpsConfigure(13.0D, 0.32D, craftServer, spigotWorldConfig),
++            // > 12 26%  -6%
++            new TpsConfigure(12.0D, 0.26D, craftServer, spigotWorldConfig),
++            // > 11 21%  -5%
++            new TpsConfigure(11.0D, 0.21D, craftServer, spigotWorldConfig),
++            // > 10 17%  -4%
++            new TpsConfigure(10.0D, 0.17D, craftServer, spigotWorldConfig),
++            // > 9  14%  -3%
++            new TpsConfigure(9.0D,  0.14D, craftServer, spigotWorldConfig),
++            // > 8  12%  -2%
++            new TpsConfigure(8.0D,  0.12D, craftServer, spigotWorldConfig),
++            // > 7  10%  -2%
++            new TpsConfigure(7.0D,  0.10D, craftServer, spigotWorldConfig),
++            // > 6  9%  -2%
++            new TpsConfigure(6.0D,  0.09D, craftServer, spigotWorldConfig),
++            // > 5  7%   -2%
++            new TpsConfigure(5.0D,  0.07D, craftServer, spigotWorldConfig),
++            // > 4  5%   -2%
++            new TpsConfigure(4.0D,  0.05D, craftServer, spigotWorldConfig),
++            // > 3  4%   -1%
++            new TpsConfigure(3.0D,  0.04D, craftServer, spigotWorldConfig),
++            // > 2  3%   -1%
++            new TpsConfigure(2.0D,  0.03D, craftServer, spigotWorldConfig),
++            // > 1  2%   -1%
++            new TpsConfigure(1.0D,  0.02D, craftServer, spigotWorldConfig),
++            // > 0  1%   -1%
++            new TpsConfigure(Double.MIN_VALUE, 0.01D, craftServer, spigotWorldConfig)
++        );
++    }
++
++    /**
++     * 根据当前的 TPS 重设各类参数限制
++     */
++    private void tpsConfigure(double... tpsList) {
++        this.initTpsConfigure();
++
++        double minTps = 20.0;
++        for (double t : tpsList) {
++            minTps = Math.min(minTps, t);
++        }
++        double tps = minTps;
++
++        this.tpsConfigures.stream()
++                .filter(c -> tps > c.minTps)
++                .findFirst()
++                .filter(c -> c != this.currentLimit)
++                .ifPresent(c -> {
++                    // 如果是上升，则每次最多允许上升一级
++                    TpsConfigure newConfigure = c;
++                    int lastIdx = this.tpsConfigures.indexOf(this.currentLimit);
++                    int newIdx = this.tpsConfigures.indexOf(newConfigure);
++                    if (lastIdx - newIdx > 1) {
++                        int useIdx = lastIdx - 1;
++                        newConfigure = this.tpsConfigures.get(useIdx);
++                    }
++
++                    newConfigure.apply();
++                    this.currentLimit = newConfigure;
++                });
++    }
++    // Cat73 End
++
+     private boolean canSleepForTick() {
+         // CraftBukkit start
+         return this.forceTicks || this.isEntered() || SystemUtils.getMonotonicMillis() < (this.X ? this.W : this.nextTick);
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index 0986d666..809a33c3 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -247,11 +247,11 @@ public final class CraftServer implements Server {
+     private final EntityMetadataStore entityMetadata = new EntityMetadataStore();
+     private final PlayerMetadataStore playerMetadata = new PlayerMetadataStore();
+     private final WorldMetadataStore worldMetadata = new WorldMetadataStore();
+-    private int monsterSpawn = -1;
+-    private int animalSpawn = -1;
+-    private int waterAnimalSpawn = -1;
+-    private int waterAmbientSpawn = -1;
+-    private int ambientSpawn = -1;
++    public int monsterSpawn = -1;
++    public int animalSpawn = -1;
++    public int waterAnimalSpawn = -1;
++    public int waterAmbientSpawn = -1;
++    public int ambientSpawn = -1;
+     private File container;
+     private WarningState warningState = WarningState.DEFAULT;
+     public String minimumAPI;
+diff --git a/src/main/java/org/spigotmc/TickLimiter.java b/src/main/java/org/spigotmc/TickLimiter.java
+index 23a39382..ddb13034 100644
+--- a/src/main/java/org/spigotmc/TickLimiter.java
++++ b/src/main/java/org/spigotmc/TickLimiter.java
+@@ -2,19 +2,20 @@ package org.spigotmc;
+ 
+ public class TickLimiter {
+ 
+-    private final int maxTime;
+-    private long startTime;
++    // private final int maxTime;
++    // private long startTime;
+ 
+     public TickLimiter(int maxtime) {
+-        this.maxTime = maxtime;
++        // this.maxTime = maxtime;
+     }
+ 
+     public void initTick() {
+-        startTime = System.currentTimeMillis();
++        // startTime = System.currentTimeMillis();
+     }
+ 
+     public boolean shouldContinue() {
+-        long remaining = System.currentTimeMillis() - startTime;
+-        return remaining < maxTime;
++        // long remaining = System.currentTimeMillis() - startTime;
++        // return remaining < maxTime;
++        return true;
+     }
+ }
+diff --git a/src/main/java/org/spigotmc/TicksPerSecondCommand.java b/src/main/java/org/spigotmc/TicksPerSecondCommand.java
+index 9cd57c9d..49508ebb 100644
+--- a/src/main/java/org/spigotmc/TicksPerSecondCommand.java
++++ b/src/main/java/org/spigotmc/TicksPerSecondCommand.java
+@@ -26,7 +26,15 @@ public class TicksPerSecondCommand extends Command
+             return true;
+         }
+ 
+-        StringBuilder sb = new StringBuilder( ChatColor.GOLD + "TPS from last 1m, 5m, 15m: " );
++        // Cat73 Start
++        StringBuilder sb = new StringBuilder(ChatColor.GOLD + "TPS from last 5s, 1m, 5m, 15m: ")
++                .append(format(MinecraftServer.getServer().nowTps))
++                .append("(>")
++                .append(MinecraftServer.getServer().currentLimit.minTps)
++                .append(": ")
++                .append(Math.floor(MinecraftServer.getServer().currentLimit.rate * 100.0))
++                .append("%), ");
++        // Cat73 End
+         for ( double tps : MinecraftServer.getServer().recentTps )
+         {
+             sb.append( format( tps ) );
+-- 
+2.28.0.windows.1
+
